@@ -19,7 +19,7 @@ class Grouping(Element):
 class Code(Element):
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
         super().__init__(id, name, unique_name, technical_type, link_to_editor)
-        self.children = []  # Added to store variables within functions if needed
+        self.children = []
         self.calls = []
         self.accesses = []
 
@@ -274,7 +274,6 @@ class UsageAnalyzer(ast.NodeVisitor):
 
         self.generic_visit(node)
 
-        # Clear variable types when exiting the function
         self.variable_types = {}
 
         self.scope_stack.pop()
@@ -299,27 +298,32 @@ class UsageAnalyzer(ast.NodeVisitor):
                         class_element = self.resolve_class_name(class_name)
                         if class_element:
                             full_class_name = class_element.unique_name
-                            # Record variable type
                             self.variable_types[target.id] = full_class_name
                             # Record the call to __init__
                             init_method_name = full_class_name + '.__init__'
                             init_method = self.symbol_table.get(init_method_name)
                             if init_method and isinstance(init_method, Code):
                                 self.calls.append({'caller': self.current_function, 'called': init_method.unique_name})
-                    else:
-                        # Handle other assignments
-                        pass
+                    elif isinstance(value, ast.Name):
+                        var_name = value.id
+                        if var_name in self.variable_types:
+                            # Assign type from another variable
+                            self.variable_types[target.id] = self.variable_types[var_name]
                 elif isinstance(target, ast.Attribute):
                     if isinstance(target.value, ast.Name) and target.value.id == 'self':
                         # Instance attribute assignment
                         name = target.attr
                         value = node.value
-                        if isinstance(value, ast.Call):
+                        if isinstance(value, ast.Name):
+                            var_name = value.id
+                            if var_name in self.variable_types:
+                                # Assign type from variable
+                                self.variable_types['self.' + name] = self.variable_types[var_name]
+                        elif isinstance(value, ast.Call):
                             class_name = self.get_called_name(value.func)
                             class_element = self.resolve_class_name(class_name)
                             if class_element:
                                 full_class_name = class_element.unique_name
-                                # Record variable type
                                 self.variable_types['self.' + name] = full_class_name
                                 # Record the call to __init__
                                 init_method_name = full_class_name + '.__init__'
@@ -381,18 +385,15 @@ class UsageAnalyzer(ast.NodeVisitor):
             attrs = parts[1:]
             if base == 'self':
                 if self.current_class:
-                    # Check if 'self.attribute' has a known type
                     attr_name = 'self.' + attrs[0]
                     if attr_name in self.variable_types:
                         class_unique_name = self.variable_types[attr_name]
                         called_unique_name = class_unique_name + '.' + '.'.join(attrs[1:])
                     else:
-                        # Try to find method in the current class
-                        called_unique_name = self.current_class + '.' + '.'.join(attrs)
+                        return None
                 else:
                     return None
             elif base in self.variable_types:
-                # Variable is an instance of a known class
                 class_unique_name = self.variable_types[base]
                 called_unique_name = class_unique_name + '.' + '.'.join(attrs)
             else:
