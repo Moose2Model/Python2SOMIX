@@ -3,7 +3,6 @@ import re
 import sys
 import shutil
 import subprocess
-import tempfile
 
 def parse_mse_file(filename):
     with open(filename, 'r', encoding='utf-8') as f:
@@ -77,17 +76,9 @@ def compare_elements(expected_elements, actual_elements):
         match_found = False
         for act_rel in actual_rels:
             if exp_rel['type'] == act_rel['type']:
-                # Compare relationships by uniqueName references
-                match = True
-                for ref_key in ['parent', 'child', 'caller', 'called', 'accessor', 'accessed']:
-                    if ref_key in exp_rel:
-                        exp_ref = exp_rel[ref_key]
-                        act_ref = act_rel.get(ref_key)
-                        # Since IDs may differ, we can't compare IDs directly
-                        # For simplicity, we'll assume that references are correct if types match
-                if match:
-                    match_found = True
-                    break
+                # For relationships, we can't compare IDs directly, so we assume if types match, it's acceptable
+                match_found = True
+                break
         if not match_found:
             print(f"Missing or different relationship in actual output: {exp_rel}")
             success = False
@@ -96,10 +87,14 @@ def compare_elements(expected_elements, actual_elements):
 
 def main():
     # Prepare test environment
-    test_dir = tempfile.mkdtemp()
+    test_dir = os.path.join(os.getcwd(), 'test')
+    if os.path.exists(test_dir):
+        shutil.rmtree(test_dir)
+    os.makedirs(test_dir, exist_ok=True)
+    os.makedirs(os.path.join(test_dir, 'subfolder'), exist_ok=True)
+
     try:
         # Create test files
-        os.makedirs(os.path.join(test_dir, 'subfolder'), exist_ok=True)
         test1_path = os.path.join(test_dir, 'test1.py')
         test2_path = os.path.join(test_dir, 'subfolder', 'test2.py')
 
@@ -308,8 +303,10 @@ def function_two():
             print("Test failed: Differences found between actual and expected outputs.")
 
     finally:
-        # Clean up the temporary directory
-        shutil.rmtree(test_dir)
+        # Clean up the test directory if you wish
+        # Uncomment the following line to remove the test directory after the test
+        # shutil.rmtree(test_dir)
+        pass
 
 if __name__ == '__main__':
     main()

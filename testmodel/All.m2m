@@ -1,0 +1,81 @@
+{
+	"newElementBox": {
+		"isInitial": false,
+		"newElBoxX": 282.6865234375,
+		"newElBoxY": -234,
+		"newElBoxWidth": 400,
+		"newElBoxHeight": 528
+	},
+	"addedWithNeighbors": [
+		"PythonMethod..test1.ClassOne.__init__",
+		"PythonVariable..test1.ClassOne.class_variable",
+		"PythonVariable..test1.ClassOne.instance_variable",
+		"PythonMethod..test1.ClassOne.method_one",
+		"PythonMethod..subfolder.test2.ClassTwo.method_two",
+		"PythonFunction..test1.function_one",
+		"PythonFunction..subfolder.test2.function_two"
+	],
+	"positions": [
+		{
+			"uniqueKey": "PythonFile..test1",
+			"x": 36.39,
+			"y": 93.7
+		},
+		{
+			"uniqueKey": "PythonClass..test1.ClassOne",
+			"x": -518.09,
+			"y": -49.74
+		},
+		{
+			"uniqueKey": "PythonVariable..test1.ClassOne.class_variable",
+			"x": -324,
+			"y": 103
+		},
+		{
+			"uniqueKey": "PythonMethod..test1.ClassOne.__init__",
+			"x": -564,
+			"y": -117
+		},
+		{
+			"uniqueKey": "PythonVariable..test1.ClassOne.instance_variable",
+			"x": -464,
+			"y": 3
+		},
+		{
+			"uniqueKey": "PythonMethod..test1.ClassOne.method_one",
+			"x": -264,
+			"y": 183
+		},
+		{
+			"uniqueKey": "PythonFunction..test1.function_one",
+			"x": -70.77,
+			"y": 167.72
+		},
+		{
+			"uniqueKey": "PythonFile..subfolder.test2",
+			"x": 35.43,
+			"y": -98
+		},
+		{
+			"uniqueKey": "PythonClass..subfolder.test2.ClassTwo",
+			"x": 22,
+			"y": -65
+		},
+		{
+			"uniqueKey": "PythonMethod..subfolder.test2.ClassTwo.method_two",
+			"x": 179.85,
+			"y": 18.63
+		},
+		{
+			"uniqueKey": "PythonFunction..subfolder.test2.function_two",
+			"x": 82,
+			"y": 95
+		}
+	],
+	"comments": [],
+	"pinned": [
+		"PythonMethod..subfolder.test2.ClassTwo.method_two",
+		"PythonFunction..test1.function_one"
+	],
+	"suppressed": []
+}

@@ -44,6 +44,8 @@ class PythonExtractor(ast.NodeVisitor):
         self.calls = []
         self.accesses = []
 
+        self.local_namespace = {}  # Map local names to fully qualified names
+
     def new_id(self):
         id = self.id_counter
         self.id_counter += 1
@@ -69,6 +71,24 @@ class PythonExtractor(ast.NodeVisitor):
         self.generic_visit(node)
 
         self.scope_stack.pop()
+
+    def visit_Import(self, node):
+        for alias in node.names:
+            name = alias.name  # The module being imported
+            asname = alias.asname if alias.asname else name
+            # Map the asname to the module name
+            self.local_namespace[asname] = name
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node):
+        module = node.module
+        for alias in node.names:
+            name = alias.name
+            asname = alias.asname if alias.asname else name
+            # Map the asname to the fully qualified name
+            full_name = module + '.' + name if module else name
+            self.local_namespace[asname] = full_name
+        self.generic_visit(node)
 
     def visit_ClassDef(self, node):
         id = self.new_id()
@@ -222,6 +242,9 @@ class PythonExtractor(ast.NodeVisitor):
                 attr_chain.append(node.id)
                 attr_chain.reverse()
                 return '.'.join(attr_chain)
+            elif isinstance(node, ast.Call):
+                # Handle chained calls
+                return self.get_called_name(node)
         elif isinstance(node, ast.Call):
             # For cases like method chaining
             return self.get_called_name(node.func)
@@ -235,11 +258,15 @@ class PythonExtractor(ast.NodeVisitor):
             else:
                 return None
         else:
-            # Attempt to resolve global names
-            called_unique_name = called_name
-            if '.' not in called_unique_name:
-                # Prepend module name if necessary
-                called_unique_name = self.module_name + '.' + called_unique_name
+            # Check if called_name is in local namespace
+            if called_name in self.local_namespace:
+                called_unique_name = self.local_namespace[called_name]
+            else:
+                # Attempt to resolve global names
+                called_unique_name = called_name
+                if '.' not in called_unique_name:
+                    # Prepend module name if necessary
+                    called_unique_name = self.module_name + '.' + called_unique_name
 
         # Check if the called_unique_name is in the symbol table and is a Code element
         called_element = self.symbol_table.get(called_unique_name)
