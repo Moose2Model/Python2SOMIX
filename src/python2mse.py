@@ -19,6 +19,7 @@ class Grouping(Element):
 class Code(Element):
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
         super().__init__(id, name, unique_name, technical_type, link_to_editor)
+        self.children = []  # Added to store variables within functions if needed
         self.calls = []
         self.accesses = []
 
@@ -105,7 +106,7 @@ class DefinitionCollector(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         name = node.name
         if self.current_class:
-            unique_name = self.module_name + '.' + self.current_class.name + '.' + name
+            unique_name = self.current_class.unique_name + '.' + name
             technical_type = 'PythonMethod'
         else:
             unique_name = self.module_name + '.' + name
@@ -131,38 +132,57 @@ class DefinitionCollector(ast.NodeVisitor):
         self.current_function = None
 
     def visit_Assign(self, node):
-        # Collect variables at all levels
         parent = self.scope_stack[-1]
         for target in node.targets:
             if isinstance(target, ast.Name):
-                # Variable assignment at module level or within functions
+                # Variable assignment
                 name = target.id
                 if self.current_function:
                     # Local variable within a function
                     unique_name = self.current_function.unique_name + '.' + name
                     technical_type = 'PythonVariable'
+                    link_to_editor = self.get_link(node.lineno, node.col_offset)
+
+                    data_element = Data(None, name, unique_name, technical_type, link_to_editor)
+                    self.elements[unique_name] = data_element
+
+                    # Optionally add to symbol table
+                    # self.symbol_table[unique_name] = data_element
+
+                    self.parent_child_relations.append({'parent': self.current_function.unique_name, 'child': unique_name, 'isMain': True})
+                    self.current_function.children.append(data_element)
                 elif self.current_class:
                     # Class variable
                     unique_name = self.current_class.unique_name + '.' + name
                     technical_type = 'PythonVariable'
+                    link_to_editor = self.get_link(node.lineno, node.col_offset)
+
+                    data_element = Data(None, name, unique_name, technical_type, link_to_editor)
+                    self.elements[unique_name] = data_element
+
+                    # Add to symbol table
+                    self.symbol_table[unique_name] = data_element
+
+                    self.parent_child_relations.append({'parent': self.current_class.unique_name, 'child': unique_name, 'isMain': True})
+                    self.current_class.children.append(data_element)
                 else:
                     # Global variable
                     unique_name = self.module_name + '.' + name
                     technical_type = 'PythonVariable'
-                link_to_editor = self.get_link(node.lineno, node.col_offset)
+                    link_to_editor = self.get_link(node.lineno, node.col_offset)
 
-                data_element = Data(None, name, unique_name, technical_type, link_to_editor)
-                self.elements[unique_name] = data_element
+                    data_element = Data(None, name, unique_name, technical_type, link_to_editor)
+                    self.elements[unique_name] = data_element
 
-                # Add to symbol table
-                self.symbol_table[unique_name] = data_element
+                    # Add to symbol table
+                    self.symbol_table[unique_name] = data_element
 
-                self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_name, 'isMain': True})
-                parent.children.append(data_element)
+                    self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_name, 'isMain': True})
+                    parent.children.append(data_element)
 
             elif isinstance(target, ast.Attribute):
-                # Instance attribute (e.g., self.attribute)
                 if isinstance(target.value, ast.Name) and target.value.id == 'self':
+                    # Instance attribute (e.g., self.attribute)
                     name = target.attr
                     unique_name = self.current_class.unique_name + '.' + name
                     technical_type = 'PythonVariable'
@@ -176,7 +196,6 @@ class DefinitionCollector(ast.NodeVisitor):
 
                     self.parent_child_relations.append({'parent': self.current_class.unique_name, 'child': unique_name, 'isMain': True})
                     self.current_class.children.append(data_element)
-
         self.generic_visit(node)
 
 class UsageAnalyzer(ast.NodeVisitor):
@@ -241,6 +260,18 @@ class UsageAnalyzer(ast.NodeVisitor):
         # Initialize variable types for this function
         self.variable_types = {}
 
+        # Collect parameter types if type annotations are available
+        args = node.args
+        if args.args:
+            for arg in args.args:
+                if arg.annotation:
+                    param_name = arg.arg
+                    param_type = self.get_annotation_name(arg.annotation)
+                    if param_type:
+                        class_element = self.resolve_class_name(param_type)
+                        if class_element:
+                            self.variable_types[param_name] = class_element.unique_name
+
         self.generic_visit(node)
 
         # Clear variable types when exiting the function
@@ -249,9 +280,15 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.scope_stack.pop()
         self.current_function = None
 
+    def get_annotation_name(self, annotation):
+        if isinstance(annotation, ast.Name):
+            return annotation.id
+        elif isinstance(annotation, ast.Attribute):
+            return self.get_called_name(annotation)
+        return None
+
     def visit_Assign(self, node):
         if self.current_function:
-            # Inside a function/method
             for target in node.targets:
                 if isinstance(target, ast.Name):
                     # Variable assignment
@@ -259,7 +296,6 @@ class UsageAnalyzer(ast.NodeVisitor):
                     if isinstance(value, ast.Call):
                         # Handle class instantiation
                         class_name = self.get_called_name(value.func)
-                        # Resolve class_name using local namespace
                         class_element = self.resolve_class_name(class_name)
                         if class_element:
                             full_class_name = class_element.unique_name
@@ -274,8 +310,22 @@ class UsageAnalyzer(ast.NodeVisitor):
                         # Handle other assignments
                         pass
                 elif isinstance(target, ast.Attribute):
-                    # Possibly handle attribute assignments (e.g., self.attribute)
-                    pass
+                    if isinstance(target.value, ast.Name) and target.value.id == 'self':
+                        # Instance attribute assignment
+                        name = target.attr
+                        value = node.value
+                        if isinstance(value, ast.Call):
+                            class_name = self.get_called_name(value.func)
+                            class_element = self.resolve_class_name(class_name)
+                            if class_element:
+                                full_class_name = class_element.unique_name
+                                # Record variable type
+                                self.variable_types['self.' + name] = full_class_name
+                                # Record the call to __init__
+                                init_method_name = full_class_name + '.__init__'
+                                init_method = self.symbol_table.get(init_method_name)
+                                if init_method and isinstance(init_method, Code):
+                                    self.calls.append({'caller': self.current_function, 'called': init_method.unique_name})
         self.generic_visit(node)
 
     def resolve_class_name(self, class_name):
@@ -325,14 +375,20 @@ class UsageAnalyzer(ast.NodeVisitor):
         return None
 
     def resolve_called_name(self, called_name):
-        # Handle 'self' references
         if '.' in called_name:
             parts = called_name.split('.')
             base = parts[0]
             attrs = parts[1:]
             if base == 'self':
                 if self.current_class:
-                    called_unique_name = self.current_class + '.' + '.'.join(attrs)
+                    # Check if 'self.attribute' has a known type
+                    attr_name = 'self.' + attrs[0]
+                    if attr_name in self.variable_types:
+                        class_unique_name = self.variable_types[attr_name]
+                        called_unique_name = class_unique_name + '.' + '.'.join(attrs[1:])
+                    else:
+                        # Try to find method in the current class
+                        called_unique_name = self.current_class + '.' + '.'.join(attrs)
                 else:
                     return None
             elif base in self.variable_types:
@@ -372,6 +428,14 @@ class UsageAnalyzer(ast.NodeVisitor):
                 if data_element and isinstance(data_element, Data):
                     # Record the access
                     self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
+            elif isinstance(node.value, ast.Name):
+                var_name = node.value.id
+                if var_name in self.variable_types:
+                    class_unique_name = self.variable_types[var_name]
+                    attr_name = class_unique_name + '.' + node.attr
+                    data_element = self.symbol_table.get(attr_name)
+                    if data_element and isinstance(data_element, Data):
+                        self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
         self.generic_visit(node)
 
     def visit_Name(self, node):
