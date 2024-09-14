@@ -1,0 +1,54 @@
+{
+	"newElementBox": {
+		"isInitial": false,
+		"newElBoxX": 142.9033203125,
+		"newElBoxY": -114,
+		"newElBoxWidth": 400,
+		"newElBoxHeight": 348
+	},
+	"addedWithNeighbors": [
+		"PythonMethod..myrepo.myfile.MyClass.MyMethod2",
+		"PythonVariable..myrepo.myfile.MyClass.myVariable2",
+		"PythonMethod..myrepo.myfile.MyClass.MyMethod",
+		"PythonVariable..myrepo.myfile.MyClass.myVariable"
+	],
+	"positions": [
+		{
+			"uniqueKey": "PythonClass..myrepo.myfile.MyClass",
+			"x": -137.71,
+			"y": -24.13
+		},
+		{
+			"uniqueKey": "PythonMethod..myrepo.myfile.MyClass.MyMethod",
+			"x": -176,
+			"y": 0
+		},
+		{
+			"uniqueKey": "PythonVariable..myrepo.myfile.MyClass.myVariable",
+			"x": -167,
+			"y": 116
+		},
+		{
+			"uniqueKey": "PythonClass..myrepo.myfile.MyClass2",
+			"x": -117.71,
+			"y": 25.33
+		},
+		{
+			"uniqueKey": "PythonMethod..myrepo.myfile.MyClass.MyMethod2",
+			"x": -7,
+			"y": 1
+		},
+		{
+			"uniqueKey": "PythonVariable..myrepo.myfile.MyClass.myVariable2",
+			"x": -2,
+			"y": 117
+		}
+	],
+	"comments": [],
+	"pinned": [
+		"PythonMethod..myrepo.myfile.MyClass.MyMethod2",
+		"PythonVariable..myrepo.myfile.MyClass.myVariable",
+		"PythonVariable..myrepo.myfile.MyClass.myVariable2"
+	],
+	"suppressed": []
+}
