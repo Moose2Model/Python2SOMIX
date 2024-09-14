@@ -27,7 +27,6 @@ class Data(Element):
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
         super().__init__(id, name, unique_name, technical_type, link_to_editor)
         self.accessed_by = []
-
 class DefinitionCollector(ast.NodeVisitor):
     def __init__(self, filename, module_name, base_path, symbol_table, elements, parent_child_relations):
         self.filename = filename
@@ -213,6 +212,7 @@ class UsageAnalyzer(ast.NodeVisitor):
 
         self.local_namespace = {}  # Map local names to fully qualified names
         self.variable_types = {}  # Map variable names to class names (within a function)
+        self.class_variable_types = {}  # Map self attributes to types across the class
 
     def visit_Module(self, node):
         self.scope_stack.append(self.module_name)
@@ -242,6 +242,9 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.scope_stack.append(unique_name)
         self.current_class = unique_name
 
+        # Initialize class variable types
+        self.class_variable_types = {}
+
         self.generic_visit(node)
 
         self.scope_stack.pop()
@@ -260,31 +263,25 @@ class UsageAnalyzer(ast.NodeVisitor):
         # Initialize variable types for this function
         self.variable_types = {}
 
-        # Collect parameter types if type annotations are available
+        # Collect parameter names (types are unknown without annotations)
         args = node.args
         if args.args:
             for arg in args.args:
-                if arg.annotation:
-                    param_name = arg.arg
-                    param_type = self.get_annotation_name(arg.annotation)
-                    if param_type:
-                        class_element = self.resolve_class_name(param_type)
-                        if class_element:
-                            self.variable_types[param_name] = class_element.unique_name
+                param_name = arg.arg
+                # Assume type is unknown
+                self.variable_types[param_name] = None
 
         self.generic_visit(node)
+
+        # Merge self.variable_types into class_variable_types
+        for var, var_type in self.variable_types.items():
+            if var.startswith('self.'):
+                self.class_variable_types[var] = var_type
 
         self.variable_types = {}
 
         self.scope_stack.pop()
         self.current_function = None
-
-    def get_annotation_name(self, annotation):
-        if isinstance(annotation, ast.Name):
-            return annotation.id
-        elif isinstance(annotation, ast.Attribute):
-            return self.get_called_name(annotation)
-        return None
 
     def visit_Assign(self, node):
         if self.current_function:
@@ -292,47 +289,47 @@ class UsageAnalyzer(ast.NodeVisitor):
                 if isinstance(target, ast.Name):
                     # Variable assignment
                     value = node.value
-                    if isinstance(value, ast.Call):
-                        # Handle class instantiation
-                        class_name = self.get_called_name(value.func)
-                        class_element = self.resolve_class_name(class_name)
-                        if class_element:
-                            full_class_name = class_element.unique_name
-                            self.variable_types[target.id] = full_class_name
-                            # Record the call to __init__
-                            init_method_name = full_class_name + '.__init__'
-                            init_method = self.symbol_table.get(init_method_name)
-                            if init_method and isinstance(init_method, Code):
-                                self.calls.append({'caller': self.current_function, 'called': init_method.unique_name})
-                    elif isinstance(value, ast.Name):
-                        var_name = value.id
-                        if var_name in self.variable_types:
-                            # Assign type from another variable
-                            self.variable_types[target.id] = self.variable_types[var_name]
+                    var_name = target.id
+                    var_type = self.infer_type(value)
+                    self.variable_types[var_name] = var_type
                 elif isinstance(target, ast.Attribute):
                     if isinstance(target.value, ast.Name) and target.value.id == 'self':
                         # Instance attribute assignment
-                        name = target.attr
+                        attr_name = 'self.' + target.attr
                         value = node.value
-                        if isinstance(value, ast.Name):
-                            var_name = value.id
-                            if var_name in self.variable_types:
-                                # Assign type from variable
-                                self.variable_types['self.' + name] = self.variable_types[var_name]
-                        elif isinstance(value, ast.Call):
-                            class_name = self.get_called_name(value.func)
-                            class_element = self.resolve_class_name(class_name)
-                            if class_element:
-                                full_class_name = class_element.unique_name
-                                self.variable_types['self.' + name] = full_class_name
-                                # Record the call to __init__
-                                init_method_name = full_class_name + '.__init__'
-                                init_method = self.symbol_table.get(init_method_name)
-                                if init_method and isinstance(init_method, Code):
-                                    self.calls.append({'caller': self.current_function, 'called': init_method.unique_name})
+                        var_type = self.infer_type(value)
+                        self.variable_types[attr_name] = var_type
+                        # Update class variable types
+                        self.class_variable_types[attr_name] = var_type
         self.generic_visit(node)
 
+    def infer_type(self, value):
+        # Infer type based on the value
+        if isinstance(value, ast.Call):
+            class_name = self.get_called_name(value.func)
+            class_element = self.resolve_class_name(class_name)
+            if class_element:
+                full_class_name = class_element.unique_name
+                # Record the call to __init__
+                init_method_name = full_class_name + '.__init__'
+                init_method = self.symbol_table.get(init_method_name)
+                if init_method and isinstance(init_method, Code):
+                    self.calls.append({'caller': self.current_function, 'called': init_method.unique_name})
+                return full_class_name
+        elif isinstance(value, ast.Name):
+            var_name = value.id
+            # Check in local variables
+            if var_name in self.variable_types:
+                return self.variable_types[var_name]
+            # Check in class variables
+            if var_name in self.class_variable_types:
+                return self.class_variable_types[var_name]
+        # Could not infer type
+        return None
+
     def resolve_class_name(self, class_name):
+        if not class_name:
+            return None
         if class_name in self.local_namespace:
             class_unique_name = self.local_namespace[class_name]
         else:
@@ -367,12 +364,6 @@ class UsageAnalyzer(ast.NodeVisitor):
                 attr_chain.append(node.id)
                 attr_chain.reverse()
                 return '.'.join(attr_chain)
-            elif isinstance(node, ast.Call):
-                # Handle chained calls
-                return self.get_called_name(node)
-            elif isinstance(node, ast.Attribute):
-                # Handle nested attributes
-                return self.get_called_name(node)
         elif isinstance(node, ast.Call):
             # For cases like method chaining
             return self.get_called_name(node.func)
@@ -383,26 +374,34 @@ class UsageAnalyzer(ast.NodeVisitor):
             parts = called_name.split('.')
             base = parts[0]
             attrs = parts[1:]
+
+            # Handle 'self' references
             if base == 'self':
-                if self.current_class:
-                    attr_name = 'self.' + attrs[0]
-                    if attr_name in self.variable_types:
-                        class_unique_name = self.variable_types[attr_name]
-                        called_unique_name = class_unique_name + '.' + '.'.join(attrs[1:])
-                    else:
-                        return None
+                attr_name = 'self.' + attrs[0]
+                # First check in current function scope
+                var_type = self.variable_types.get(attr_name)
+                if not var_type:
+                    # Then check in class scope
+                    var_type = self.class_variable_types.get(attr_name)
+                if var_type:
+                    called_unique_name = var_type + '.' + '.'.join(attrs[1:])
                 else:
                     return None
-            elif base in self.variable_types:
-                class_unique_name = self.variable_types[base]
-                called_unique_name = class_unique_name + '.' + '.'.join(attrs)
             else:
-                # Try to resolve base from local namespace
-                if base in self.local_namespace:
-                    base_unique_name = self.local_namespace[base]
+                # Check if base is a variable
+                var_type = self.variable_types.get(base)
+                if not var_type:
+                    # Check in class variable types
+                    var_type = self.class_variable_types.get(base)
+                if var_type:
+                    called_unique_name = var_type + '.' + '.'.join(attrs)
                 else:
-                    base_unique_name = self.module_name + '.' + base
-                called_unique_name = base_unique_name + '.' + '.'.join(attrs)
+                    # Try to resolve base from local namespace or module
+                    if base in self.local_namespace:
+                        base_unique_name = self.local_namespace[base]
+                    else:
+                        base_unique_name = self.module_name + '.' + base
+                    called_unique_name = base_unique_name + '.' + '.'.join(attrs)
         else:
             # Check if called_name is in local namespace
             if called_name in self.local_namespace:
@@ -416,27 +415,30 @@ class UsageAnalyzer(ast.NodeVisitor):
         if isinstance(called_element, Code):
             return called_element
         else:
-            return None  # Ignore if it's not a Code element
+            return None
 
     def visit_Attribute(self, node):
         if self.current_function:
-            if isinstance(node.value, ast.Name) and node.value.id == 'self':
-                # Accessing an instance attribute
-                name = node.attr
-                unique_name = self.current_class + '.' + name
-                # Try to find the data element
-                data_element = self.symbol_table.get(unique_name)
-                if data_element and isinstance(data_element, Data):
-                    # Record the access
-                    self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
-            elif isinstance(node.value, ast.Name):
+            # Handle attribute access
+            if isinstance(node.value, ast.Name):
                 var_name = node.value.id
-                if var_name in self.variable_types:
-                    class_unique_name = self.variable_types[var_name]
-                    attr_name = class_unique_name + '.' + node.attr
-                    data_element = self.symbol_table.get(attr_name)
+                attr_name = var_name + '.' + node.attr
+
+                # Check if var_name is 'self'
+                if var_name == 'self':
+                    full_attr_name = 'self.' + node.attr
+                    # Record access
+                    data_element = self.symbol_table.get(self.current_class + '.' + node.attr)
                     if data_element and isinstance(data_element, Data):
                         self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
+                else:
+                    # Check variable types
+                    var_type = self.variable_types.get(var_name) or self.class_variable_types.get(var_name)
+                    if var_type:
+                        full_attr_name = var_type + '.' + node.attr
+                        data_element = self.symbol_table.get(full_attr_name)
+                        if data_element and isinstance(data_element, Data):
+                            self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
         self.generic_visit(node)
 
     def visit_Name(self, node):
