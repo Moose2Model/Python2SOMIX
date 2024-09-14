@@ -45,6 +45,7 @@ class PythonExtractor(ast.NodeVisitor):
         self.accesses = []
 
         self.local_namespace = {}  # Map local names to fully qualified names
+        self.variable_types = {}  # Map variable names to class names (within a function)
 
     def new_id(self):
         id = self.id_counter
@@ -74,9 +75,8 @@ class PythonExtractor(ast.NodeVisitor):
 
     def visit_Import(self, node):
         for alias in node.names:
-            name = alias.name  # The module being imported
+            name = alias.name
             asname = alias.asname if alias.asname else name
-            # Map the asname to the module name
             self.local_namespace[asname] = name
         self.generic_visit(node)
 
@@ -85,7 +85,6 @@ class PythonExtractor(ast.NodeVisitor):
         for alias in node.names:
             name = alias.name
             asname = alias.asname if alias.asname else name
-            # Map the asname to the fully qualified name
             full_name = module + '.' + name if module else name
             self.local_namespace[asname] = full_name
         self.generic_visit(node)
@@ -139,7 +138,13 @@ class PythonExtractor(ast.NodeVisitor):
         self.scope_stack.append(code_element)
         self.current_function = code_element
 
+        # Initialize variable types for this function
+        self.variable_types = {}
+
         self.generic_visit(node)
+
+        # Clear variable types when exiting the function
+        self.variable_types = {}
 
         self.scope_stack.pop()
         self.current_function = None
@@ -215,8 +220,22 @@ class PythonExtractor(ast.NodeVisitor):
                             parent.children.append(data_element)
                         # Record the access with accessor being a Code element
                         self.accesses.append({'accessor': self.current_function.unique_name, 'accessed': data_element.unique_name, 'isWrite': True, 'isRead': False, 'isDependent': True})
-
-        self.generic_visit(node)
+                elif isinstance(target, ast.Name):
+                    # Variable assignment; check if it's assigning an instance of a class
+                    value = node.value
+                    if isinstance(value, ast.Call) and isinstance(value.func, ast.Name):
+                        class_name = value.func.id
+                        # Resolve class_name using local namespace
+                        if class_name in self.local_namespace:
+                            full_class_name = self.local_namespace[class_name]
+                        else:
+                            full_class_name = self.module_name + '.' + class_name
+                        # Check if the class is known
+                        if full_class_name in self.symbol_table and isinstance(self.symbol_table[full_class_name], Grouping):
+                            # Record variable type
+                            self.variable_types[target.id] = full_class_name
+            # Continue visiting to handle nested assignments
+            self.generic_visit(node)
 
     def visit_Call(self, node):
         # Get the fully qualified name of the called function/method
@@ -245,6 +264,9 @@ class PythonExtractor(ast.NodeVisitor):
             elif isinstance(node, ast.Call):
                 # Handle chained calls
                 return self.get_called_name(node)
+            elif isinstance(node, ast.Attribute):
+                # Handle nested attributes
+                return self.get_called_name(node)
         elif isinstance(node, ast.Call):
             # For cases like method chaining
             return self.get_called_name(node.func)
@@ -252,21 +274,33 @@ class PythonExtractor(ast.NodeVisitor):
 
     def resolve_called_name(self, called_name):
         # Handle 'self' references
-        if called_name.startswith('self.'):
-            if self.current_class:
-                called_unique_name = self.module_name + '.' + self.current_class.name + '.' + called_name[len('self.'):]
+        if '.' in called_name:
+            parts = called_name.split('.')
+            base = parts[0]
+            attrs = parts[1:]
+            if base == 'self':
+                if self.current_class:
+                    called_unique_name = self.module_name + '.' + self.current_class.name + '.' + '.'.join(attrs)
+                else:
+                    return None
+            elif base in self.variable_types:
+                # Variable is an instance of a known class
+                class_unique_name = self.variable_types[base]
+                called_unique_name = class_unique_name + '.' + '.'.join(attrs)
             else:
-                return None
+                # Try to resolve base from local namespace
+                if base in self.local_namespace:
+                    base_unique_name = self.local_namespace[base]
+                else:
+                    base_unique_name = self.module_name + '.' + base
+                called_unique_name = base_unique_name + '.' + '.'.join(attrs)
         else:
             # Check if called_name is in local namespace
             if called_name in self.local_namespace:
                 called_unique_name = self.local_namespace[called_name]
             else:
                 # Attempt to resolve global names
-                called_unique_name = called_name
-                if '.' not in called_unique_name:
-                    # Prepend module name if necessary
-                    called_unique_name = self.module_name + '.' + called_unique_name
+                called_unique_name = self.module_name + '.' + called_name
 
         # Check if the called_unique_name is in the symbol table and is a Code element
         called_element = self.symbol_table.get(called_unique_name)
