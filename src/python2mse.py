@@ -50,9 +50,7 @@ class PythonExtractor(ast.NodeVisitor):
         return id
 
     def get_link(self, lineno, col_offset):
-        # Adjust col_offset to start from 1
         col = col_offset + 1
-        # Convert Windows paths to use forward slashes
         filepath = os.path.abspath(self.filename).replace('\\', '/')
         return f'vscode://file/{filepath}/:{lineno}:{col}'
 
@@ -65,7 +63,7 @@ class PythonExtractor(ast.NodeVisitor):
 
         module_element = Grouping(id, name, unique_name, technical_type, link_to_editor)
         self.elements[id] = module_element
-        module_element.is_main = True  # Root element
+        module_element.is_main = True
         self.scope_stack.append(module_element)
 
         self.generic_visit(node)
@@ -202,10 +200,10 @@ class PythonExtractor(ast.NodeVisitor):
         # Get the fully qualified name of the called function/method
         called_name = self.get_called_name(node.func)
         if called_name and self.current_function:
-            # Try to resolve the called name in the symbol table
+            # Try to resolve the called function/method in the symbol table
             called_element = self.resolve_called_name(called_name)
-            if called_element:
-                # Record the call
+            if called_element and isinstance(called_element, Code):
+                # Only consider code elements for SOMIX.Call
                 self.calls.append({'caller': self.current_function.id, 'called': called_element.id})
         self.generic_visit(node)
 
@@ -227,7 +225,6 @@ class PythonExtractor(ast.NodeVisitor):
         return None
 
     def resolve_called_name(self, called_name):
-        # Try to resolve the called name to a unique name in the symbol table
         # Handle 'self' references
         if called_name.startswith('self.'):
             if self.current_class:
@@ -241,9 +238,12 @@ class PythonExtractor(ast.NodeVisitor):
                 # Prepend module name if necessary
                 called_unique_name = self.module_name + '.' + called_unique_name
 
-        # Check if the called_unique_name is in the symbol table
+        # Check if the called_unique_name is in the symbol table and is a Code element
         called_element = self.symbol_table.get(called_unique_name)
-        return called_element
+        if isinstance(called_element, Code):
+            return called_element
+        else:
+            return None  # Ignore if it's not a Code element
 
     def visit_Attribute(self, node):
         if isinstance(node.value, ast.Name) and node.value.id == 'self':
