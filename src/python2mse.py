@@ -223,19 +223,37 @@ class PythonExtractor(ast.NodeVisitor):
                 elif isinstance(target, ast.Name):
                     # Variable assignment; check if it's assigning an instance of a class
                     value = node.value
-                    if isinstance(value, ast.Call) and isinstance(value.func, ast.Name):
-                        class_name = value.func.id
+                    if isinstance(value, ast.Call):
+                        # Handle class instantiation
+                        class_name = self.get_called_name(value.func)
                         # Resolve class_name using local namespace
-                        if class_name in self.local_namespace:
-                            full_class_name = self.local_namespace[class_name]
-                        else:
-                            full_class_name = self.module_name + '.' + class_name
-                        # Check if the class is known
-                        if full_class_name in self.symbol_table and isinstance(self.symbol_table[full_class_name], Grouping):
+                        class_element = self.resolve_class_name(class_name)
+                        if class_element:
+                            full_class_name = class_element.unique_name
                             # Record variable type
                             self.variable_types[target.id] = full_class_name
+                            # Record the call to __init__
+                            init_method_name = full_class_name + '.__init__'
+                            init_method = self.symbol_table.get(init_method_name)
+                            if init_method and isinstance(init_method, Code):
+                                if self.current_function:
+                                    self.calls.append({'caller': self.current_function.unique_name, 'called': init_method.unique_name})
+                    else:
+                        # Handle other assignments
+                        pass
             # Continue visiting to handle nested assignments
             self.generic_visit(node)
+
+    def resolve_class_name(self, class_name):
+        if class_name in self.local_namespace:
+            class_unique_name = self.local_namespace[class_name]
+        else:
+            class_unique_name = self.module_name + '.' + class_name
+        class_element = self.symbol_table.get(class_unique_name)
+        if isinstance(class_element, Grouping):
+            return class_element
+        else:
+            return None
 
     def visit_Call(self, node):
         # Get the fully qualified name of the called function/method

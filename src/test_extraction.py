@@ -126,6 +126,8 @@ class ClassTwo:
         print("ClassTwo method_two called")
 
 def function_two():
+    obj = ClassOne()
+    obj.method_one()
     function_one()
     print("function_two called")
 """)
