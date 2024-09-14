@@ -126,6 +126,7 @@ class PythonExtractor(ast.NodeVisitor):
 
     def visit_Assign(self, node):
         if isinstance(self.scope_stack[-1], Grouping):
+            # At the module or class level
             if self.current_class:
                 # Class attribute
                 for target in node.targets:
@@ -164,6 +165,7 @@ class PythonExtractor(ast.NodeVisitor):
                         parent = self.scope_stack[-1]
                         self.parent_child_relations.append({'parent': parent.id, 'child': id, 'isMain': True})
                         parent.children.append(data_element)
+            # Do not record accesses at the module or class level
         elif isinstance(self.scope_stack[-1], Code):
             # Inside a function/method
             for target in node.targets:
@@ -191,20 +193,21 @@ class PythonExtractor(ast.NodeVisitor):
                             parent = self.current_class
                             self.parent_child_relations.append({'parent': parent.id, 'child': id, 'isMain': True})
                             parent.children.append(data_element)
-                        # Record the access
-                        self.accesses.append({'accessor': self.current_function.id, 'accessed': data_element.id, 'isWrite': True, 'isRead': False, 'isDependent': True})
+                        # Record the access with accessor being a Code element
+                        self.accesses.append({'accessor': self.current_function.unique_name, 'accessed': data_element.unique_name, 'isWrite': True, 'isRead': False, 'isDependent': True})
 
         self.generic_visit(node)
 
     def visit_Call(self, node):
         # Get the fully qualified name of the called function/method
         called_name = self.get_called_name(node.func)
-        if called_name and self.current_function:
+        if called_name:
             # Try to resolve the called function/method in the symbol table
             called_element = self.resolve_called_name(called_name)
             if called_element and isinstance(called_element, Code):
-                # Only consider code elements for SOMIX.Call
-                self.calls.append({'caller': self.current_function.id, 'called': called_element.id})
+                if self.current_function:
+                    # Record the call with unique names
+                    self.calls.append({'caller': self.current_function.unique_name, 'called': called_element.unique_name})
         self.generic_visit(node)
 
     def get_called_name(self, node):
@@ -246,8 +249,8 @@ class PythonExtractor(ast.NodeVisitor):
             return None  # Ignore if it's not a Code element
 
     def visit_Attribute(self, node):
-        if isinstance(node.value, ast.Name) and node.value.id == 'self':
-            if self.current_function:
+        if self.current_function:
+            if isinstance(node.value, ast.Name) and node.value.id == 'self':
                 # Accessing an instance attribute
                 name = node.attr
                 unique_name = self.module_name + '.' + self.current_class.name + '.' + name
@@ -255,18 +258,18 @@ class PythonExtractor(ast.NodeVisitor):
                 data_element = self.symbol_table.get(unique_name)
                 if data_element and isinstance(data_element, Data):
                     # Record the access
-                    self.accesses.append({'accessor': self.current_function.id, 'accessed': data_element.id, 'isWrite': False, 'isRead': True, 'isDependent': True})
+                    self.accesses.append({'accessor': self.current_function.unique_name, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
         self.generic_visit(node)
 
     def visit_Name(self, node):
-        # Check if the name refers to a global variable
         if self.current_function:
+            # Check if the name refers to a global variable
             name = node.id
             unique_name = self.module_name + '.' + name
             data_element = self.symbol_table.get(unique_name)
             if data_element and isinstance(data_element, Data):
                 # Record the access
-                self.accesses.append({'accessor': self.current_function.id, 'accessed': data_element.id, 'isWrite': False, 'isRead': True, 'isDependent': True})
+                self.accesses.append({'accessor': self.current_function.unique_name, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
         self.generic_visit(node)
 
 def main():
@@ -300,7 +303,7 @@ def main():
                 except Exception as e:
                     print(f"Error processing file {filepath}: {e}")
 
-    # Second pass to update IDs and collect relations
+    # Second pass to assign unique IDs and collect relations
     id_counter = 1
     id_mapping_global = {}
     for extractor in extractors:
@@ -319,29 +322,25 @@ def main():
             relation['child'] = id_mapping[relation['child']]
             all_parent_child_relations.append(relation)
 
-    # Now that all IDs are assigned, process calls and accesses
+    # Now process calls and accesses
     for extractor in extractors:
         for call in extractor.calls:
-            caller_id = call['caller']
-            called_elem = extractor.elements.get(call['called'])
-            if called_elem:
-                called_id = id_mapping_global.get(called_elem.unique_name)
-                if called_id:
-                    all_calls.append({'caller': caller_id, 'called': called_id})
+            caller_id = id_mapping_global.get(call['caller'])
+            called_id = id_mapping_global.get(call['called'])
+            if caller_id and called_id:
+                all_calls.append({'caller': caller_id, 'called': called_id})
 
         for access in extractor.accesses:
-            accessor_id = access['accessor']
-            accessed_elem = extractor.elements.get(access['accessed'])
-            if accessed_elem:
-                accessed_id = id_mapping_global.get(accessed_elem.unique_name)
-                if accessed_id:
-                    all_accesses.append({
-                        'accessor': accessor_id,
-                        'accessed': accessed_id,
-                        'isWrite': access['isWrite'],
-                        'isRead': access['isRead'],
-                        'isDependent': access['isDependent']
-                    })
+            accessor_id = id_mapping_global.get(access['accessor'])
+            accessed_id = id_mapping_global.get(access['accessed'])
+            if accessor_id and accessed_id:
+                all_accesses.append({
+                    'accessor': accessor_id,
+                    'accessed': accessed_id,
+                    'isWrite': access['isWrite'],
+                    'isRead': access['isRead'],
+                    'isDependent': access['isDependent']
+                })
 
     # Write output to .mse file
     with open(output_filename, 'w', encoding='utf-8') as f:
