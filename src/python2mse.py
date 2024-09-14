@@ -27,30 +27,20 @@ class Data(Element):
         super().__init__(id, name, unique_name, technical_type, link_to_editor)
         self.accessed_by = []
 
-class PythonExtractor(ast.NodeVisitor):
-    def __init__(self, filename, module_name, base_path, symbol_table):
+class DefinitionCollector(ast.NodeVisitor):
+    def __init__(self, filename, module_name, base_path, symbol_table, elements, parent_child_relations):
         self.filename = filename
         self.module_name = module_name
         self.base_path = base_path
         self.symbol_table = symbol_table  # Shared symbol table
+        self.elements = elements  # Shared elements dictionary
+        self.parent_child_relations = parent_child_relations  # Shared relations list
 
         self.scope_stack = []
         self.current_class = None
         self.current_function = None
 
-        self.elements = {}
-        self.id_counter = 1
-        self.parent_child_relations = []
-        self.calls = []
-        self.accesses = []
-
         self.local_namespace = {}  # Map local names to fully qualified names
-        self.variable_types = {}  # Map variable names to class names (within a function)
-
-    def new_id(self):
-        id = self.id_counter
-        self.id_counter += 1
-        return id
 
     def get_link(self, lineno, col_offset):
         col = col_offset + 1
@@ -58,14 +48,13 @@ class PythonExtractor(ast.NodeVisitor):
         return f'vscode://file/{filepath}/:{lineno}:{col}'
 
     def visit_Module(self, node):
-        id = self.new_id()
         name = os.path.basename(self.filename)
         unique_name = self.module_name
         technical_type = 'PythonFile'
         link_to_editor = self.get_link(getattr(node, 'lineno', 1), 0)
 
-        module_element = Grouping(id, name, unique_name, technical_type, link_to_editor)
-        self.elements[id] = module_element
+        module_element = Grouping(None, name, unique_name, technical_type, link_to_editor)
+        self.elements[unique_name] = module_element
         module_element.is_main = True
         self.scope_stack.append(module_element)
 
@@ -90,20 +79,19 @@ class PythonExtractor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_ClassDef(self, node):
-        id = self.new_id()
         name = node.name
         unique_name = self.module_name + '.' + name
         technical_type = 'PythonClass'
         link_to_editor = self.get_link(node.lineno, node.col_offset)
 
-        class_element = Grouping(id, name, unique_name, technical_type, link_to_editor)
-        self.elements[id] = class_element
+        class_element = Grouping(None, name, unique_name, technical_type, link_to_editor)
+        self.elements[unique_name] = class_element
 
         # Add to symbol table
         self.symbol_table[unique_name] = class_element
 
         parent = self.scope_stack[-1]
-        self.parent_child_relations.append({'parent': parent.id, 'child': id, 'isMain': True})
+        self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_name, 'isMain': True})
         parent.children.append(class_element)
 
         self.scope_stack.append(class_element)
@@ -115,7 +103,6 @@ class PythonExtractor(ast.NodeVisitor):
         self.current_class = None
 
     def visit_FunctionDef(self, node):
-        id = self.new_id()
         name = node.name
         if self.current_class:
             unique_name = self.module_name + '.' + self.current_class.name + '.' + name
@@ -125,18 +112,131 @@ class PythonExtractor(ast.NodeVisitor):
             technical_type = 'PythonFunction'
         link_to_editor = self.get_link(node.lineno, node.col_offset)
 
-        code_element = Code(id, name, unique_name, technical_type, link_to_editor)
-        self.elements[id] = code_element
+        code_element = Code(None, name, unique_name, technical_type, link_to_editor)
+        self.elements[unique_name] = code_element
 
         # Add to symbol table
         self.symbol_table[unique_name] = code_element
 
         parent = self.scope_stack[-1]
-        self.parent_child_relations.append({'parent': parent.id, 'child': id, 'isMain': True})
+        self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_name, 'isMain': True})
         parent.children.append(code_element)
 
         self.scope_stack.append(code_element)
         self.current_function = code_element
+
+        self.generic_visit(node)
+
+        self.scope_stack.pop()
+        self.current_function = None
+
+    def visit_Assign(self, node):
+        # Collect variables at all levels
+        parent = self.scope_stack[-1]
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                # Variable assignment at module level or within functions
+                name = target.id
+                if self.current_function:
+                    # Local variable within a function
+                    unique_name = self.current_function.unique_name + '.' + name
+                    technical_type = 'PythonVariable'
+                elif self.current_class:
+                    # Class variable
+                    unique_name = self.current_class.unique_name + '.' + name
+                    technical_type = 'PythonVariable'
+                else:
+                    # Global variable
+                    unique_name = self.module_name + '.' + name
+                    technical_type = 'PythonVariable'
+                link_to_editor = self.get_link(node.lineno, node.col_offset)
+
+                data_element = Data(None, name, unique_name, technical_type, link_to_editor)
+                self.elements[unique_name] = data_element
+
+                # Add to symbol table
+                self.symbol_table[unique_name] = data_element
+
+                self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_name, 'isMain': True})
+                parent.children.append(data_element)
+
+            elif isinstance(target, ast.Attribute):
+                # Instance attribute (e.g., self.attribute)
+                if isinstance(target.value, ast.Name) and target.value.id == 'self':
+                    name = target.attr
+                    unique_name = self.current_class.unique_name + '.' + name
+                    technical_type = 'PythonVariable'
+                    link_to_editor = self.get_link(node.lineno, node.col_offset)
+
+                    data_element = Data(None, name, unique_name, technical_type, link_to_editor)
+                    self.elements[unique_name] = data_element
+
+                    # Add to symbol table
+                    self.symbol_table[unique_name] = data_element
+
+                    self.parent_child_relations.append({'parent': self.current_class.unique_name, 'child': unique_name, 'isMain': True})
+                    self.current_class.children.append(data_element)
+
+        self.generic_visit(node)
+
+class UsageAnalyzer(ast.NodeVisitor):
+    def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses):
+        self.filename = filename
+        self.module_name = module_name
+        self.base_path = base_path
+        self.symbol_table = symbol_table  # Shared symbol table
+        self.calls = calls
+        self.accesses = accesses
+
+        self.scope_stack = []
+        self.current_class = None
+        self.current_function = None
+
+        self.local_namespace = {}  # Map local names to fully qualified names
+        self.variable_types = {}  # Map variable names to class names (within a function)
+
+    def visit_Module(self, node):
+        self.scope_stack.append(self.module_name)
+        self.generic_visit(node)
+        self.scope_stack.pop()
+
+    def visit_Import(self, node):
+        for alias in node.names:
+            name = alias.name
+            asname = alias.asname if alias.asname else name
+            self.local_namespace[asname] = name
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node):
+        module = node.module
+        for alias in node.names:
+            name = alias.name
+            asname = alias.asname if alias.asname else name
+            full_name = module + '.' + name if module else name
+            self.local_namespace[asname] = full_name
+        self.generic_visit(node)
+
+    def visit_ClassDef(self, node):
+        name = node.name
+        unique_name = self.module_name + '.' + name
+
+        self.scope_stack.append(unique_name)
+        self.current_class = unique_name
+
+        self.generic_visit(node)
+
+        self.scope_stack.pop()
+        self.current_class = None
+
+    def visit_FunctionDef(self, node):
+        name = node.name
+        if self.current_class:
+            unique_name = self.current_class + '.' + name
+        else:
+            unique_name = self.module_name + '.' + name
+
+        self.scope_stack.append(unique_name)
+        self.current_function = unique_name
 
         # Initialize variable types for this function
         self.variable_types = {}
@@ -150,78 +250,11 @@ class PythonExtractor(ast.NodeVisitor):
         self.current_function = None
 
     def visit_Assign(self, node):
-        if isinstance(self.scope_stack[-1], Grouping):
-            # At the module or class level
-            if self.current_class:
-                # Class attribute
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        id = self.new_id()
-                        name = target.id
-                        unique_name = self.module_name + '.' + self.current_class.name + '.' + name
-                        technical_type = 'PythonVariable'
-                        link_to_editor = self.get_link(node.lineno, node.col_offset)
-
-                        data_element = Data(id, name, unique_name, technical_type, link_to_editor)
-                        self.elements[id] = data_element
-
-                        # Add to symbol table
-                        self.symbol_table[unique_name] = data_element
-
-                        parent = self.current_class
-                        self.parent_child_relations.append({'parent': parent.id, 'child': id, 'isMain': True})
-                        parent.children.append(data_element)
-            else:
-                # Global variable
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        id = self.new_id()
-                        name = target.id
-                        unique_name = self.module_name + '.' + name
-                        technical_type = 'PythonVariable'
-                        link_to_editor = self.get_link(node.lineno, node.col_offset)
-
-                        data_element = Data(id, name, unique_name, technical_type, link_to_editor)
-                        self.elements[id] = data_element
-
-                        # Add to symbol table
-                        self.symbol_table[unique_name] = data_element
-
-                        parent = self.scope_stack[-1]
-                        self.parent_child_relations.append({'parent': parent.id, 'child': id, 'isMain': True})
-                        parent.children.append(data_element)
-            # Do not record accesses at the module or class level
-        elif isinstance(self.scope_stack[-1], Code):
+        if self.current_function:
             # Inside a function/method
             for target in node.targets:
-                if isinstance(target, ast.Attribute):
-                    if isinstance(target.value, ast.Name) and target.value.id == 'self':
-                        # Instance attribute
-                        name = target.attr
-                        unique_name = self.module_name + '.' + self.current_class.name + '.' + name
-                        technical_type = 'PythonVariable'
-                        link_to_editor = self.get_link(node.lineno, node.col_offset)
-
-                        # Check if the variable already exists
-                        data_element = None
-                        for child in self.current_class.children:
-                            if isinstance(child, Data) and child.name == name:
-                                data_element = child
-                                break
-                        if data_element is None:
-                            id = self.new_id()
-                            data_element = Data(id, name, unique_name, technical_type, link_to_editor)
-                            self.elements[id] = data_element
-                            # Add to symbol table
-                            self.symbol_table[unique_name] = data_element
-
-                            parent = self.current_class
-                            self.parent_child_relations.append({'parent': parent.id, 'child': id, 'isMain': True})
-                            parent.children.append(data_element)
-                        # Record the access with accessor being a Code element
-                        self.accesses.append({'accessor': self.current_function.unique_name, 'accessed': data_element.unique_name, 'isWrite': True, 'isRead': False, 'isDependent': True})
-                elif isinstance(target, ast.Name):
-                    # Variable assignment; check if it's assigning an instance of a class
+                if isinstance(target, ast.Name):
+                    # Variable assignment
                     value = node.value
                     if isinstance(value, ast.Call):
                         # Handle class instantiation
@@ -236,13 +269,14 @@ class PythonExtractor(ast.NodeVisitor):
                             init_method_name = full_class_name + '.__init__'
                             init_method = self.symbol_table.get(init_method_name)
                             if init_method and isinstance(init_method, Code):
-                                if self.current_function:
-                                    self.calls.append({'caller': self.current_function.unique_name, 'called': init_method.unique_name})
+                                self.calls.append({'caller': self.current_function, 'called': init_method.unique_name})
                     else:
                         # Handle other assignments
                         pass
-            # Continue visiting to handle nested assignments
-            self.generic_visit(node)
+                elif isinstance(target, ast.Attribute):
+                    # Possibly handle attribute assignments (e.g., self.attribute)
+                    pass
+        self.generic_visit(node)
 
     def resolve_class_name(self, class_name):
         if class_name in self.local_namespace:
@@ -264,7 +298,7 @@ class PythonExtractor(ast.NodeVisitor):
             if called_element and isinstance(called_element, Code):
                 if self.current_function:
                     # Record the call with unique names
-                    self.calls.append({'caller': self.current_function.unique_name, 'called': called_element.unique_name})
+                    self.calls.append({'caller': self.current_function, 'called': called_element.unique_name})
         self.generic_visit(node)
 
     def get_called_name(self, node):
@@ -298,7 +332,7 @@ class PythonExtractor(ast.NodeVisitor):
             attrs = parts[1:]
             if base == 'self':
                 if self.current_class:
-                    called_unique_name = self.module_name + '.' + self.current_class.name + '.' + '.'.join(attrs)
+                    called_unique_name = self.current_class + '.' + '.'.join(attrs)
                 else:
                     return None
             elif base in self.variable_types:
@@ -332,12 +366,12 @@ class PythonExtractor(ast.NodeVisitor):
             if isinstance(node.value, ast.Name) and node.value.id == 'self':
                 # Accessing an instance attribute
                 name = node.attr
-                unique_name = self.module_name + '.' + self.current_class.name + '.' + name
+                unique_name = self.current_class + '.' + name
                 # Try to find the data element
                 data_element = self.symbol_table.get(unique_name)
                 if data_element and isinstance(data_element, Data):
                     # Record the access
-                    self.accesses.append({'accessor': self.current_function.unique_name, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
+                    self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
         self.generic_visit(node)
 
     def visit_Name(self, node):
@@ -348,7 +382,7 @@ class PythonExtractor(ast.NodeVisitor):
             data_element = self.symbol_table.get(unique_name)
             if data_element and isinstance(data_element, Data):
                 # Record the access
-                self.accesses.append({'accessor': self.current_function.unique_name, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
+                self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
         self.generic_visit(node)
 
 def main():
@@ -364,8 +398,9 @@ def main():
     # Global symbol table
     symbol_table = {}
 
-    # First pass to collect all elements and build the symbol table
-    extractors = []
+    # First pass: Collect definitions
+    elements = {}
+    parent_child_relations = []
     for root, dirs, files in os.walk(base_path):
         for file in files:
             if file.endswith('.py'):
@@ -376,50 +411,63 @@ def main():
                     module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
                     module_name = module_name[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
-                    extractor = PythonExtractor(filepath, module_name, base_path, symbol_table)
-                    extractor.visit(tree)
-                    extractors.append(extractor)
+                    collector = DefinitionCollector(filepath, module_name, base_path, symbol_table, elements, parent_child_relations)
+                    collector.visit(tree)
                 except Exception as e:
                     print(f"Error processing file {filepath}: {e}")
 
-    # Second pass to assign unique IDs and collect relations
+    # Second pass: Analyze usages
+    calls = []
+    accesses = []
+    for root, dirs, files in os.walk(base_path):
+        for file in files:
+            if file.endswith('.py'):
+                filepath = os.path.join(root, file)
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        source = f.read()
+                    module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = module_name[:-3]  # Remove '.py'
+                    tree = ast.parse(source, filename=filepath)
+                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls, accesses)
+                    analyzer.visit(tree)
+                except Exception as e:
+                    print(f"Error processing file {filepath}: {e}")
+
+    # Assign IDs
     id_counter = 1
-    id_mapping_global = {}
-    for extractor in extractors:
-        id_mapping = {}
-        for id, elem in extractor.elements.items():
-            new_id = id_counter
-            id_counter += 1
-            elem.id = new_id
-            all_elements[new_id] = elem
-            id_mapping[id] = new_id
-            id_mapping_global[elem.unique_name] = new_id
+    id_mapping = {}
+    for unique_name, elem in elements.items():
+        elem.id = id_counter
+        id_mapping[unique_name] = id_counter
+        all_elements[id_counter] = elem
+        id_counter += 1
 
-        # Update parent-child relations
-        for relation in extractor.parent_child_relations:
-            relation['parent'] = id_mapping[relation['parent']]
-            relation['child'] = id_mapping[relation['child']]
-            all_parent_child_relations.append(relation)
+    # Map parent-child relations
+    for relation in parent_child_relations:
+        parent_id = id_mapping.get(relation['parent'])
+        child_id = id_mapping.get(relation['child'])
+        if parent_id and child_id:
+            all_parent_child_relations.append({'parent': parent_id, 'child': child_id, 'isMain': relation['isMain']})
 
-    # Now process calls and accesses
-    for extractor in extractors:
-        for call in extractor.calls:
-            caller_id = id_mapping_global.get(call['caller'])
-            called_id = id_mapping_global.get(call['called'])
-            if caller_id and called_id:
-                all_calls.append({'caller': caller_id, 'called': called_id})
+    # Map calls and accesses
+    for call in calls:
+        caller_id = id_mapping.get(call['caller'])
+        called_id = id_mapping.get(call['called'])
+        if caller_id and called_id:
+            all_calls.append({'caller': caller_id, 'called': called_id})
 
-        for access in extractor.accesses:
-            accessor_id = id_mapping_global.get(access['accessor'])
-            accessed_id = id_mapping_global.get(access['accessed'])
-            if accessor_id and accessed_id:
-                all_accesses.append({
-                    'accessor': accessor_id,
-                    'accessed': accessed_id,
-                    'isWrite': access['isWrite'],
-                    'isRead': access['isRead'],
-                    'isDependent': access['isDependent']
-                })
+    for access in accesses:
+        accessor_id = id_mapping.get(access['accessor'])
+        accessed_id = id_mapping.get(access['accessed'])
+        if accessor_id and accessed_id:
+            all_accesses.append({
+                'accessor': accessor_id,
+                'accessed': accessed_id,
+                'isWrite': access['isWrite'],
+                'isRead': access['isRead'],
+                'isDependent': access['isDependent']
+            })
 
     # Write output to .mse file
     with open(output_filename, 'w', encoding='utf-8') as f:
