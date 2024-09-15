@@ -452,10 +452,34 @@ class UsageAnalyzer(ast.NodeVisitor):
                 self.accesses.append({'accessor': self.current_function, 'accessed': data_element.unique_name, 'isWrite': False, 'isRead': True, 'isDependent': True})
         self.generic_visit(node)
 
+def load_config(config_file='config_python2mse.txt'):
+    config = {}
+    if os.path.exists(config_file):
+        with open(config_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#'):
+                    key, value = line.split('=', 1)
+                    config[key.strip()] = value.strip()
+    return config
+
 def main():
-    base_path = input("Enter the base folder path: ")
+    config = load_config()
+    
+    if 'base_path' in config:
+        base_path = config['base_path']
+    else:
+        base_path = input("Enter the base folder path: ")
+
     base_repo_name = os.path.basename(os.path.normpath(base_path))
-    output_filename = datetime.datetime.now().strftime(f"%Y-%m-%d_%H-%M_{base_repo_name}.mse")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_filename = f"{base_repo_name}_{timestamp}.mse"
+    
+    if 'output_path' in config:
+        output_path = config['output_path']
+        output_file = os.path.join(output_path, output_filename)
+    else:
+        output_file = output_filename
 
     all_elements = {}
     all_parent_child_relations = []
@@ -537,7 +561,7 @@ def main():
             })
 
     # Write output to .mse file
-    with open(output_filename, 'w', encoding='utf-8') as f:
+    with open(output_file, 'w', encoding='utf-8') as f:
         f.write('(\n')
         for elem in all_elements.values():
             if isinstance(elem, Grouping):

@@ -105,6 +105,7 @@ class ClassOne:
 
     def __init__(self):
         self.instance_variable = 0
+        class_variable += 1
 
     def method_one(self):
         self.instance_variable += 1
