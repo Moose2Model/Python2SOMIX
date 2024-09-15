@@ -4,7 +4,7 @@
 		"newElBoxX": -97.3134765625,
 		"newElBoxY": -372.4,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 466.4
+		"newElBoxHeight": 596.4
 	},
 	"addedWithNeighbors": [
 		"PythonMethod..test1.ClassOne.__init__",
@@ -67,9 +67,19 @@
 			"y": -236.37
 		},
 		{
+			"uniqueKey": "PythonVariable..subfolder.test2.ClassTwo.method_two.obj",
+			"x": -432.14,
+			"y": 61.73
+		},
+		{
 			"uniqueKey": "PythonFunction..subfolder.test2.function_two",
 			"x": -359,
 			"y": -248
+		},
+		{
+			"uniqueKey": "PythonVariable..subfolder.test2.function_two.obj",
+			"x": -524.05,
+			"y": 55.05
 		}
 	],
 	"comments": [
@@ -84,6 +94,12 @@
 			"x": -254.77,
 			"y": -85.28,
 			"text": "This is a function in the Python\ntest coding"
+		},
+		{
+			"uniqueKey": "PythonVariable..subfolder.test2.function_two.obj",
+			"x": -561.55,
+			"y": 124.55,
+			"text": "A local variable, which should not be in the model"
 		}
 	],
 	"pinned": [
@@ -93,7 +109,9 @@
 		"PythonMethod..test1.ClassOne.method_one",
 		"PythonVariable..test1.ClassOne.class_variable",
 		"PythonFunction..subfolder.test2.function_two",
-		"PythonMethod..test1.ClassOne.__init__"
+		"PythonMethod..test1.ClassOne.__init__",
+		"PythonVariable..subfolder.test2.function_two.obj",
+		"PythonVariable..subfolder.test2.ClassTwo.method_two.obj"
 	],
 	"suppressed": []
 }
