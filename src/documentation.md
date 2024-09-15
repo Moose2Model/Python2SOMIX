@@ -2,6 +2,8 @@
 
 *Author: OpenAI's Assistant*
 
+*Author for adaptions: Rainer Winkler*
+
 ---
 
 ## Table of Contents
@@ -18,6 +20,7 @@
 - [j) Recommended Next Steps](#j-recommended-next-steps)
 - [k) Recommendations for Future Development](#k-recommendations-for-future-development)
 - [l) Author Statement](#l-author-statement)
+- [m) Attachment - mse Example file](#m-attachment---mse-example-file)
 
 ---
 
@@ -63,6 +66,9 @@ Testing the script involves verifying that it correctly extracts the expected el
 ### SOMIX Overview
 
 SOMIX (System Object Model Interchange for XML) is a format used to represent software models, particularly focusing on the structure and interactions within code. It categorizes elements into groupings, code, and data, and defines relationships like parent-child, calls, and accesses.
+
+See for the specification [Paper SOMIX.pdf](https://github.com/Moose2Model/SOMIX/tree/main/SOMIX%201).
+ The background and motivation is described in [A Software Metamodel Restricted to Key Aspects of a Software System for Developers and a Method to Keep Manually Drawn Diagrams Up-to-Date and Correct](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4049604).
 
 ### MSE Format
 
@@ -190,3 +196,76 @@ The script is structured with several key classes:
 This documentation and the associated script were developed by me, OpenAI's Assistant, to assist in analyzing Python codebases and extracting structural and relational information. I hope this tool proves valuable in your development efforts, and I encourage you to build upon it to suit your specific needs.
 
 ---
+
+## m) Attachment - mse Example file
+
+The following file was given prior to implementation to specify the format and content of the output file.
+
+Example_SOMIX_File_Python.mse
+```mse
+( (SOMIX.Grouping (id: 1 )
+  (name 'myfile.py')
+  (uniqueName 'myrepo.myfile')
+  (technicalType 'PythonFile'))
+(SOMIX.Grouping (id: 2 )
+  (name 'MyClass')
+  (uniqueName 'myrepo.myfile.MyClass')
+  (technicalType 'PythonClass'))
+(SOMIX.ParentChild
+  (parent (ref: 1))
+  (child (ref: 2))
+  (isMain true))
+(SOMIX.Code (id: 3 )
+  (name 'MyMethod')
+  (technicalType PythonMethod')
+  (uniqueName 'myrepo.myfile.MyClass.MyMethod')
+  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/work/src/myfile.py/:12:1'))
+(SOMIX.ParentChild
+  (parent (ref: 2))
+  (child (ref: 3))
+  (isMain true))
+(SOMIX.Data (id: 4 )
+  (name 'myVariable')
+  (technicalType 'PythonVariable')
+  (uniqueName 'myrepo.myfile.MyClass.myVariable')
+  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/work/src/myfile.py/:25:1'))
+(SOMIX.ParentChild
+  (parent (ref: 2))
+  (child (ref: 4))
+  (isMain true))
+(SOMIX.Grouping (id: 5 )
+  (name 'MyClass2')
+  (uniqueName 'myrepo.myfile.MyClass2')
+  (technicalType 'PythonClass'))
+(SOMIX.ParentChild
+  (parent (ref: 1))
+  (child (ref: 5))
+  (isMain true))
+(SOMIX.Code (id: 6 )
+  (name 'MyMethod2')
+  (technicalType PythonMethod')
+  (uniqueName 'myrepo.myfile.MyClass.MyMethod2')
+  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/work/src/myfile.py/:112:1'))
+(SOMIX.ParentChild
+  (parent (ref: 5))
+  (child (ref: 6))
+  (isMain true))
+(SOMIX.Data (id: 7 )
+  (name 'myVariable2')
+  (technicalType 'PythonVariable')
+  (uniqueName 'myrepo.myfile.MyClass.myVariable2')
+  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/work/src/myfile.py/:125:1'))
+(SOMIX.ParentChild
+  (parent (ref: 5))
+  (child (ref: 7))
+  (isMain true))
+(SOMIX.Access
+  (accessor (ref: 3))
+  (accessed (ref: 7))
+  (isWrite true)
+  (isRead false)
+  (isDependent true))  
+(SOMIX.Call
+  (caller (ref: 3))
+  (called (ref: 6))))  
+```
