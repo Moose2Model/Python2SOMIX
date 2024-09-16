@@ -204,6 +204,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.class_variable_types = {}  # Map self attributes to types across the class
 
 
+
     def visit_Module(self, node):
         logging.debug(f"Visiting module: {self.module_name}")
         self.scope_stack.append(self.module_name)
@@ -319,8 +320,8 @@ class UsageAnalyzer(ast.NodeVisitor):
                 return '.'.join(parts)
         elif isinstance(annotation, ast.Subscript):
             return self.get_annotation_type(annotation.value)
-        return None        
-
+        return None
+    
     def visit_Assign(self, node):
         if self.current_function:
             for target in node.targets:
@@ -374,13 +375,11 @@ class UsageAnalyzer(ast.NodeVisitor):
     def resolve_class_name(self, class_name):
         if not class_name:
             return None
-        if class_name in self.local_namespace:
-            class_unique_name = self.local_namespace[class_name]
-        else:
-            class_unique_name = self.module_name + '.' + class_name
-        class_element = self.symbol_table.get(class_unique_name)
+        # Handle relative imports if any, or direct module.class
+        # For simplicity, assuming class_name is fully qualified
+        class_element = self.symbol_table.get(class_name)
         if isinstance(class_element, Grouping):
-            logging.debug(f"Resolved class name '{class_name}' to '{class_unique_name}'")
+            logging.debug(f"Resolved class name '{class_name}'")
             return class_element
         else:
             logging.warning(f"Could not resolve class name '{class_name}'")
@@ -422,6 +421,7 @@ class UsageAnalyzer(ast.NodeVisitor):
             else:
                 logging.debug(f"Could not infer type for parameter '{param}' in function '{called_unique_name}'")
 
+
     def get_called_name(self, node):
         if isinstance(node, ast.Name):
             return node.id
@@ -456,29 +456,50 @@ class UsageAnalyzer(ast.NodeVisitor):
                     logging.warning(f"Could not resolve type for 'self.{attrs[0]}'")
                     return None
             else:
+                # Check if base is a parameter with inferred type
                 var_type = self.variable_types.get(base) or self.class_variable_types.get(base)
                 if var_type:
                     called_unique_name = var_type + '.' + '.'.join(attrs)
                     logging.debug(f"Resolved '{base}' to '{var_type}' for call '{called_unique_name}'")
                 else:
-                    if base in self.local_namespace:
-                        base_unique_name = self.local_namespace[base]
-                        called_unique_name = base_unique_name + '.' + '.'.join(attrs)
-                        logging.debug(f"Resolved '{base}' via local namespace to '{called_unique_name}'")
+                    # Check if base is in parameter_type_map
+                    current_func_params = self.parameter_type_map.get(self.current_function, {})
+                    if base in current_func_params:
+                        inferred_types = current_func_params[base]
+                        if len(inferred_types) == 1:
+                            var_type = next(iter(inferred_types))
+                            called_unique_name = var_type + '.' + '.'.join(attrs)
+                            logging.debug(f"Resolved '{base}' via parameter_type_map to '{called_unique_name}'")
+                        elif len(inferred_types) > 1:
+                            # Choose one for simplicity
+                            var_type = next(iter(inferred_types))
+                            called_unique_name = var_type + '.' + '.'.join(attrs)
+                            logging.warning(f"Parameter '{base}' in function '{self.current_function}' has multiple inferred types: {inferred_types}. Assigned '{var_type}'")
+                        else:
+                            var_type = None
+                            called_unique_name = None
+                            logging.warning(f"Parameter '{base}' in function '{self.current_function}' has no inferred type")
                     else:
-                        # If base is not in local_namespace, check if it's a built-in
-                        if base in BUILT_IN_FUNCTIONS:
-                            logging.debug(f"Identified '{base}' as a built-in function. Skipping.")
-                            return None
-                        called_unique_name = self.module_name + '.' + called_name
-                        logging.debug(f"Resolved '{called_name}' via module context to '{called_unique_name}'")
+                        # Check if base is in local_namespace
+                        if base in self.local_namespace:
+                            base_unique_name = self.local_namespace[base]
+                            called_unique_name = base_unique_name + '.' + '.'.join(attrs)
+                            logging.debug(f"Resolved '{base}' via local namespace to '{called_unique_name}'")
+                        else:
+                            # If base is not in local_namespace, check if it's a built-in
+                            if base in BUILT_IN_FUNCTIONS:
+                                logging.debug(f"Identified '{base}' as a built-in function. Skipping.")
+                                return None
+                            called_unique_name = self.module_name + '.' + called_name
+                            logging.debug(f"Resolved '{called_name}' via module context to '{called_unique_name}'")
 
-            called_element = self.symbol_table.get(called_unique_name)
-            if isinstance(called_element, Code):
-                return called_element
-            else:
-                logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
-                return None
+            if called_unique_name:
+                called_element = self.symbol_table.get(called_unique_name)
+                if isinstance(called_element, Code):
+                    return called_element
+                else:
+                    logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
+                    return None
         else:
             if called_name in self.local_namespace:
                 called_unique_name = self.local_namespace[called_name]
@@ -517,19 +538,52 @@ class UsageAnalyzer(ast.NodeVisitor):
                         })
                         logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
                 else:
-                    var_type = self.variable_types.get(var_name) or self.class_variable_types.get(var_name)
-                    if var_type:
-                        full_attr_name = var_type + '.' + node.attr
-                        data_element = self.symbol_table.get(full_attr_name)
-                        if data_element and isinstance(data_element, Data):
-                            self.accesses.append({
-                                'accessor': self.current_function,
-                                'accessed': data_element.unique_name,
-                                'isWrite': False,
-                                'isRead': True,
-                                'isDependent': True
-                            })
-                            logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
+                    # Check if var_name is a parameter with inferred type
+                    current_func_params = self.parameter_type_map.get(self.current_function, {})
+                    if var_name in current_func_params:
+                        inferred_types = current_func_params[var_name]
+                        if len(inferred_types) == 1:
+                            var_type = next(iter(inferred_types))
+                            full_attr_name = var_type + '.' + node.attr
+                            data_element = self.symbol_table.get(full_attr_name)
+                            if data_element and isinstance(data_element, Data):
+                                self.accesses.append({
+                                    'accessor': self.current_function,
+                                    'accessed': data_element.unique_name,
+                                    'isWrite': False,
+                                    'isRead': True,
+                                    'isDependent': True
+                                })
+                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
+                        elif len(inferred_types) > 1:
+                            # Choose one for simplicity
+                            var_type = next(iter(inferred_types))
+                            full_attr_name = var_type + '.' + node.attr
+                            data_element = self.symbol_table.get(full_attr_name)
+                            if data_element and isinstance(data_element, Data):
+                                self.accesses.append({
+                                    'accessor': self.current_function,
+                                    'accessed': data_element.unique_name,
+                                    'isWrite': False,
+                                    'isRead': True,
+                                    'isDependent': True
+                                })
+                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
+                            logging.warning(f"Parameter '{var_name}' in function '{self.current_function}' has multiple inferred types. Assigned '{var_type}'")
+                    else:
+                        var_type = self.variable_types.get(var_name) or self.class_variable_types.get(var_name)
+                        if var_type:
+                            full_attr_name = var_type + '.' + node.attr
+                            data_element = self.symbol_table.get(full_attr_name)
+                            if data_element and isinstance(data_element, Data):
+                                self.accesses.append({
+                                    'accessor': self.current_function,
+                                    'accessed': data_element.unique_name,
+                                    'isWrite': False,
+                                    'isRead': True,
+                                    'isDependent': True
+                                })
+                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
         self.generic_visit(node)
 
     def visit_Name(self, node):
@@ -753,6 +807,7 @@ def main():
             f.write(')\n')
 
         f.write(')\n')
+
 
 
 if __name__ == '__main__':
