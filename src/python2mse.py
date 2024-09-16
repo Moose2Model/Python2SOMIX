@@ -11,6 +11,16 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+# Define a set of built-in functions to exclude them from being treated as user-defined
+BUILT_IN_FUNCTIONS = {
+    'print', 'len', 'range', 'int', 'str', 'float', 'bool', 'list',
+    'dict', 'set', 'tuple', 'open', 'enumerate', 'zip', 'map', 'filter',
+    'sum', 'min', 'max', 'abs', 'round', 'sorted', 'reversed', 'any',
+    'all', 'type', 'isinstance', 'issubclass', 'getattr', 'setattr',
+    'hasattr', 'delattr', 'globals', 'locals', 'dir', 'id', 'eval',
+    'exec', 'compile', 'vars', 'globals', 'locals', 'help', 'input'
+}
+
 class Element:
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
         self.id = id
@@ -19,13 +29,11 @@ class Element:
         self.technical_type = technical_type
         self.link_to_editor = link_to_editor
 
-
 class Grouping(Element):
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
         super().__init__(id, name, unique_name, technical_type, link_to_editor)
         self.children = []
         self.is_main = False
-
 
 class Code(Element):
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
@@ -33,15 +41,13 @@ class Code(Element):
         self.children = []
         self.calls = []
         self.accesses = []
-        self.parameters = []  # Added to store function/method parameters
+        self.parameters = []  # To store function/method parameters
         self.inferred_parameter_types = {}  # To store inferred types for parameters
-
 
 class Data(Element):
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
         super().__init__(id, name, unique_name, technical_type, link_to_editor)
         self.accessed_by = []
-
 
 class DefinitionCollector(ast.NodeVisitor):
     def __init__(self, filename, module_name, base_path, symbol_table, elements, parent_child_relations):
@@ -135,6 +141,29 @@ class DefinitionCollector(ast.NodeVisitor):
         self.scope_stack.pop()
         self.current_function = None
 
+    def visit_Assign(self, node):
+        if self.current_class and not self.current_function:
+            # Class-level attribute assignment
+            for target in node.targets:
+                if isinstance(target, ast.Attribute):
+                    if isinstance(target.value, ast.Name) and target.value.id == 'self':
+                        attr_name = 'self.' + target.attr
+                        unique_attr_name = self.current_class.unique_name + '.' + target.attr
+                        technical_type = 'PythonAttribute'
+                        link_to_editor = self.get_link(node.lineno, node.col_offset)
+
+                        data_element = Data(None, target.attr, unique_attr_name, technical_type, link_to_editor)
+                        self.elements[unique_attr_name] = data_element
+
+                        # Add to symbol table
+                        self.symbol_table[unique_attr_name] = data_element
+
+                        parent = self.scope_stack[-1]
+                        self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': False})
+                        parent.children.append(data_element)
+
+                        logging.debug(f"Collected class attribute '{unique_attr_name}'")
+        self.generic_visit(node)
 
 class UsageAnalyzer(ast.NodeVisitor):
     def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, parameter_type_map=None):
@@ -211,7 +240,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         # Initialize variable types for this function
         self.variable_types = {}
 
-        # Collect parameter names (types are inferred from parameter_type_map)
+        # Collect parameter names and assign inferred types
         parameter_names = [arg.arg for arg in node.args.args]
         for param in parameter_names:
             if self.parameter_type_map and unique_name in self.parameter_type_map:
@@ -281,6 +310,17 @@ class UsageAnalyzer(ast.NodeVisitor):
             var_type = self.variable_types.get(var_name) or self.class_variable_types.get(var_name)
             logging.debug(f"Inferred type for variable '{var_name}': {var_type}")
             return var_type
+        elif isinstance(value, ast.Attribute):
+            # Handle cases like self.attribute
+            var_name = value.attr
+            var_type = self.variable_types.get(var_name) or self.class_variable_types.get(var_name)
+            logging.debug(f"Inferred type for attribute '{var_name}': {var_type}")
+            return var_type
+        elif isinstance(value, ast.Constant):
+            # For literals, return None or a generic type
+            logging.debug(f"Encountered constant value: {value.value}")
+            return None
+        # Could not infer type
         logging.warning(f"Could not infer type for value: {ast.dump(value)}")
         return None
 
@@ -379,6 +419,10 @@ class UsageAnalyzer(ast.NodeVisitor):
                         called_unique_name = base_unique_name + '.' + '.'.join(attrs)
                         logging.debug(f"Resolved '{base}' via local namespace to '{called_unique_name}'")
                     else:
+                        # If base is not in local_namespace, check if it's a built-in
+                        if base in BUILT_IN_FUNCTIONS:
+                            logging.debug(f"Identified '{base}' as a built-in function. Skipping.")
+                            return None
                         called_unique_name = self.module_name + '.' + called_name
                         logging.debug(f"Resolved '{called_name}' via module context to '{called_unique_name}'")
 
@@ -393,6 +437,10 @@ class UsageAnalyzer(ast.NodeVisitor):
                 called_unique_name = self.local_namespace[called_name]
                 logging.debug(f"Resolved global function '{called_name}' to '{called_unique_name}'")
             else:
+                # If called_name is a built-in function, skip
+                if called_name in BUILT_IN_FUNCTIONS:
+                    logging.debug(f"Identified '{called_name}' as a built-in function. Skipping.")
+                    return None
                 called_unique_name = self.module_name + '.' + called_name
                 logging.debug(f"Resolved global function '{called_name}' to '{called_unique_name}'")
 
@@ -453,7 +501,6 @@ class UsageAnalyzer(ast.NodeVisitor):
                 logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
         self.generic_visit(node)
 
-
 def load_config(config_file='config_python2mse.txt'):
     config = {}
     if os.path.exists(config_file):
@@ -464,7 +511,6 @@ def load_config(config_file='config_python2mse.txt'):
                     key, value = line.split('=', 1)
                     config[key.strip()] = value.strip()
     return config
-
 
 def main():
     config = load_config()
@@ -530,8 +576,23 @@ def main():
                 except Exception as e:
                     logging.error(f"Error processing file {filepath}: {e}")
 
-    # Update parameter_type_map based on calls_pass1
-    # (Already updated during the first usage analysis pass)
+    # Assign inferred types to Code elements based on parameter_type_map
+    for func_name, params in parameter_type_map.items():
+        for param, types in params.items():
+            if len(types) == 1:
+                inferred_type = next(iter(types))
+                function_element = symbol_table.get(func_name)
+                if function_element and isinstance(function_element, Code):
+                    function_element.inferred_parameter_types[param] = inferred_type
+                    logging.debug(f"Assigned inferred type '{inferred_type}' to parameter '{param}' in function '{func_name}'")
+            elif len(types) > 1:
+                inferred_type = next(iter(types))  # Choose one for simplicity
+                function_element = symbol_table.get(func_name)
+                if function_element and isinstance(function_element, Code):
+                    function_element.inferred_parameter_types[param] = inferred_type
+                    logging.warning(f"Parameter '{param}' in function '{func_name}' has multiple inferred types: {types}. Assigned '{inferred_type}'")
+            else:
+                logging.warning(f"Parameter '{param}' in function '{func_name}' has no inferred type")
 
     # Third pass: Analyze usages again with parameter_type_map to resolve parameter types
     calls_pass2 = []
@@ -571,11 +632,25 @@ def main():
         if parent_id and child_id:
             all_parent_child_relations.append({'parent': parent_id, 'child': child_id, 'isMain': relation['isMain']})
 
-    # Assign IDs for Code elements if not already assigned
-    # (Handled above)
+    # Map calls
+    for call in all_calls:
+        caller_id = id_mapping.get(call['caller'])
+        called_id = id_mapping.get(call['called'])
+        if caller_id and called_id:
+            all_calls.append({'caller': caller_id, 'called': called_id})
 
-    # Map calls and accesses
-    # (Handled above)
+    # Map accesses
+    for access in all_accesses:
+        accessor_id = id_mapping.get(access['accessor'])
+        accessed_id = id_mapping.get(access['accessed'])
+        if accessor_id and accessed_id:
+            all_accesses.append({
+                'accessor': accessor_id,
+                'accessed': accessed_id,
+                'isWrite': access['isWrite'],
+                'isRead': access['isRead'],
+                'isDependent': access['isDependent']
+            })
 
     # Write output to .mse file
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -615,21 +690,20 @@ def main():
 
         for call in all_calls:
             f.write('(SOMIX.Call\n')
-            f.write(f'  (caller (ref: {id_mapping.get(call["caller"])}) )\n')
-            f.write(f'  (called (ref: {id_mapping.get(call["called"])}) )\n')
+            f.write(f'  (caller (ref: {call["caller"]}))\n')
+            f.write(f'  (called (ref: {call["called"]}))\n')
             f.write(')\n')
 
         for access in all_accesses:
             f.write('(SOMIX.Access\n')
-            f.write(f'  (accessor (ref: {access["accessor"]}) )\n')
-            f.write(f'  (accessed (ref: {access["accessed"]}) )\n')
+            f.write(f'  (accessor (ref: {access["accessor"]}))\n')
+            f.write(f'  (accessed (ref: {access["accessed"]}))\n')
             f.write(f'  (isWrite {"true" if access["isWrite"] else "false"})\n')
             f.write(f'  (isRead {"true" if access["isRead"] else "false"})\n')
             f.write(f'  (isDependent {"true" if access["isDependent"] else "false"})\n')
             f.write(')\n')
 
         f.write(')\n')
-
 
 if __name__ == '__main__':
     main()

@@ -2,3 +2,4 @@
 *.mse
 /src/test
 /work/code_versions
+src/python2mse.log
