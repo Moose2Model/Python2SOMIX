@@ -5,7 +5,7 @@ Extract SOMIX model from Python code
 
 It allows to visualize Python code and the relations due to calls, accesses and grouping.
 
-Example, there are two Pythond files
+See the following example. There are two Python files:
 
 test1.py
 ```python
