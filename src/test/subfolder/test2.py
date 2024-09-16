@@ -17,3 +17,4 @@ def function_two():
     obj.method_one()
     function_one()
     print("function_two called")
+
