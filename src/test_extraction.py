@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import re
 import sys
 import shutil
@@ -279,11 +280,23 @@ def function_two():
 )
 """)
 
-        # Run the extraction script
-        extraction_script_path = 'C:\DataEigen\Eigenes\Python2SOMIX\src\python2mse.py'  # Update this path if needed
-        if not os.path.isfile(extraction_script_path):
+        # # Run the extraction script
+        # extraction_script_path = 'C:\DataEigen\Eigenes\Python2SOMIX\src\python2mse.py'  # Update this path if needed
+        # # extraction_script_path = os.path.join('.', 'python2mse.py')
+        # if not os.path.isfile(extraction_script_path):
+        #     print(f"Extraction script not found at {extraction_script_path}")
+        #     sys.exit(1)
+
+        # Get the current script directory
+        current_dir = Path(__file__).parent
+
+        # Define the relative path to python2mse.py
+        extraction_script_path = current_dir / 'python2mse.py'
+
+        # Check if the extraction script exists
+        if not extraction_script_path.is_file():
             print(f"Extraction script not found at {extraction_script_path}")
-            sys.exit(1)
+            sys.exit(1)            
 
         # Run the extraction script
         cmd = ['python', extraction_script_path]
