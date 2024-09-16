@@ -1,10 +1,10 @@
 {
 	"newElementBox": {
 		"isInitial": false,
-		"newElBoxX": -97.3134765625,
-		"newElBoxY": -372.4,
+		"newElBoxX": 27.025390625,
+		"newElBoxY": -374,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 466.4
+		"newElBoxHeight": 448
 	},
 	"addedWithNeighbors": [
 		"PythonMethod..test1.ClassOne.__init__",
@@ -23,66 +23,66 @@
 		},
 		{
 			"uniqueKey": "PythonClass..test1.ClassOne",
-			"x": -518.09,
-			"y": -49.74
+			"x": -455.59,
+			"y": -42.74
 		},
 		{
 			"uniqueKey": "PythonMethod..test1.ClassOne.__init__",
-			"x": -601,
-			"y": -120
+			"x": -537.5,
+			"y": -113
 		},
 		{
 			"uniqueKey": "PythonVariable..test1.ClassOne.instance_variable",
-			"x": -597,
-			"y": -22.5
+			"x": -500.5,
+			"y": -30.5
 		},
 		{
 			"uniqueKey": "PythonMethod..test1.ClassOne.method_one",
-			"x": -510,
-			"y": -123
+			"x": -437.5,
+			"y": -113
 		},
 		{
 			"uniqueKey": "PythonFunction..test1.function_one",
-			"x": -329.77,
-			"y": -26.28
+			"x": -322.77,
+			"y": -44.28
 		},
 		{
 			"uniqueKey": "PythonFile..subfolder.test2",
-			"x": -293.57,
-			"y": -443
+			"x": -327.07,
+			"y": -458.5
 		},
 		{
 			"uniqueKey": "PythonClass..subfolder.test2.ClassTwo",
-			"x": -295,
-			"y": -387
+			"x": -333.5,
+			"y": -406.5
 		},
 		{
 			"uniqueKey": "PythonMethod..subfolder.test2.ClassTwo.method_two",
-			"x": -243.15,
-			"y": -236.37
+			"x": -240,
+			"y": -251
 		},
 		{
 			"uniqueKey": "PythonMethod..subfolder.test2.ClassTwo.method_three",
-			"x": -118.65,
-			"y": -237.37
+			"x": -120,
+			"y": -251
 		},
 		{
 			"uniqueKey": "PythonFunction..subfolder.test2.function_two",
-			"x": -359,
-			"y": -248
+			"x": -393.5,
+			"y": -255.5
 		}
 	],
 	"comments": [
 		{
 			"uniqueKey": "PythonFile..test1",
-			"x": -788.7,
-			"y": -258,
+			"x": -851.7,
+			"y": -266.5,
 			"text": "This is a test file.\nThe benefit is to get a mental map of \nthe coding and the option to jump to the editor from the diagram."
 		},
 		{
 			"uniqueKey": "PythonFunction..test1.function_one",
-			"x": -254.77,
-			"y": -85.28,
+			"x": -257.27,
+			"y": -100.78,
 			"text": "This is a function in the Python\ntest coding"
 		}
 	],
