@@ -7,3 +7,5 @@ src/config_python2mse.txt
 /src/test
 /test/subfolder
 /test
+src/test_extraction.log
+test_extraction.log

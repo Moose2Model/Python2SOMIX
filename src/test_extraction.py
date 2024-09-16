@@ -4,87 +4,234 @@ import re
 import sys
 import shutil
 import subprocess
+import logging
 
-def parse_mse_file(filename):
-    with open(filename, 'r', encoding='utf-8') as f:
-        content = f.read()
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename='test_extraction.log',
+    filemode='w',
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
-    # Remove whitespace and line breaks
-    content = re.sub(r'\s+', '', content)
+import re
+from collections import defaultdict
+from typing import List, Tuple, Dict, Union
 
-    # Split into elements
-    elements = re.findall(r'\((SOMIX\.[^)]+\))', content)
+# Define types for clarity
+SExpr = Union[str, List['SExpr']]
 
-    parsed_elements = []
+def tokenize(s: str) -> List[str]:
+    """
+    Tokenize the input string into a list of tokens for S-expression parsing.
+    """
+    # Remove comments and unnecessary whitespaces
+    s = re.sub(r";;.*", "", s)  # Remove comments starting with ;;
+    s = re.sub(r'\s+', ' ', s)  # Replace multiple whitespaces with single space
+    tokens = re.findall(r'\(|\)|[^\s()]+', s)
+    return tokens
 
-    for elem in elements:
-        elem_dict = {}
-        # Extract the type
-        elem_type_match = re.match(r'(SOMIX\.\w+)', elem)
-        if elem_type_match:
-            elem_type = elem_type_match.group(1)
-            elem_dict['type'] = elem_type
+def parse_sexpr(tokens: List[str]) -> SExpr:
+    """
+    Parse tokens into a nested S-expression.
+    """
+    if not tokens:
+        raise SyntaxError("Unexpected EOF while reading")
+    
+    token = tokens.pop(0)
+    if token == '(':
+        L = []
+        while tokens[0] != ')':
+            L.append(parse_sexpr(tokens))
+            if not tokens:
+                raise SyntaxError("Unexpected EOF while reading")
+        tokens.pop(0)  # Remove ')'
+        return L
+    elif token == ')':
+        raise SyntaxError("Unexpected )")
+    else:
+        return token
+
+def parse_mse_content(content: str) -> List[SExpr]:
+    """
+    Parse the entire MSE file content into a list of S-expressions.
+    """
+    tokens = tokenize(content)
+    sexprs = []
+    while tokens:
+        sexprs.append(parse_sexpr(tokens))
+    return sexprs
+
+def extract_entries(sexprs: List[SExpr]) -> List[SExpr]:
+    """
+    Extract top-level SOMIX entries from the parsed S-expressions.
+    """
+    entries = []
+    for expr in sexprs:
+        if isinstance(expr, list):
+            for item in expr:
+                if isinstance(item, list) and len(item) > 0 and item[0].startswith("SOMIX."):
+                    entries.append(item)
+    return entries
+
+def normalize_ids(entries: List[SExpr]) -> Tuple[List[SExpr], Dict[str, str]]:
+    """
+    Normalize numeric IDs by replacing them with consistent identifiers.
+    Returns the updated entries and a mapping from original IDs to new identifiers.
+    """
+    id_map = {}
+    unique_names = {}
+    normalized_entries = []
+
+    # First pass: Assign new identifiers based on uniqueName or other unique attribute
+    for entry in entries:
+        if entry[0] in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
+            # Find uniqueName
+            unique_name = ""
+            for attr in entry[1:]:
+                if isinstance(attr, list) and attr[0] == "uniqueName":
+                    unique_name = attr[1].strip("'")
+                    break
+            if not unique_name:
+                raise ValueError(f"Entry {entry} lacks a uniqueName attribute.")
+            unique_names[unique_name] = None  # Initialize
+    # Assign consistent identifiers
+    for idx, unique_name in enumerate(sorted(unique_names.keys()), start=1):
+        id_map[str(idx)] = unique_name  # Map numeric ID to uniqueName
+
+    # Second pass: Replace IDs in entries
+    for entry in entries:
+        if entry[0] in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
+            # Replace 'id' with uniqueName
+            new_entry = []
+            for attr in entry:
+                if isinstance(attr, list) and attr[0] == "id":
+                    original_id = attr[1]
+                    if original_id not in id_map:
+                        raise ValueError(f"Unknown id reference: {original_id}")
+                    # Replace id with uniqueName
+                    # We skip adding 'id' to the new_entry as per requirement
+                else:
+                    new_entry.append(attr)
+            normalized_entries.append(new_entry)
         else:
+            # Relations will be processed later
+            normalized_entries.append(entry)
+
+    return normalized_entries, id_map
+
+def replace_refs(entries: List[SExpr], id_map: Dict[str, str]) -> List[str]:
+    """
+    Replace 'ref' IDs in relations with the corresponding uniqueNames and format entries.
+    Returns a list of formatted strings.
+    """
+    formatted_entries = []
+    object_names = {}  # Map from original ID to uniqueName
+
+    # First, map original IDs to uniqueNames
+    for entry in entries:
+        if entry[0] in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
+            unique_name = ""
+            for attr in entry[1:]:
+                if isinstance(attr, list) and attr[0] == "uniqueName":
+                    unique_name = attr[1].strip("'")
+                    break
+            object_names[unique_name] = unique_name  # Using uniqueName as identifier
+
+    # Now process each entry
+    for entry in entries:
+        if not isinstance(entry, list) or len(entry) == 0:
             continue
-
-        # Extract properties
-        properties = re.findall(r'\(([^()]+)\)', elem)
-        for prop in properties:
-            key_value = prop.split(None, 1)
-            if len(key_value) == 2:
-                key, value = key_value
-                value = value.strip("'")
-                elem_dict[key] = value
-        parsed_elements.append(elem_dict)
-
-    return parsed_elements
-
-def compare_elements(expected_elements, actual_elements):
-    # Build dictionaries keyed by uniqueName
-    expected_dict = {}
-    for elem in expected_elements:
-        unique_name = elem.get('uniqueName')
-        if unique_name:
-            expected_dict[(elem['type'], unique_name)] = elem
-
-    actual_dict = {}
-    for elem in actual_elements:
-        unique_name = elem.get('uniqueName')
-        if unique_name:
-            actual_dict[(elem['type'], unique_name)] = elem
-
-    # Compare elements
-    success = True
-    for key in expected_dict:
-        if key not in actual_dict:
-            print(f"Missing element in actual output: {key}")
-            success = False
+        entry_type = entry[0]
+        if entry_type in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
+            # Coding objects
+            attrs = {}
+            for attr in entry[1:]:
+                if isinstance(attr, list) and len(attr) == 2:
+                    key = attr[0]
+                    value = attr[1].strip("'")
+                    attrs[key] = value
+            # Remove 'id' as per requirement
+            attrs.pop("id", None)
+            # Sort attributes alphabetically
+            sorted_attrs = sorted(attrs.items())
+            # Format as "SOMIX.Type(attr1:value1, attr2:value2, ...)"
+            attr_str = ', '.join(f"{k}:{v}" for k, v in sorted_attrs)
+            formatted = f"{entry_type}({attr_str})"
+            formatted_entries.append(formatted)
+        elif entry_type in {"SOMIX.ParentChild", "SOMIX.Call", "SOMIX.Access"}:
+            # Relations
+            attrs = {}
+            for attr in entry[1:]:
+                if isinstance(attr, list) and len(attr) >= 2:
+                    key = attr[0]
+                    if attr[1][0].startswith("(ref:"):
+                        ref_id = re.findall(r'\(ref:\s*(\d+)\)', ' '.join(attr[1:]))
+                        if ref_id:
+                            ref_id = ref_id[0]
+                            if ref_id in id_map:
+                                ref_name = id_map[ref_id]
+                                attrs[key] = ref_name
+                            else:
+                                raise ValueError(f"Unknown ref id: {ref_id}")
+                        else:
+                            raise ValueError(f"Invalid ref format in {attr}")
+                    else:
+                        # Handle boolean or other attributes
+                        value = attr[1][1].strip("'")
+                        attrs[key] = value
+            # Sort attributes alphabetically
+            sorted_attrs = sorted(attrs.items())
+            # Format as "SOMIX.Type(attr1:value1, attr2:value2, ...)"
+            attr_str = ', '.join(f"{k}:{v}" for k, v in sorted_attrs)
+            formatted = f"{entry_type}({attr_str})"
+            formatted_entries.append(formatted)
         else:
-            expected_elem = expected_dict[key]
-            actual_elem = actual_dict[key]
-            # Compare properties except IDs
-            for prop in expected_elem:
-                if prop not in ['id', 'linkToEditor', 'parent', 'child', 'caller', 'called', 'accessor', 'accessed']:
-                    if expected_elem[prop] != actual_elem.get(prop):
-                        print(f"Difference in element {key}: property '{prop}' expected '{expected_elem[prop]}', got '{actual_elem.get(prop)}'")
-                        success = False
+            # Unknown entry type
+            continue
+    return formatted_entries
 
-    # Compare relationships (ParentChild, Call, Access)
-    expected_rels = [elem for elem in expected_elements if elem['type'] in ('SOMIX.ParentChild', 'SOMIX.Call', 'SOMIX.Access')]
-    actual_rels = [elem for elem in actual_elements if elem['type'] in ('SOMIX.ParentChild', 'SOMIX.Call', 'SOMIX.Access')]
+def parse_mse_file(filepath: str) -> List[str]:
+    """
+    Parse an MSE file and return a list of formatted strings based on the specifications.
+    """
+    with open(filepath, 'r') as file:
+        content = file.read()
 
-    for exp_rel in expected_rels:
-        match_found = False
-        for act_rel in actual_rels:
-            if exp_rel['type'] == act_rel['type']:
-                # For relationships, we can't compare IDs directly, so we assume if types match, it's acceptable
-                match_found = True
-                break
-        if not match_found:
-            print(f"Missing or different relationship in actual output: {exp_rel}")
-            success = False
+    # Parse the S-expressions
+    sexprs = parse_mse_content(content)
 
-    return success
+    # Extract SOMIX entries
+    entries = extract_entries(sexprs)
+
+    # Normalize IDs
+    normalized_entries, id_map = normalize_ids(entries)
+
+    # Replace refs and format entries
+    formatted_entries = replace_refs(normalized_entries, id_map)
+
+    # Sort the list to make comparison order-independent
+    formatted_entries.sort()
+
+    return formatted_entries
+
+def compare_mse_files(file1: str, file2: str) -> Tuple[bool, List[str], List[str]]:
+    """
+    Compare two MSE files and return whether they are identical along with differences.
+    Returns a tuple:
+        (are_identical, differences_in_file1, differences_in_file2)
+    """
+    list1 = parse_mse_file(file1)
+    list2 = parse_mse_file(file2)
+
+    set1 = set(list1)
+    set2 = set(list2)
+
+    are_identical = set1 == set2
+    differences_in_file1 = list(set1 - set2)
+    differences_in_file2 = list(set2 - set1)
+
+    return are_identical, differences_in_file1, differences_in_file2
 
 def main():
     # Prepare test environment
@@ -309,22 +456,39 @@ def function_two():
 
         # Find the generated mse file
         mse_files = [f for f in os.listdir(test_dir) if f.endswith('.mse')]
+
+        # Exclude 'expected_output.mse' from the list
+        mse_files = [f for f in mse_files if f != 'expected_output.mse']
+
         if not mse_files:
             print("No .mse file generated by extraction script")
             sys.exit(1)
         actual_mse_path = os.path.join(test_dir, mse_files[0])
 
         # Parse the expected and actual mse files
-        expected_elements = parse_mse_file(expected_mse_path)
-        actual_elements = parse_mse_file(actual_mse_path)
 
-        # Compare the elements
-        success = compare_elements(expected_elements, actual_elements)
+        # Log the paths
+        logging.info(f"Expected MSE file: {expected_mse_path}")
+        logging.info(f"Actual MSE file: {actual_mse_path}")
 
-        if success:
-            print("Test passed: The actual output matches the expected output.")
+        # expected_elements = parse_mse_file(expected_mse_path)
+        # actual_elements = parse_mse_file(actual_mse_path)
+
+        # Compare the files
+        identical, diffs1, diffs2 = compare_mse_files(expected_mse_path, actual_mse_path)
+
+        if identical:
+            print("The MSE files are identical.")
         else:
-            print("Test failed: Differences found between actual and expected outputs.")
+            print("The MSE files are different.")
+            if diffs1:
+                print("\nEntries in file1 but not in file2:")
+                for diff in diffs1:
+                    print(diff)
+            if diffs2:
+                print("\nEntries in file2 but not in file1:")
+                for diff in diffs2:
+                    print(diff)
 
     finally:
         # Clean up the test directory if you wish
