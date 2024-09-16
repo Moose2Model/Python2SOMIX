@@ -24,6 +24,16 @@ To find usages of methods when the instance is passed to a parameter, you have t
         # To check that usage is also found when ClassOne is passed as an argument
         my_obj.method_one()
 ```
+## Automatic test
+
+Do an automatic test with 
+
+```batch
+...\Python2SOMIX\src> python .\test_extraction.py
+```
+
+This test generates the subfolder test with test coding and compares the expected mse file expected_output.mse with the extracted file test(date_time).mse.
+Adapt this coding when the logic is changed. The test ignores the exact order of entries and the exact value of the id.
 
 ## Documentation
 

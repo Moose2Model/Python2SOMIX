@@ -10,3 +10,4 @@ src/config_python2mse.txt
 src/test_extraction.log
 test_extraction.log
 src/config_python2mse.txt
+src/test/expected_output.mse
