@@ -142,28 +142,48 @@ class DefinitionCollector(ast.NodeVisitor):
         self.current_function = None
 
     def visit_Assign(self, node):
+        # Handle class-level attributes (outside any function)
         if self.current_class and not self.current_function:
-            # Class-level attribute assignment
             for target in node.targets:
                 if isinstance(target, ast.Attribute):
                     if isinstance(target.value, ast.Name) and target.value.id == 'self':
-                        attr_name = 'self.' + target.attr
-                        unique_attr_name = self.current_class.unique_name + '.' + target.attr
-                        technical_type = 'PythonAttribute'
+                        attr_name = target.attr
+                        unique_attr_name = f"{self.current_class.unique_name}.{attr_name}"
+                        technical_type = 'PythonVariable'  # Changed to 'PythonVariable' to match previous MSE
                         link_to_editor = self.get_link(node.lineno, node.col_offset)
 
-                        data_element = Data(None, target.attr, unique_attr_name, technical_type, link_to_editor)
-                        self.elements[unique_attr_name] = data_element
+                        if unique_attr_name not in self.elements:
+                            data_element = Data(None, attr_name, unique_attr_name, technical_type, link_to_editor)
+                            self.elements[unique_attr_name] = data_element
+                            self.symbol_table[unique_attr_name] = data_element
 
-                        # Add to symbol table
-                        self.symbol_table[unique_attr_name] = data_element
+                            parent = self.scope_stack[-1]
+                            self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': False})
+                            parent.children.append(data_element)
 
-                        parent = self.scope_stack[-1]
-                        self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': False})
-                        parent.children.append(data_element)
+                            logging.debug(f"Collected class attribute '{unique_attr_name}'")
+        # Handle instance-level attributes (inside a function)
+        elif self.current_class and self.current_function:
+            for target in node.targets:
+                if isinstance(target, ast.Attribute):
+                    if isinstance(target.value, ast.Name) and target.value.id == 'self':
+                        attr_name = target.attr
+                        unique_attr_name = f"{self.current_class.unique_name}.{attr_name}"
+                        technical_type = 'PythonVariable'  # Changed to 'PythonVariable' to match previous MSE
+                        link_to_editor = self.get_link(node.lineno, node.col_offset)
 
-                        logging.debug(f"Collected class attribute '{unique_attr_name}'")
+                        if unique_attr_name not in self.elements:
+                            data_element = Data(None, attr_name, unique_attr_name, technical_type, link_to_editor)
+                            self.elements[unique_attr_name] = data_element
+                            self.symbol_table[unique_attr_name] = data_element
+
+                            parent = self.scope_stack[-1]
+                            self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': False})
+                            parent.children.append(data_element)
+
+                            logging.debug(f"Collected instance attribute '{unique_attr_name}'")
         self.generic_visit(node)
+
 
 class UsageAnalyzer(ast.NodeVisitor):
     def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, parameter_type_map=None):
@@ -632,19 +652,21 @@ def main():
         if parent_id and child_id:
             all_parent_child_relations.append({'parent': parent_id, 'child': child_id, 'isMain': relation['isMain']})
 
-    # Map calls
+    # Map calls correctly without modifying the list during iteration
+    mapped_calls = []
     for call in all_calls:
         caller_id = id_mapping.get(call['caller'])
         called_id = id_mapping.get(call['called'])
         if caller_id and called_id:
-            all_calls.append({'caller': caller_id, 'called': called_id})
+            mapped_calls.append({'caller': caller_id, 'called': called_id})
 
-    # Map accesses
+    # Map accesses correctly without modifying the list during iteration
+    mapped_accesses = []
     for access in all_accesses:
         accessor_id = id_mapping.get(access['accessor'])
         accessed_id = id_mapping.get(access['accessed'])
         if accessor_id and accessed_id:
-            all_accesses.append({
+            mapped_accesses.append({
                 'accessor': accessor_id,
                 'accessed': accessed_id,
                 'isWrite': access['isWrite'],
@@ -688,13 +710,13 @@ def main():
             f.write(f'  (isMain {"true" if relation["isMain"] else "false"})\n')
             f.write(')\n')
 
-        for call in all_calls:
+        for call in mapped_calls:
             f.write('(SOMIX.Call\n')
             f.write(f'  (caller (ref: {call["caller"]}))\n')
             f.write(f'  (called (ref: {call["called"]}))\n')
             f.write(')\n')
 
-        for access in all_accesses:
+        for access in mapped_accesses:
             f.write('(SOMIX.Access\n')
             f.write(f'  (accessor (ref: {access["accessor"]}))\n')
             f.write(f'  (accessed (ref: {access["accessed"]}))\n')
@@ -704,6 +726,7 @@ def main():
             f.write(')\n')
 
         f.write(')\n')
+
 
 if __name__ == '__main__':
     main()
