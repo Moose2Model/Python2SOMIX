@@ -41,10 +41,10 @@ def parse_sexpr(tokens: List[str]) -> SExpr:
     token = tokens.pop(0)
     if token == '(':
         L = []
-        while tokens[0] != ')':
+        while tokens and tokens[0] != ')':
             L.append(parse_sexpr(tokens))
-            if not tokens:
-                raise SyntaxError("Unexpected EOF while reading")
+        if not tokens:
+            raise SyntaxError("Unexpected EOF while reading")
         tokens.pop(0)  # Remove ')'
         return L
     elif token == ')':
@@ -74,111 +74,74 @@ def extract_entries(sexprs: List[SExpr]) -> List[SExpr]:
                     entries.append(item)
     return entries
 
-def normalize_ids(entries: List[SExpr]) -> Tuple[List[SExpr], Dict[str, str]]:
+def build_id_to_object_map(entries: List[SExpr]) -> Dict[str, str]:
     """
-    Normalize numeric IDs by replacing them with consistent identifiers.
-    Returns the updated entries and a mapping from original IDs to new identifiers.
+    Build a mapping from numeric IDs to formatted object strings (without 'id').
     """
-    id_map = {}
-    unique_names = {}
-    normalized_entries = []
+    id_to_object = {}
+    temp_objects = {}
 
-    # First pass: Assign new identifiers based on uniqueName or other unique attribute
+    # First pass: Process coding objects and store their attributes
     for entry in entries:
         if entry[0] in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
-            # Find uniqueName
-            unique_name = ""
+            attrs = {}
+            obj_id = None
             for attr in entry[1:]:
-                if isinstance(attr, list) and attr[0] == "uniqueName":
-                    unique_name = attr[1].strip("'")
-                    break
-            if not unique_name:
-                raise ValueError(f"Entry {entry} lacks a uniqueName attribute.")
-            unique_names[unique_name] = None  # Initialize
-    # Assign consistent identifiers
-    for idx, unique_name in enumerate(sorted(unique_names.keys()), start=1):
-        id_map[str(idx)] = unique_name  # Map numeric ID to uniqueName
+                if isinstance(attr, list) and len(attr) == 2:
+                    key = attr[0]
+                    value = attr[1].strip("'")
+                    if key == "id":
+                        obj_id = value
+                    else:
+                        attrs[key] = value
+            if obj_id is None:
+                raise ValueError(f"Entry {entry} lacks an 'id' attribute.")
+            # Sort attributes alphabetically
+            sorted_attrs = sorted(attrs.items())
+            # Format as "SOMIX.Type(attr1:value1, attr2:value2, ...)"
+            attr_str = ', '.join(f"{k}:{v}" for k, v in sorted_attrs)
+            formatted = f"{entry[0]}({attr_str})"
+            id_to_object[obj_id] = formatted
+            temp_objects[obj_id] = formatted  # Store for relation replacements
 
-    # Second pass: Replace IDs in entries
-    for entry in entries:
-        if entry[0] in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
-            # Replace 'id' with uniqueName
-            new_entry = []
-            for attr in entry:
-                if isinstance(attr, list) and attr[0] == "id":
-                    original_id = attr[1]
-                    if original_id not in id_map:
-                        raise ValueError(f"Unknown id reference: {original_id}")
-                    # Replace id with uniqueName
-                    # We skip adding 'id' to the new_entry as per requirement
-                else:
-                    new_entry.append(attr)
-            normalized_entries.append(new_entry)
-        else:
-            # Relations will be processed later
-            normalized_entries.append(entry)
+    return id_to_object
 
-    return normalized_entries, id_map
-
-def replace_refs(entries: List[SExpr], id_map: Dict[str, str]) -> List[str]:
+def replace_refs_in_relations(entries: List[SExpr], id_to_object: Dict[str, str]) -> List[str]:
     """
-    Replace 'ref' IDs in relations with the corresponding uniqueNames and format entries.
+    Replace 'ref' IDs in relations with the corresponding full object strings.
     Returns a list of formatted strings.
     """
     formatted_entries = []
-    object_names = {}  # Map from original ID to uniqueName
 
-    # First, map original IDs to uniqueNames
-    for entry in entries:
-        if entry[0] in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
-            unique_name = ""
-            for attr in entry[1:]:
-                if isinstance(attr, list) and attr[0] == "uniqueName":
-                    unique_name = attr[1].strip("'")
-                    break
-            object_names[unique_name] = unique_name  # Using uniqueName as identifier
-
-    # Now process each entry
     for entry in entries:
         if not isinstance(entry, list) or len(entry) == 0:
             continue
         entry_type = entry[0]
         if entry_type in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
-            # Coding objects
-            attrs = {}
-            for attr in entry[1:]:
-                if isinstance(attr, list) and len(attr) == 2:
-                    key = attr[0]
-                    value = attr[1].strip("'")
-                    attrs[key] = value
-            # Remove 'id' as per requirement
-            attrs.pop("id", None)
-            # Sort attributes alphabetically
-            sorted_attrs = sorted(attrs.items())
-            # Format as "SOMIX.Type(attr1:value1, attr2:value2, ...)"
-            attr_str = ', '.join(f"{k}:{v}" for k, v in sorted_attrs)
-            formatted = f"{entry_type}({attr_str})"
-            formatted_entries.append(formatted)
+            # Coding objects already processed in id_to_object
+            continue
         elif entry_type in {"SOMIX.ParentChild", "SOMIX.Call", "SOMIX.Access"}:
             # Relations
             attrs = {}
             for attr in entry[1:]:
                 if isinstance(attr, list) and len(attr) >= 2:
                     key = attr[0]
-                    if attr[1][0].startswith("(ref:"):
-                        ref_id = re.findall(r'\(ref:\s*(\d+)\)', ' '.join(attr[1:]))
-                        if ref_id:
-                            ref_id = ref_id[0]
-                            if ref_id in id_map:
-                                ref_name = id_map[ref_id]
-                                attrs[key] = ref_name
+                    if any(subattr.startswith("ref:") for subattr in attr[1:]):
+                        # Extract ref ID
+                        ref_match = re.search(r'\(ref:\s*(\d+)\)', ' '.join(attr[1:]))
+                        if ref_match:
+                            ref_id = ref_match.group(1)
+                            if ref_id in id_to_object:
+                                attrs[key] = id_to_object[ref_id]
                             else:
                                 raise ValueError(f"Unknown ref id: {ref_id}")
                         else:
                             raise ValueError(f"Invalid ref format in {attr}")
                     else:
                         # Handle boolean or other attributes
-                        value = attr[1][1].strip("'")
+                        # Convert 'true'/'false' to 't'/'f' or as per your requirement
+                        value = attr[1].strip("'")
+                        # Optionally, handle specific value conversions here
                         attrs[key] = value
             # Sort attributes alphabetically
             sorted_attrs = sorted(attrs.items())
@@ -189,6 +152,30 @@ def replace_refs(entries: List[SExpr], id_map: Dict[str, str]) -> List[str]:
         else:
             # Unknown entry type
             continue
+    return formatted_entries
+
+def process_coding_objects(entries: List[SExpr], id_to_object: Dict[str, str]) -> List[str]:
+    """
+    Process coding objects to create formatted strings without 'id'.
+    Returns a list of formatted strings.
+    """
+    formatted_entries = []
+    for entry in entries:
+        if entry[0] in {"SOMIX.Grouping", "SOMIX.Code", "SOMIX.Data"}:
+            attrs = {}
+            for attr in entry[1:]:
+                if isinstance(attr, list) and len(attr) == 2:
+                    key = attr[0]
+                    if key == "id":
+                        continue  # Skip 'id'
+                    value = attr[1].strip("'")
+                    attrs[key] = value
+            # Sort attributes alphabetically
+            sorted_attrs = sorted(attrs.items())
+            # Format as "SOMIX.Type(attr1:value1, attr2:value2, ...)"
+            attr_str = ', '.join(f"{k}:{v}" for k, v in sorted_attrs)
+            formatted = f"{entry[0]}({attr_str})"
+            formatted_entries.append(formatted)
     return formatted_entries
 
 def parse_mse_file(filepath: str) -> List[str]:
@@ -204,16 +191,22 @@ def parse_mse_file(filepath: str) -> List[str]:
     # Extract SOMIX entries
     entries = extract_entries(sexprs)
 
-    # Normalize IDs
-    normalized_entries, id_map = normalize_ids(entries)
+    # Build ID to Object mapping
+    id_to_object = build_id_to_object_map(entries)
 
-    # Replace refs and format entries
-    formatted_entries = replace_refs(normalized_entries, id_map)
+    # Process coding objects
+    coding_objects = process_coding_objects(entries, id_to_object)
+
+    # Process relations by replacing refs with full object strings
+    relations = replace_refs_in_relations(entries, id_to_object)
+
+    # Combine all formatted entries
+    all_formatted = coding_objects + relations
 
     # Sort the list to make comparison order-independent
-    formatted_entries.sort()
+    all_formatted.sort()
 
-    return formatted_entries
+    return all_formatted
 
 def compare_mse_files(file1: str, file2: str) -> Tuple[bool, List[str], List[str]]:
     """
