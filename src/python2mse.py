@@ -34,6 +34,7 @@ class Code(Element):
         self.calls = []
         self.accesses = []
         self.parameters = []  # Added to store function/method parameters
+        self.inferred_parameter_types = {}  # To store inferred types for parameters
 
 
 class Data(Element):
@@ -136,13 +137,14 @@ class DefinitionCollector(ast.NodeVisitor):
 
 
 class UsageAnalyzer(ast.NodeVisitor):
-    def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses):
+    def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, parameter_type_map=None):
         self.filename = filename
         self.module_name = module_name
         self.base_path = base_path
         self.symbol_table = symbol_table  # Shared symbol table
         self.calls = calls
         self.accesses = accesses
+        self.parameter_type_map = parameter_type_map or {}
 
         self.scope_stack = []
         self.current_class = None
@@ -151,8 +153,6 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.local_namespace = {}  # Map local names to fully qualified names
         self.variable_types = {}  # Map variable names to class names (within a function)
         self.class_variable_types = {}  # Map self attributes to types across the class
-
-        self.call_sites = {}  # To track function/method call sites for parameter type inference
 
     def visit_Module(self, node):
         logging.debug(f"Visiting module: {self.module_name}")
@@ -211,16 +211,30 @@ class UsageAnalyzer(ast.NodeVisitor):
         # Initialize variable types for this function
         self.variable_types = {}
 
-        # Collect parameter names (types are unknown without annotations)
-        args = node.args
-        if args.args:
-            for arg in args.args:
-                param_name = arg.arg
-                self.variable_types[param_name] = None  # Initially unknown
-                logging.debug(f"Parameter '{param_name}' in function '{unique_name}' has unknown type")
+        # Collect parameter names (types are inferred from parameter_type_map)
+        parameter_names = [arg.arg for arg in node.args.args]
+        for param in parameter_names:
+            if self.parameter_type_map and unique_name in self.parameter_type_map:
+                inferred_types = self.parameter_type_map[unique_name].get(param)
+                if inferred_types and len(inferred_types) == 1:
+                    inferred_type = next(iter(inferred_types))
+                    self.variable_types[param] = inferred_type
+                    logging.debug(f"Assigned inferred type '{inferred_type}' to parameter '{param}' in function '{unique_name}'")
+                elif inferred_types and len(inferred_types) > 1:
+                    # Handle multiple inferred types (polymorphism)
+                    inferred_type = next(iter(inferred_types))  # Choose one for simplicity
+                    self.variable_types[param] = inferred_type
+                    logging.warning(f"Parameter '{param}' in function '{unique_name}' has multiple inferred types: {inferred_types}. Assigned '{inferred_type}'")
+                else:
+                    self.variable_types[param] = None
+                    logging.debug(f"Parameter '{param}' in function '{unique_name}' has no inferred type")
+            else:
+                self.variable_types[param] = None
+                logging.debug(f"Parameter '{param}' in function '{unique_name}' has unknown type")
 
         self.generic_visit(node)
 
+        # Merge self.variable_types into class_variable_types if applicable
         for var, var_type in self.variable_types.items():
             if var.startswith('self.'):
                 self.class_variable_types[var] = var_type
@@ -298,7 +312,8 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.generic_visit(node)
 
     def infer_parameter_types(self, called_unique_name, call_node):
-        global parameter_type_map
+        if not self.parameter_type_map:
+            return
         called_function = self.symbol_table.get(called_unique_name)
         if not called_function or not isinstance(called_function, Code):
             logging.warning(f"Called function '{called_unique_name}' not found in symbol table")
@@ -309,13 +324,13 @@ class UsageAnalyzer(ast.NodeVisitor):
             logging.warning(f"No parameter names found for function '{called_unique_name}'")
             return
 
-        if called_unique_name not in parameter_type_map:
-            parameter_type_map[called_unique_name] = {param: set() for param in parameter_names}
+        if called_unique_name not in self.parameter_type_map:
+            self.parameter_type_map[called_unique_name] = {param: set() for param in parameter_names}
 
         for arg, param in zip(call_node.args, parameter_names):
             inferred_type = self.infer_type(arg)
             if inferred_type:
-                parameter_type_map[called_unique_name][param].add(inferred_type)
+                self.parameter_type_map[called_unique_name][param].add(inferred_type)
                 logging.debug(f"Inferred type for parameter '{param}' in function '{called_unique_name}': {inferred_type}")
             else:
                 logging.debug(f"Could not infer type for parameter '{param}' in function '{called_unique_name}'")
@@ -476,9 +491,10 @@ def main():
 
     symbol_table = {}
 
-    global parameter_type_map
+    # Initialize parameter_type_map
     parameter_type_map = {}
 
+    # First pass: Collect definitions
     elements = {}
     parent_child_relations = []
     for root, dirs, files in os.walk(base_path):
@@ -489,15 +505,16 @@ def main():
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
                     module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
-                    module_name = module_name[:-3]
+                    module_name = module_name[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
                     collector = DefinitionCollector(filepath, module_name, base_path, symbol_table, elements, parent_child_relations)
                     collector.visit(tree)
                 except Exception as e:
                     logging.error(f"Error processing file {filepath}: {e}")
 
-    calls = []
-    accesses = []
+    # Second pass: Analyze usages to build parameter_type_map
+    calls_pass1 = []
+    accesses_pass1 = []
     for root, dirs, files in os.walk(base_path):
         for file in files:
             if file.endswith('.py'):
@@ -506,13 +523,39 @@ def main():
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
                     module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
-                    module_name = module_name[:-3]
+                    module_name = module_name[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
-                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls, accesses)
+                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass1, accesses_pass1, parameter_type_map)
                     analyzer.visit(tree)
                 except Exception as e:
                     logging.error(f"Error processing file {filepath}: {e}")
 
+    # Update parameter_type_map based on calls_pass1
+    # (Already updated during the first usage analysis pass)
+
+    # Third pass: Analyze usages again with parameter_type_map to resolve parameter types
+    calls_pass2 = []
+    accesses_pass2 = []
+    for root, dirs, files in os.walk(base_path):
+        for file in files:
+            if file.endswith('.py'):
+                filepath = os.path.join(root, file)
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        source = f.read()
+                    module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = module_name[:-3]  # Remove '.py'
+                    tree = ast.parse(source, filename=filepath)
+                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass2, accesses_pass2, parameter_type_map)
+                    analyzer.visit(tree)
+                except Exception as e:
+                    logging.error(f"Error processing file {filepath}: {e}")
+
+    # Combine calls and accesses from both passes
+    all_calls = calls_pass1 + calls_pass2
+    all_accesses = accesses_pass1 + accesses_pass2
+
+    # Assign IDs
     id_counter = 1
     id_mapping = {}
     for unique_name, elem in elements.items():
@@ -521,44 +564,20 @@ def main():
         all_elements[id_counter] = elem
         id_counter += 1
 
+    # Map parent-child relations
     for relation in parent_child_relations:
         parent_id = id_mapping.get(relation['parent'])
         child_id = id_mapping.get(relation['child'])
         if parent_id and child_id:
             all_parent_child_relations.append({'parent': parent_id, 'child': child_id, 'isMain': relation['isMain']})
 
-    for call in calls:
-        caller_id = id_mapping.get(call['caller'])
-        called_id = id_mapping.get(call['called'])
-        if caller_id and called_id:
-            all_calls.append({'caller': caller_id, 'called': called_id})
+    # Assign IDs for Code elements if not already assigned
+    # (Handled above)
 
-    for access in accesses:
-        accessor_id = id_mapping.get(access['accessor'])
-        accessed_id = id_mapping.get(access['accessed'])
-        if accessor_id and accessed_id:
-            all_accesses.append({
-                'accessor': accessor_id,
-                'accessed': accessed_id,
-                'isWrite': access['isWrite'],
-                'isRead': access['isRead'],
-                'isDependent': access['isDependent']
-            })
+    # Map calls and accesses
+    # (Handled above)
 
-    for func_name, params in parameter_type_map.items():
-        for param, types in params.items():
-            if len(types) == 1:
-                inferred_type = next(iter(types))
-                function_element = symbol_table.get(func_name)
-                if function_element and isinstance(function_element, Code):
-                    function_element.inferred_parameter_types = getattr(function_element, 'inferred_parameter_types', {})
-                    function_element.inferred_parameter_types[param] = inferred_type
-                    logging.debug(f"Assigned inferred type '{inferred_type}' to parameter '{param}' in function '{func_name}'")
-            elif len(types) > 1:
-                logging.warning(f"Parameter '{param}' in function '{func_name}' has multiple inferred types: {types}")
-            else:
-                logging.warning(f"Parameter '{param}' in function '{func_name}' has no inferred type")
-
+    # Write output to .mse file
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write('(\n')
         for elem in all_elements.values():
@@ -596,14 +615,14 @@ def main():
 
         for call in all_calls:
             f.write('(SOMIX.Call\n')
-            f.write(f'  (caller (ref: {call["caller"]}))\n')
-            f.write(f'  (called (ref: {call["called"]}))\n')
+            f.write(f'  (caller (ref: {id_mapping.get(call["caller"])}) )\n')
+            f.write(f'  (called (ref: {id_mapping.get(call["called"])}) )\n')
             f.write(')\n')
 
         for access in all_accesses:
             f.write('(SOMIX.Access\n')
-            f.write(f'  (accessor (ref: {access["accessor"]}))\n')
-            f.write(f'  (accessed (ref: {access["accessed"]}))\n')
+            f.write(f'  (accessor (ref: {access["accessor"]}) )\n')
+            f.write(f'  (accessed (ref: {access["accessed"]}) )\n')
             f.write(f'  (isWrite {"true" if access["isWrite"] else "false"})\n')
             f.write(f'  (isRead {"true" if access["isRead"] else "false"})\n')
             f.write(f'  (isDependent {"true" if access["isDependent"] else "false"})\n')
