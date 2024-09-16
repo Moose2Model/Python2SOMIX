@@ -49,7 +49,7 @@ def function_two():
 You can use the extracted mse file to display diagram in Moose2Model. 
 Go to www.moose2model.org to do this. This website uses only simple JavaScript coding and can also be run locally.
 
-![Demo Diagram of the two test classes](./DemoDiagram.png)
+![Demo Diagram of the two test classes](./src/DemoDiagram.png)
 
 ## How to run
 start the script in the terminal with 
