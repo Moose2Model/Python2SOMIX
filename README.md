@@ -17,3 +17,7 @@ Exact name of the file: config_python2mse.txt
 base_path=/path/to/your/base/folder
 output_path=/path/to/output/directory
 ```
+
+## Documentation
+
+See [/src/documentation.md](https://github.com/Moose2Model/Python2SOMIX/blob/main/src/documentation.md).
