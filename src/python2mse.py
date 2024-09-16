@@ -185,6 +185,7 @@ class DefinitionCollector(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+
 class UsageAnalyzer(ast.NodeVisitor):
     def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, parameter_type_map=None):
         self.filename = filename
@@ -202,6 +203,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.local_namespace = {}  # Map local names to fully qualified names
         self.variable_types = {}  # Map variable names to class names (within a function)
         self.class_variable_types = {}  # Map self attributes to types across the class
+
 
 
 
@@ -275,6 +277,9 @@ class UsageAnalyzer(ast.NodeVisitor):
                             self.parameter_type_map[unique_name] = {}
                         self.parameter_type_map[unique_name][param_name] = set([resolved_type.unique_name])
                         logging.debug(f"Assigned inferred type '{resolved_type.unique_name}' to parameter '{param_name}' in function '{unique_name}'")
+                        # **Assign the inferred type to variable_types**
+                        self.variable_types[param_name] = resolved_type.unique_name
+                        logging.debug(f"Set variable_types['{param_name}'] = '{resolved_type.unique_name}'")
             else:
                 # Attempt to infer type from existing parameter_type_map
                 inferred_types = self.parameter_type_map.get(unique_name, {}).get(param_name)
@@ -375,11 +380,13 @@ class UsageAnalyzer(ast.NodeVisitor):
     def resolve_class_name(self, class_name):
         if not class_name:
             return None
-        # Handle relative imports if any, or direct module.class
-        # For simplicity, assuming class_name is fully qualified
-        class_element = self.symbol_table.get(class_name)
+        if class_name in self.local_namespace:
+            class_unique_name = self.local_namespace[class_name]
+        else:
+            class_unique_name = self.module_name + '.' + class_name
+        class_element = self.symbol_table.get(class_unique_name)
         if isinstance(class_element, Grouping):
-            logging.debug(f"Resolved class name '{class_name}'")
+            logging.debug(f"Resolved class name '{class_name}' to '{class_unique_name}'")
             return class_element
         else:
             logging.warning(f"Could not resolve class name '{class_name}'")
@@ -447,8 +454,9 @@ class UsageAnalyzer(ast.NodeVisitor):
             attrs = parts[1:]
 
             if base == 'self':
+                # Handle self.method
                 attr_name = 'self.' + attrs[0]
-                var_type = self.variable_types.get(attr_name) or self.class_variable_types.get(attr_name)
+                var_type = self.class_variable_types.get(attr_name)
                 if var_type:
                     called_unique_name = var_type + '.' + '.'.join(attrs[1:])
                     logging.debug(f"Resolved 'self.{attrs[0]}' to '{var_type}' for call '{called_unique_name}'")
@@ -456,50 +464,29 @@ class UsageAnalyzer(ast.NodeVisitor):
                     logging.warning(f"Could not resolve type for 'self.{attrs[0]}'")
                     return None
             else:
-                # Check if base is a parameter with inferred type
                 var_type = self.variable_types.get(base) or self.class_variable_types.get(base)
                 if var_type:
                     called_unique_name = var_type + '.' + '.'.join(attrs)
                     logging.debug(f"Resolved '{base}' to '{var_type}' for call '{called_unique_name}'")
                 else:
-                    # Check if base is in parameter_type_map
-                    current_func_params = self.parameter_type_map.get(self.current_function, {})
-                    if base in current_func_params:
-                        inferred_types = current_func_params[base]
-                        if len(inferred_types) == 1:
-                            var_type = next(iter(inferred_types))
-                            called_unique_name = var_type + '.' + '.'.join(attrs)
-                            logging.debug(f"Resolved '{base}' via parameter_type_map to '{called_unique_name}'")
-                        elif len(inferred_types) > 1:
-                            # Choose one for simplicity
-                            var_type = next(iter(inferred_types))
-                            called_unique_name = var_type + '.' + '.'.join(attrs)
-                            logging.warning(f"Parameter '{base}' in function '{self.current_function}' has multiple inferred types: {inferred_types}. Assigned '{var_type}'")
-                        else:
-                            var_type = None
-                            called_unique_name = None
-                            logging.warning(f"Parameter '{base}' in function '{self.current_function}' has no inferred type")
+                    if base in self.local_namespace:
+                        base_unique_name = self.local_namespace[base]
+                        called_unique_name = base_unique_name + '.' + '.'.join(attrs)
+                        logging.debug(f"Resolved '{base}' via local namespace to '{called_unique_name}'")
                     else:
-                        # Check if base is in local_namespace
-                        if base in self.local_namespace:
-                            base_unique_name = self.local_namespace[base]
-                            called_unique_name = base_unique_name + '.' + '.'.join(attrs)
-                            logging.debug(f"Resolved '{base}' via local namespace to '{called_unique_name}'")
-                        else:
-                            # If base is not in local_namespace, check if it's a built-in
-                            if base in BUILT_IN_FUNCTIONS:
-                                logging.debug(f"Identified '{base}' as a built-in function. Skipping.")
-                                return None
-                            called_unique_name = self.module_name + '.' + called_name
-                            logging.debug(f"Resolved '{called_name}' via module context to '{called_unique_name}'")
+                        # If base is not in local_namespace, check if it's a built-in
+                        if base in BUILT_IN_FUNCTIONS:
+                            logging.debug(f"Identified '{base}' as a built-in function. Skipping.")
+                            return None
+                        called_unique_name = self.module_name + '.' + called_name
+                        logging.debug(f"Resolved '{called_name}' via module context to '{called_unique_name}'")
 
-            if called_unique_name:
-                called_element = self.symbol_table.get(called_unique_name)
-                if isinstance(called_element, Code):
-                    return called_element
-                else:
-                    logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
-                    return None
+            called_element = self.symbol_table.get(called_unique_name)
+            if isinstance(called_element, Code):
+                return called_element
+            else:
+                logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
+                return None
         else:
             if called_name in self.local_namespace:
                 called_unique_name = self.local_namespace[called_name]
@@ -518,6 +505,7 @@ class UsageAnalyzer(ast.NodeVisitor):
             else:
                 logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
                 return None
+
 
     def visit_Attribute(self, node):
         if self.current_function:
