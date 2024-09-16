@@ -4,18 +4,15 @@
 		"newElBoxX": -97.3134765625,
 		"newElBoxY": -372.4,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 596.4
+		"newElBoxHeight": 466.4
 	},
 	"addedWithNeighbors": [
 		"PythonMethod..test1.ClassOne.__init__",
-		"PythonVariable..test1.ClassOne.class_variable",
 		"PythonVariable..test1.ClassOne.instance_variable",
 		"PythonMethod..test1.ClassOne.method_one",
 		"PythonMethod..subfolder.test2.ClassTwo.method_two",
 		"PythonFunction..test1.function_one",
 		"PythonFunction..subfolder.test2.function_two",
-		"PythonVariable..subfolder.test2.function_two.obj",
-		"PythonVariable..subfolder.test2.ClassTwo.method_two.obj",
 		"PythonMethod..subfolder.test2.ClassTwo.method_three"
 	],
 	"positions": [
@@ -30,19 +27,14 @@
 			"y": -49.74
 		},
 		{
-			"uniqueKey": "PythonVariable..test1.ClassOne.class_variable",
-			"x": -506,
-			"y": -20
-		},
-		{
 			"uniqueKey": "PythonMethod..test1.ClassOne.__init__",
 			"x": -601,
 			"y": -120
 		},
 		{
 			"uniqueKey": "PythonVariable..test1.ClassOne.instance_variable",
-			"x": -594,
-			"y": -23
+			"x": -597,
+			"y": -22.5
 		},
 		{
 			"uniqueKey": "PythonMethod..test1.ClassOne.method_one",
@@ -70,11 +62,6 @@
 			"y": -236.37
 		},
 		{
-			"uniqueKey": "PythonVariable..subfolder.test2.ClassTwo.method_two.obj",
-			"x": -432.14,
-			"y": 61.73
-		},
-		{
 			"uniqueKey": "PythonMethod..subfolder.test2.ClassTwo.method_three",
 			"x": -118.65,
 			"y": -237.37
@@ -83,11 +70,6 @@
 			"uniqueKey": "PythonFunction..subfolder.test2.function_two",
 			"x": -359,
 			"y": -248
-		},
-		{
-			"uniqueKey": "PythonVariable..subfolder.test2.function_two.obj",
-			"x": -524.05,
-			"y": 55.05
 		}
 	],
 	"comments": [
@@ -102,12 +84,6 @@
 			"x": -254.77,
 			"y": -85.28,
 			"text": "This is a function in the Python\ntest coding"
-		},
-		{
-			"uniqueKey": "PythonVariable..subfolder.test2.function_two.obj",
-			"x": -561.55,
-			"y": 124.55,
-			"text": "A local variable, which should not be in the model"
 		}
 	],
 	"pinned": [
@@ -115,11 +91,8 @@
 		"PythonFunction..test1.function_one",
 		"PythonVariable..test1.ClassOne.instance_variable",
 		"PythonMethod..test1.ClassOne.method_one",
-		"PythonVariable..test1.ClassOne.class_variable",
 		"PythonFunction..subfolder.test2.function_two",
 		"PythonMethod..test1.ClassOne.__init__",
-		"PythonVariable..subfolder.test2.function_two.obj",
-		"PythonVariable..subfolder.test2.ClassTwo.method_two.obj",
 		"PythonMethod..subfolder.test2.ClassTwo.method_three"
 	],
 	"suppressed": []
