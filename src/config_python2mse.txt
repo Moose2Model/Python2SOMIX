@@ -1,3 +1,6 @@
 # Configuration file
-base_path=C:\DataEigen\Eigenes\Python2SOMIX
-output_path=C:\DataEigen\Eigenes\Python2SOMIX\model\SOMIX
+# base_path=C:\DataEigen\Eigenes\Python2SOMIX
+# output_path=C:\DataEigen\Eigenes\Python2SOMIX\model\SOMIX
+
+base_path=C:\DataEigen\Eigenes\Python2SOMIX\src\test
+output_path=C:\DataEigen\Eigenes\Python2SOMIX\testmodel\SOMIX

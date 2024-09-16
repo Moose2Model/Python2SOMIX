@@ -13,7 +13,10 @@
 		"PythonMethod..test1.ClassOne.method_one",
 		"PythonMethod..subfolder.test2.ClassTwo.method_two",
 		"PythonFunction..test1.function_one",
-		"PythonFunction..subfolder.test2.function_two"
+		"PythonFunction..subfolder.test2.function_two",
+		"PythonVariable..subfolder.test2.function_two.obj",
+		"PythonVariable..subfolder.test2.ClassTwo.method_two.obj",
+		"PythonMethod..subfolder.test2.ClassTwo.method_three"
 	],
 	"positions": [
 		{
@@ -72,6 +75,11 @@
 			"y": 61.73
 		},
 		{
+			"uniqueKey": "PythonMethod..subfolder.test2.ClassTwo.method_three",
+			"x": -118.65,
+			"y": -237.37
+		},
+		{
 			"uniqueKey": "PythonFunction..subfolder.test2.function_two",
 			"x": -359,
 			"y": -248
@@ -111,7 +119,8 @@
 		"PythonFunction..subfolder.test2.function_two",
 		"PythonMethod..test1.ClassOne.__init__",
 		"PythonVariable..subfolder.test2.function_two.obj",
-		"PythonVariable..subfolder.test2.ClassTwo.method_two.obj"
+		"PythonVariable..subfolder.test2.ClassTwo.method_two.obj",
+		"PythonMethod..subfolder.test2.ClassTwo.method_three"
 	],
 	"suppressed": []
 }
