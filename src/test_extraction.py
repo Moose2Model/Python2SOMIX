@@ -90,7 +90,7 @@ def build_id_to_object_map(entries: List[SExpr]) -> Dict[str, str]:
                 if isinstance(attr, list) and len(attr) == 2:
                     key = attr[0]
                     value = attr[1].strip("'")
-                    if key == "id":
+                    if key == "id:":
                         obj_id = value
                     else:
                         attrs[key] = value
@@ -126,9 +126,13 @@ def replace_refs_in_relations(entries: List[SExpr], id_to_object: Dict[str, str]
             for attr in entry[1:]:
                 if isinstance(attr, list) and len(attr) >= 2:
                     key = attr[0]
-                    if any(subattr.startswith("ref:") for subattr in attr[1:]):
+                    if any(subattr[0].startswith("ref:") for subattr in attr[1:]):
                         # Extract ref ID
-                        ref_match = re.search(r'\(ref:\s*(\d+)\)', ' '.join(attr[1:]))
+                        # ref_match = re.search(r'\(ref:\s*(\d+)\)', ' '.join(attr[1:]))
+                        # Flatten the list and convert all elements to strings
+                        flat_attr = [str(item) if not isinstance(item, list) else ' '.join(item) for item in attr[1:]]
+                        # Corrected regex to match 'ref: 1' format without parentheses
+                        ref_match = re.search(r'ref:\s*(\d+)', ' '.join(flat_attr))
                         if ref_match:
                             ref_id = ref_match.group(1)
                             if ref_id in id_to_object:
