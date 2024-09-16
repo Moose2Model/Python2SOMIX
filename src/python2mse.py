@@ -45,7 +45,7 @@ class DefinitionCollector(ast.NodeVisitor):
         self.elements = elements
         self.parent_child_relations = parent_child_relations
         self.current_class = None
-        self.current_function = None
+        self.current_function = None  # Initialize current_function
         self.local_namespace = {}  # Map local names to fully qualified names
 
     def get_link(self, lineno, col_offset):
@@ -59,7 +59,13 @@ class DefinitionCollector(ast.NodeVisitor):
         technical_type = 'PythonFile'
         link_to_editor = self.get_link(getattr(node, 'lineno', 1), 0)
 
-        module_element = Grouping(None, name, unique_name, technical_type, link_to_editor)
+        module_element = Grouping(
+            id=None,  # id will be assigned later
+            name=name,
+            unique_name=unique_name,
+            technical_type=technical_type,
+            link_to_editor=link_to_editor
+        )
         self.symbol_table[unique_name] = module_element
         self.elements[unique_name] = module_element
         module_element.is_main = True
@@ -69,7 +75,7 @@ class DefinitionCollector(ast.NodeVisitor):
             'isMain': True
         })
         self.current_class = None
-        self.current_function = None
+        self.current_function = None  # Ensure current_function is None
         self.generic_visit(node)
 
     def visit_Import(self, node):
@@ -92,9 +98,10 @@ class DefinitionCollector(ast.NodeVisitor):
         class_name = node.name
         unique_name = self.module_name + '.' + class_name
         grouping = Grouping(
+            id=None,  # id will be assigned later
             name=class_name,
-            technical_type='class',
             unique_name=unique_name,
+            technical_type='class',
             link_to_editor=None
         )
         self.symbol_table[unique_name] = grouping
@@ -119,9 +126,10 @@ class DefinitionCollector(ast.NodeVisitor):
             unique_name = self.module_name + '.' + func_name
 
         code = Code(
+            id=None,  # id will be assigned later
             name=func_name,
-            technical_type='method' if self.current_class else 'function',
             unique_name=unique_name,
+            technical_type='method' if self.current_class else 'function',
             link_to_editor=None
         )
         code.parameters = {arg.arg: None for arg in node.args.args}
@@ -155,7 +163,13 @@ class DefinitionCollector(ast.NodeVisitor):
                 technical_type = 'PythonVariable'
                 link_to_editor = self.get_link(getattr(node, 'lineno', 1), target.col_offset)
 
-                data_element = Data(None, name, unique_name, technical_type, link_to_editor)
+                data_element = Data(
+                    id=None,
+                    name=name,
+                    unique_name=unique_name,
+                    technical_type=technical_type,
+                    link_to_editor=link_to_editor
+                )
                 self.elements[unique_name] = data_element
 
                 if not self.current_function:
@@ -174,7 +188,13 @@ class DefinitionCollector(ast.NodeVisitor):
                     technical_type = 'PythonVariable'
                     link_to_editor = self.get_link(getattr(node, 'lineno', 1), target.col_offset)
 
-                    data_element = Data(None, name, unique_name, technical_type, link_to_editor)
+                    data_element = Data(
+                        id=None,
+                        name=name,
+                        unique_name=unique_name,
+                        technical_type=technical_type,
+                        link_to_editor=link_to_editor
+                    )
                     self.elements[unique_name] = data_element
 
                     self.symbol_table[unique_name] = data_element
@@ -185,6 +205,7 @@ class DefinitionCollector(ast.NodeVisitor):
                         'isMain': True
                     })
         self.generic_visit(node)
+
 
 class UsageAnalyzer(ast.NodeVisitor):
     def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, param_type_assignments):
@@ -200,9 +221,9 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.current_class = None
         self.current_function = None
 
-        self.local_namespace = {}  
-        self.variable_types = {}  
-        self.class_variable_types = {}  
+        self.local_namespace = {}  # Map local names to fully qualified names
+        self.variable_types = {}    # Map variable names to class names (within a function)
+        self.class_variable_types = {}  # Map self attributes to types across the class
 
     def visit_Module(self, node):
         self.scope_stack.append(self.module_name)
@@ -232,6 +253,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.scope_stack.append(unique_name)
         self.current_class = unique_name
 
+        # Initialize class variable types
         self.class_variable_types = {}
 
         self.generic_visit(node)
@@ -249,8 +271,10 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.scope_stack.append(unique_name)
         self.current_function = unique_name
 
+        # Initialize variable types for this function
         self.variable_types = {}
 
+        # Assign parameter types from the symbol table
         code_element = self.symbol_table.get(unique_name)
         if code_element and isinstance(code_element, Code):
             for param_name, param_type in code_element.parameters.items():
@@ -258,6 +282,7 @@ class UsageAnalyzer(ast.NodeVisitor):
 
         self.generic_visit(node)
 
+        # Merge self.variable_types into class_variable_types
         for var, var_type in self.variable_types.items():
             if var.startswith('self.'):
                 self.class_variable_types[var] = var_type
@@ -287,6 +312,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         called_name = self.get_called_name(node.func)
         logging.info(f"visit_Call - Called name: {called_name}")
 
+        # List of built-in functions to ignore
         built_in_functions = {'print', 'len', 'range', 'str', 'int', 'float', 'list', 'dict', 'set', 'tuple', 'open'}
         
         if called_name in built_in_functions:
@@ -294,12 +320,15 @@ class UsageAnalyzer(ast.NodeVisitor):
             self.generic_visit(node)
             return
 
+        # Try to resolve the called function/method in the symbol table
         called_element = self.resolve_called_name(called_name)
         logging.info(f"Resolved called element: {called_element}")
         if called_element and isinstance(called_element, Code):
             if self.current_function:
+                # Record the call with unique names
                 self.calls.append({'caller': self.current_function, 'called': called_element.unique_name})
         
+            # Assign types to parameters based on arguments
             args = node.args
             param_names = list(called_element.parameters.keys())
             for i, arg in enumerate(args):
@@ -307,23 +336,28 @@ class UsageAnalyzer(ast.NodeVisitor):
                     param_name = param_names[i]
                     arg_type = self.infer_argument_type(arg)
                     if arg_type and self.param_type_assignments[called_element.unique_name].get(param_name) != arg_type:
+                        # Update the parameter type assignment
                         self.param_type_assignments[called_element.unique_name][param_name] = arg_type
                         logging.debug(f"Assigned type '{arg_type}' to parameter '{param_name}' in '{called_element.unique_name}'")
         
         self.generic_visit(node)
 
     def infer_argument_type(self, arg):
+        # Infer the type of the argument
         if isinstance(arg, ast.Name):
             var_name = arg.id
+            # Check in local variables
             var_type = self.variable_types.get(var_name)
             if var_type:
                 return var_type
+            # Check in class variable types
             var_type = self.class_variable_types.get(var_name)
             if var_type:
                 return var_type
         elif isinstance(arg, ast.Call):
             return self.infer_type(arg)
         elif isinstance(arg, ast.Attribute):
+            # Handle attributes like self.obj
             if isinstance(arg.value, ast.Name):
                 base_name = arg.value.id
                 if base_name == 'self':
@@ -331,14 +365,17 @@ class UsageAnalyzer(ast.NodeVisitor):
                     var_type = self.class_variable_types.get(attr_name)
                     if var_type:
                         return var_type
+        # Could not infer type
         return None
 
     def infer_type(self, value):
+        # Infer type based on the value
         if isinstance(value, ast.Call):
             class_name = self.get_called_name(value.func)
             class_element = self.resolve_class_name(class_name)
             if class_element:
                 full_class_name = class_element.unique_name
+                # Record the call to __init__
                 init_method_name = full_class_name + '.__init__'
                 init_method = self.symbol_table.get(init_method_name)
                 if init_method and isinstance(init_method, Code):
@@ -346,10 +383,13 @@ class UsageAnalyzer(ast.NodeVisitor):
                 return full_class_name
         elif isinstance(value, ast.Name):
             var_name = value.id
+            # Check in local variables
             if var_name in self.variable_types:
                 return self.variable_types[var_name]
+            # Check in class variables
             if var_name in self.class_variable_types:
                 return self.class_variable_types[var_name]
+        # Could not infer type
         return None
 
     def get_called_name(self, node):
@@ -365,6 +405,7 @@ class UsageAnalyzer(ast.NodeVisitor):
                 attr_chain.reverse()
                 return '.'.join(attr_chain)
         elif isinstance(node, ast.Call):
+            # For cases like method chaining
             return self.get_called_name(node.func)
         return None
 
@@ -377,6 +418,7 @@ class UsageAnalyzer(ast.NodeVisitor):
             base = called_name
             attrs = []
 
+        # Handle 'self' references
         if base == 'self':
             if not attrs:
                 logging.warning(f"No attribute specified after 'self' in called name '{called_name}'.")
@@ -388,21 +430,25 @@ class UsageAnalyzer(ast.NodeVisitor):
             else:
                 return None
         else:
+            # Check if base is a variable
             var_type = self.variable_types.get(base) or self.class_variable_types.get(base)
             if var_type:
                 called_unique_name = var_type + '.' + '.'.join(attrs) if attrs else var_type
             else:
+                # Try to resolve base from local namespace or module
                 if base in self.local_namespace:
                     base_unique_name = self.local_namespace[base]
                 else:
                     base_unique_name = self.module_name + '.' + base
                 called_unique_name = base_unique_name + '.' + '.'.join(attrs) if attrs else base_unique_name
 
+        # Check if the called_unique_name is in the symbol table and is a Code element
         called_element = self.symbol_table.get(called_unique_name)
         if isinstance(called_element, Code):
             logging.debug(f"Resolved '{called_name}' to '{called_element.unique_name}'")
             return called_element
         else:
+            # If the called element is a Grouping, check if the next attribute is a method
             if isinstance(called_element, Grouping) and attrs:
                 method_name = attrs[-1]
                 method_unique_name = called_element.unique_name + '.' + method_name
@@ -417,22 +463,26 @@ class UsageAnalyzer(ast.NodeVisitor):
         if not class_name:
             return None
 
+        # Check if class_name is already fully qualified
         if class_name in self.symbol_table:
             class_element = self.symbol_table.get(class_name)
             if isinstance(class_element, Grouping):
                 return class_element
 
+        # Attempt to resolve based on local imports
         if class_name in self.local_namespace:
             resolved_name = self.local_namespace[class_name]
             class_element = self.symbol_table.get(resolved_name)
             if isinstance(class_element, Grouping):
                 return class_element
 
+        # Attempt to resolve within the current module
         current_module_prefix = self.module_name + '.' + class_name
         class_element = self.symbol_table.get(current_module_prefix)
         if isinstance(class_element, Grouping):
             return class_element
 
+        # Class not found
         logging.warning(f"Class '{class_name}' could not be resolved in symbol table.")
         return None
 
@@ -483,6 +533,7 @@ class UsageAnalyzer(ast.NodeVisitor):
                 })
         self.generic_visit(node)
 
+
 def load_config(config_file='config_python2mse.txt'):
     config = {}
     if os.path.exists(config_file):
@@ -529,16 +580,22 @@ def main():
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
                     module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
-                    module_name = module_name[:-3]
+                    module_name = module_name[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
                     collector = DefinitionCollector(filepath, module_name, base_path, symbol_table, elements, parent_child_relations)
                     collector.visit(tree)
                 except Exception as e:
                     logging.error(f"Error processing file {filepath}: {e}")
 
+    # Log the symbol_table to verify contents
+    for unique_name, elem in symbol_table.items():
+        logging.debug(f"Symbol Table Entry: {unique_name} -> {elem}")
+
+    # Initialize parameter type assignments
     param_type_assignments = {unique_name: {} for unique_name, elem in elements.items() if isinstance(elem, Code)}
 
-    max_iterations = 5
+    # Iterative analysis: Perform multiple passes until no new type assignments are found
+    max_iterations = 5  # Prevent infinite loops; adjust as needed
     iteration = 0
     changed = True
 
@@ -547,7 +604,7 @@ def main():
         changed = False
         calls = []
         accesses = []
-
+        
         for root, dirs, files in os.walk(base_path):
             for file in files:
                 if file.endswith('.py'):
@@ -556,21 +613,26 @@ def main():
                         with open(filepath, 'r', encoding='utf-8') as f:
                             source = f.read()
                         module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
-                        module_name = module_name[:-3]
+                        module_name = module_name[:-3]  # Remove '.py'
                         tree = ast.parse(source, filename=filepath)
                         analyzer = UsageAnalyzer(
-                            filepath,
-                            module_name,
-                            base_path,
-                            symbol_table,
-                            calls,
-                            accesses,
+                            filepath, 
+                            module_name, 
+                            base_path, 
+                            symbol_table, 
+                            calls, 
+                            accesses, 
                             param_type_assignments
                         )
                         analyzer.visit(tree)
                     except Exception as e:
                         logging.error(f"Error processing file {filepath}: {e}")
-
+        
+        # Log collected calls and accesses in this iteration
+        logging.debug(f"Calls collected in iteration {iteration + 1}: {calls}")
+        logging.debug(f"Accesses collected in iteration {iteration + 1}: {accesses}")
+        
+        # Apply parameter type assignments and check for changes
         for func_unique_name, params in param_type_assignments.items():
             func_element = symbol_table.get(func_unique_name)
             if func_element and isinstance(func_element, Code):
@@ -579,12 +641,14 @@ def main():
                         func_element.parameters[param_name] = param_type
                         changed = True
                         logging.debug(f"Updated parameter '{param_name}' in '{func_unique_name}' to type '{param_type}'")
+        
+        # Append calls and accesses from this iteration
+        all_calls.extend(calls)
+        all_accesses.extend(accesses)
 
         iteration += 1
 
-    all_calls.extend(calls)
-    all_accesses.extend(accesses)
-
+    # Assign IDs
     id_counter = 1
     id_mapping = {}
     for unique_name, elem in elements.items():
@@ -593,12 +657,20 @@ def main():
         all_elements[id_counter] = elem
         id_counter += 1
 
+    # Map parent-child relations
     for relation in parent_child_relations:
-        parent_id = id_mapping.get(relation['parent'])
-        child_id = id_mapping.get(relation['child'])
+        parent_unique = relation['parent']
+        child_unique = relation['child']
+        parent_id = id_mapping.get(parent_unique)
+        child_id = id_mapping.get(child_unique)
         if parent_id and child_id:
-            all_parent_child_relations.append({'parent': parent_id, 'child': child_id, 'isMain': relation['isMain']})
+            all_parent_child_relations.append({
+                'parent': parent_id,
+                'child': child_id,
+                'isMain': relation['isMain']
+            })
 
+    # Map calls and accesses using separate lists to prevent modification during iteration
     mapped_calls = []
     for call in all_calls:
         caller_id = id_mapping.get(call['caller'])
@@ -619,6 +691,7 @@ def main():
                 'isDependent': access['isDependent']
             })
 
+    # Write output to .mse file
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write('(\n')
         for elem in all_elements.values():
@@ -672,6 +745,7 @@ def main():
         f.write(')\n')
 
     logging.info(f"Extraction completed. Output written to {output_file}")
+
 
 
 if __name__ == '__main__':
