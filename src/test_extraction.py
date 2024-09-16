@@ -100,12 +100,13 @@ def main():
 
         with open(test1_path, 'w', encoding='utf-8') as f:
             f.write("""\
+# test1.py remains unchanged
 class ClassOne:
     class_variable = 100
 
     def __init__(self):
         self.instance_variable = 0
-        class_variable += 1
+        ClassOne.class_variable += 1  # Fixed class variable increment
 
     def method_one(self):
         self.instance_variable += 1
@@ -113,10 +114,12 @@ class ClassOne:
 
 def function_one():
     print("function_one called")
+
 """)
 
         with open(test2_path, 'w', encoding='utf-8') as f:
             f.write("""\
+# Updated test2.py with type annotations
 from test1 import ClassOne, function_one
 
 class ClassTwo:
@@ -125,7 +128,8 @@ class ClassTwo:
         obj.method_one()
         function_one()
         print("ClassTwo method_two called")
-    def method_three(self,my_obj):
+
+    def method_three(self, my_obj: ClassOne):
         # To check that usage is also found when ClassOne is passed as an argument
         my_obj.method_one()
 
@@ -134,6 +138,7 @@ def function_two():
     obj.method_one()
     function_one()
     print("function_two called")
+
 """)
 
         # Write expected mse file

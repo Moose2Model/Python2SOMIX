@@ -203,6 +203,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.variable_types = {}  # Map variable names to class names (within a function)
         self.class_variable_types = {}  # Map self attributes to types across the class
 
+
     def visit_Module(self, node):
         logging.debug(f"Visiting module: {self.module_name}")
         self.scope_stack.append(self.module_name)
@@ -260,26 +261,33 @@ class UsageAnalyzer(ast.NodeVisitor):
         # Initialize variable types for this function
         self.variable_types = {}
 
-        # Collect parameter names and assign inferred types
-        parameter_names = [arg.arg for arg in node.args.args]
-        for param in parameter_names:
-            if self.parameter_type_map and unique_name in self.parameter_type_map:
-                inferred_types = self.parameter_type_map[unique_name].get(param)
+        # Collect parameter names and assign inferred types from annotations
+        for arg in node.args.args:
+            param_name = arg.arg
+            if arg.annotation:
+                inferred_type = self.get_annotation_type(arg.annotation)
+                if inferred_type:
+                    # Resolve the inferred type to its unique name
+                    resolved_type = self.resolve_class_name(inferred_type)
+                    if resolved_type:
+                        if unique_name not in self.parameter_type_map:
+                            self.parameter_type_map[unique_name] = {}
+                        self.parameter_type_map[unique_name][param_name] = set([resolved_type.unique_name])
+                        logging.debug(f"Assigned inferred type '{resolved_type.unique_name}' to parameter '{param_name}' in function '{unique_name}'")
+            else:
+                # Attempt to infer type from existing parameter_type_map
+                inferred_types = self.parameter_type_map.get(unique_name, {}).get(param_name)
                 if inferred_types and len(inferred_types) == 1:
                     inferred_type = next(iter(inferred_types))
-                    self.variable_types[param] = inferred_type
-                    logging.debug(f"Assigned inferred type '{inferred_type}' to parameter '{param}' in function '{unique_name}'")
+                    self.variable_types[param_name] = inferred_type
+                    logging.debug(f"Inferred type '{inferred_type}' for parameter '{param_name}' in function '{unique_name}'")
                 elif inferred_types and len(inferred_types) > 1:
-                    # Handle multiple inferred types (polymorphism)
                     inferred_type = next(iter(inferred_types))  # Choose one for simplicity
-                    self.variable_types[param] = inferred_type
-                    logging.warning(f"Parameter '{param}' in function '{unique_name}' has multiple inferred types: {inferred_types}. Assigned '{inferred_type}'")
+                    self.variable_types[param_name] = inferred_type
+                    logging.warning(f"Parameter '{param_name}' in function '{unique_name}' has multiple inferred types: {inferred_types}. Assigned '{inferred_type}'")
                 else:
-                    self.variable_types[param] = None
-                    logging.debug(f"Parameter '{param}' in function '{unique_name}' has no inferred type")
-            else:
-                self.variable_types[param] = None
-                logging.debug(f"Parameter '{param}' in function '{unique_name}' has unknown type")
+                    self.variable_types[param_name] = None
+                    logging.debug(f"Parameter '{param_name}' in function '{unique_name}' has unknown type")
 
         self.generic_visit(node)
 
@@ -293,6 +301,25 @@ class UsageAnalyzer(ast.NodeVisitor):
 
         self.scope_stack.pop()
         self.current_function = None
+
+    def get_annotation_type(self, annotation):
+        """
+        Extract the type name from the annotation node.
+        """
+        if isinstance(annotation, ast.Name):
+            return annotation.id
+        elif isinstance(annotation, ast.Attribute):
+            parts = []
+            while isinstance(annotation, ast.Attribute):
+                parts.append(annotation.attr)
+                annotation = annotation.value
+            if isinstance(annotation, ast.Name):
+                parts.append(annotation.id)
+                parts.reverse()
+                return '.'.join(parts)
+        elif isinstance(annotation, ast.Subscript):
+            return self.get_annotation_type(annotation.value)
+        return None        
 
     def visit_Assign(self, node):
         if self.current_function:
