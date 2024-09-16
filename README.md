@@ -5,7 +5,7 @@ Extract SOMIX model from Python code
 
 It allows to visualize Python code and the relations due to calls, accesses and grouping.
 
-See the following example. There are two Python files:
+See the following example with two Python files:
 
 test1.py
 ```python
@@ -46,8 +46,14 @@ def function_two():
     function_one()
     print("function_two called")
 ```
-You can use the extracted mse file to display diagram in Moose2Model. 
+Use Python2SOMIX to extract an mse file to display diagrams in Moose2Model. 
 Go to www.moose2model.org to do this. This website uses only simple JavaScript coding and can also be run locally.
+
+You may display all parts in a diagram like this:
+
+![Force-attraction-diagram of all elements](./src/AllElements.png)
+
+Or construct diagrams which may contain only parts of the application together with coding. These are easy to keep correct when the code changes. You can also easily jump to an editor from the diagram.
 
 ![Demo Diagram of the two test classes](./src/DemoDiagram.png)
 
