@@ -458,13 +458,18 @@ class UsageAnalyzer(ast.NodeVisitor):
 
             if base == 'self':
                 # Handle self.method
-                attr_name = 'self.' + attrs[0]
-                var_type = self.class_variable_types.get(attr_name)
-                if var_type:
-                    called_unique_name = var_type + '.' + '.'.join(attrs[1:])
-                    logging.debug(f"Resolved 'self.{attrs[0]}' to '{var_type}' for call '{called_unique_name}'")
+                if len(attrs) >= 1:
+                    method_name = attrs[0]
+                    called_unique_name = f"{self.current_class}.{method_name}"
+                    logging.debug(f"Resolved 'self.{method_name}' to '{called_unique_name}'")
+                    called_element = self.symbol_table.get(called_unique_name)
+                    if isinstance(called_element, Code):
+                        return called_element
+                    else:
+                        logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
+                        return None
                 else:
-                    logging.warning(f"Could not resolve type for 'self.{attrs[0]}'")
+                    logging.warning(f"Invalid method call format: '{called_name}'")
                     return None
             else:
                 var_type = self.variable_types.get(base) or self.class_variable_types.get(base)
@@ -484,12 +489,12 @@ class UsageAnalyzer(ast.NodeVisitor):
                         called_unique_name = self.module_name + '.' + called_name
                         logging.debug(f"Resolved '{called_name}' via module context to '{called_unique_name}'")
 
-            called_element = self.symbol_table.get(called_unique_name)
-            if isinstance(called_element, Code):
-                return called_element
-            else:
-                logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
-                return None
+                called_element = self.symbol_table.get(called_unique_name)
+                if isinstance(called_element, Code):
+                    return called_element
+                else:
+                    logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
+                    return None
         else:
             if called_name in self.local_namespace:
                 called_unique_name = self.local_namespace[called_name]
@@ -798,8 +803,6 @@ def main():
             f.write(')\n')
 
         f.write(')\n')
-
-
 
 if __name__ == '__main__':
     main()

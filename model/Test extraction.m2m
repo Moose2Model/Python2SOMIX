@@ -7,36 +7,36 @@
 		"newElBoxHeight": 328
 	},
 	"addedWithNeighbors": [
-		"PythonFunction..src.test_extraction.compare_elements",
-		"PythonFunction..src.test_extraction.main",
-		"PythonFunction..src.test_extraction.parse_mse_file"
+		"PythonFunction..test_extraction.compare_elements",
+		"PythonFunction..test_extraction.main",
+		"PythonFunction..test_extraction.parse_mse_file"
 	],
 	"positions": [
 		{
-			"uniqueKey": "PythonFile..src.test_extraction",
+			"uniqueKey": "PythonFile..test_extraction",
 			"x": 49.66,
 			"y": 26.26
 		},
 		{
-			"uniqueKey": "PythonFunction..src.test_extraction.parse_mse_file",
+			"uniqueKey": "PythonFunction..test_extraction.parse_mse_file",
 			"x": -54.29,
 			"y": 167.23
 		},
 		{
-			"uniqueKey": "PythonFunction..src.test_extraction.compare_elements",
+			"uniqueKey": "PythonFunction..test_extraction.compare_elements",
 			"x": 63.93,
 			"y": 165.34
 		},
 		{
-			"uniqueKey": "PythonFunction..src.test_extraction.main",
+			"uniqueKey": "PythonFunction..test_extraction.main",
 			"x": 5.29,
 			"y": 50.99
 		}
 	],
 	"comments": [],
 	"pinned": [
-		"PythonFunction..src.test_extraction.compare_elements",
-		"PythonFunction..src.test_extraction.parse_mse_file"
+		"PythonFunction..test_extraction.compare_elements",
+		"PythonFunction..test_extraction.parse_mse_file"
 	],
 	"suppressed": []
 }

@@ -68,13 +68,13 @@
 		},
 		{
 			"uniqueKey": "PythonMethod..test2.ClassTwo.method_four",
-			"x": -57.83,
-			"y": -298.11
+			"x": -197.56,
+			"y": -243.41
 		},
 		{
 			"uniqueKey": "PythonFunction..test2.function_two",
-			"x": -151.84,
-			"y": -302.97
+			"x": -53.73,
+			"y": -231.02
 		}
 	],
 	"comments": [
