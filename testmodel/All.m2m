@@ -10,7 +10,10 @@
 		"PythonMethod..test1.ClassOne.__init__",
 		"PythonVariable..test1.ClassOne.instance_variable",
 		"PythonMethod..test1.ClassOne.method_one",
-		"PythonFunction..test1.function_one"
+		"PythonFunction..test1.function_one",
+		"PythonMethod..test2.ClassTwo.method_four",
+		"PythonMethod..test2.ClassTwo.method_three",
+		"PythonMethod..test2.ClassTwo.method_two"
 	],
 	"positions": [
 		{
@@ -55,13 +58,18 @@
 		},
 		{
 			"uniqueKey": "PythonMethod..test2.ClassTwo.method_two",
-			"x": -422.7,
-			"y": -308.32
+			"x": -421.51,
+			"y": -307.73
 		},
 		{
 			"uniqueKey": "PythonMethod..test2.ClassTwo.method_three",
 			"x": -282.7,
 			"y": -308.32
+		},
+		{
+			"uniqueKey": "PythonMethod..test2.ClassTwo.method_four",
+			"x": -57.83,
+			"y": -298.11
 		},
 		{
 			"uniqueKey": "PythonFunction..test2.function_two",
@@ -89,7 +97,8 @@
 		"PythonMethod..test1.ClassOne.method_one",
 		"PythonMethod..test1.ClassOne.__init__",
 		"PythonMethod..test2.ClassTwo.method_two",
-		"PythonFunction..test2.function_two"
+		"PythonFunction..test2.function_two",
+		"PythonMethod..test2.ClassTwo.method_four"
 	],
 	"suppressed": []
 }

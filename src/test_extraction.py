@@ -279,7 +279,8 @@ def function_one():
 
         with open(test2_path, 'w', encoding='utf-8') as f:
             f.write("""\
-# Updated test2.py with type annotations
+# test2.py
+# Import of ClassOne and function_one from test1.py required to find usages
 from test1 import ClassOne, function_one
 
 class ClassTwo:
@@ -289,16 +290,21 @@ class ClassTwo:
         function_one()
         print("ClassTwo method_two called")
 
+# Type annotation ClassOne required to find usage of method_one
     def method_three(self, my_obj: ClassOne):
         # To check that usage is also found when ClassOne is passed as an argument
         my_obj.method_one()
+        self.method_four()
+
+    def method_four(self):
+        # Add a dummy code line  
+        print("ClassTwo method_four called")
 
 def function_two():
     classOne = ClassOne()
     classOne.method_one( 'test' )
     function_one()
     print("function_two called")
-
 """)
             
 
@@ -359,25 +365,31 @@ def function_two():
   (name 'ClassTwo')
   (uniqueName 'test2.ClassTwo')
   (technicalType 'PythonClass')
-  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:4:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:5:1')
 )
 (SOMIX.Code (id: 9 )
   (name 'method_two')
   (technicalType 'PythonMethod')
   (uniqueName 'test2.ClassTwo.method_two')
-  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:5:5')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:6:5')
 )
-(SOMIX.Code (id: 11 )
+(SOMIX.Code (id: 10 )
   (name 'method_three')
   (technicalType 'PythonMethod')
   (uniqueName 'test2.ClassTwo.method_three')
-  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:11:5')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:13:5')
 )
-(SOMIX.Code (id: 10 )
+(SOMIX.Code (id: 11 )
+  (name 'method_four')
+  (technicalType 'PythonMethod')
+  (uniqueName 'test2.ClassTwo.method_four')
+  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/test2.py/:18:5')
+)
+(SOMIX.Code (id: 12 )
   (name 'function_two')
   (technicalType 'PythonFunction')
   (uniqueName 'test2.function_two')
-  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:15:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test2.py/:22:1')
 )
 (SOMIX.ParentChild
   (parent (ref: 1))
@@ -416,12 +428,17 @@ def function_two():
 )
 (SOMIX.ParentChild
   (parent (ref: 8))
+  (child (ref: 10))
+  (isMain true)
+)
+(SOMIX.ParentChild
+  (parent (ref: 8))
   (child (ref: 11))
   (isMain true)
 )
 (SOMIX.ParentChild
   (parent (ref: 7))
-  (child (ref: 10))
+  (child (ref: 12))
   (isMain true)
 )
 (SOMIX.Call
@@ -437,19 +454,19 @@ def function_two():
   (called (ref: 6))
 )
 (SOMIX.Call
-  (caller (ref: 11))
+  (caller (ref: 10))
   (called (ref: 5))
 )
 (SOMIX.Call
-  (caller (ref: 10))
+  (caller (ref: 12))
   (called (ref: 3))
 )
 (SOMIX.Call
-  (caller (ref: 10))
+  (caller (ref: 12))
   (called (ref: 5))
 )
 (SOMIX.Call
-  (caller (ref: 10))
+  (caller (ref: 12))
   (called (ref: 6))
 )
 (SOMIX.Call
@@ -465,19 +482,19 @@ def function_two():
   (called (ref: 6))
 )
 (SOMIX.Call
-  (caller (ref: 11))
+  (caller (ref: 10))
   (called (ref: 5))
 )
 (SOMIX.Call
-  (caller (ref: 10))
+  (caller (ref: 12))
   (called (ref: 3))
 )
 (SOMIX.Call
-  (caller (ref: 10))
+  (caller (ref: 12))
   (called (ref: 5))
 )
 (SOMIX.Call
-  (caller (ref: 10))
+  (caller (ref: 12))
   (called (ref: 6))
 )
 (SOMIX.Access
