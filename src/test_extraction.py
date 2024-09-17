@@ -248,12 +248,15 @@ def main():
     if os.path.exists(test_dir):
         shutil.rmtree(test_dir)
     os.makedirs(test_dir, exist_ok=True)
-    os.makedirs(os.path.join(test_dir, 'subfolder'), exist_ok=True)
+    # os.makedirs(os.path.join(test_dir, 'subfolder1'), exist_ok=True)
+    # os.makedirs(os.path.join(test_dir, 'subfolder2'), exist_ok=True)
 
     try:
         # Create test files
+        # test1_path = os.path.join(test_dir, 'subfolder1','test1.py')
+        # test2_path = os.path.join(test_dir, 'subfolder2', 'test2.py')
         test1_path = os.path.join(test_dir, 'test1.py')
-        test2_path = os.path.join(test_dir, 'subfolder', 'test2.py')
+        test2_path = os.path.join(test_dir, 'test2.py')
 
         with open(test1_path, 'w', encoding='utf-8') as f:
             f.write("""\
@@ -291,8 +294,8 @@ class ClassTwo:
         my_obj.method_one()
 
 def function_two():
-    obj = ClassOne()
-    obj.method_one()
+    classOne = ClassOne()
+    classOne.method_one( 'test' )
     function_one()
     print("function_two called")
 
@@ -389,7 +392,7 @@ def function_two():
 (SOMIX.ParentChild
   (parent (ref: 3))
   (child (ref: 4))
-  (isMain false)
+  (isMain true)
 )
 (SOMIX.ParentChild
   (parent (ref: 2))

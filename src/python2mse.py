@@ -158,7 +158,7 @@ class DefinitionCollector(ast.NodeVisitor):
                             self.symbol_table[unique_attr_name] = data_element
 
                             parent = self.scope_stack[-1]
-                            self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': False})
+                            self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': True})
                             parent.children.append(data_element)
 
                             logging.debug(f"Collected class attribute '{unique_attr_name}'")
@@ -178,7 +178,7 @@ class DefinitionCollector(ast.NodeVisitor):
                             self.symbol_table[unique_attr_name] = data_element
 
                             parent = self.scope_stack[-1]
-                            self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': False})
+                            self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': True})
                             parent.children.append(data_element)
 
                             logging.debug(f"Collected instance attribute '{unique_attr_name}'")

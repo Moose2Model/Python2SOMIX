@@ -1,19 +1,16 @@
 {
 	"newElementBox": {
 		"isInitial": false,
-		"newElBoxX": 27.025390625,
-		"newElBoxY": -374,
+		"newElBoxX": 16.223828124999955,
+		"newElBoxY": -414,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 448
+		"newElBoxHeight": 488
 	},
 	"addedWithNeighbors": [
 		"PythonMethod..test1.ClassOne.__init__",
 		"PythonVariable..test1.ClassOne.instance_variable",
 		"PythonMethod..test1.ClassOne.method_one",
-		"PythonMethod..subfolder.test2.ClassTwo.method_two",
-		"PythonFunction..test1.function_one",
-		"PythonFunction..subfolder.test2.function_two",
-		"PythonMethod..subfolder.test2.ClassTwo.method_three"
+		"PythonFunction..test1.function_one"
 	],
 	"positions": [
 		{
@@ -47,29 +44,29 @@
 			"y": -44.28
 		},
 		{
-			"uniqueKey": "PythonFile..subfolder.test2",
-			"x": -327.07,
-			"y": -458.5
+			"uniqueKey": "PythonFile..test2",
+			"x": -176.21,
+			"y": -362.91
 		},
 		{
-			"uniqueKey": "PythonClass..subfolder.test2.ClassTwo",
-			"x": -333.5,
-			"y": -406.5
+			"uniqueKey": "PythonClass..test2.ClassTwo",
+			"x": -831.84,
+			"y": -142.97
 		},
 		{
-			"uniqueKey": "PythonMethod..subfolder.test2.ClassTwo.method_two",
-			"x": -240,
-			"y": -251
+			"uniqueKey": "PythonMethod..test2.ClassTwo.method_two",
+			"x": -422.7,
+			"y": -308.32
 		},
 		{
-			"uniqueKey": "PythonMethod..subfolder.test2.ClassTwo.method_three",
-			"x": -120,
-			"y": -251
+			"uniqueKey": "PythonMethod..test2.ClassTwo.method_three",
+			"x": -282.7,
+			"y": -308.32
 		},
 		{
-			"uniqueKey": "PythonFunction..subfolder.test2.function_two",
-			"x": -393.5,
-			"y": -255.5
+			"uniqueKey": "PythonFunction..test2.function_two",
+			"x": -151.84,
+			"y": -302.97
 		}
 	],
 	"comments": [
@@ -87,13 +84,12 @@
 		}
 	],
 	"pinned": [
-		"PythonMethod..subfolder.test2.ClassTwo.method_two",
 		"PythonFunction..test1.function_one",
 		"PythonVariable..test1.ClassOne.instance_variable",
 		"PythonMethod..test1.ClassOne.method_one",
-		"PythonFunction..subfolder.test2.function_two",
 		"PythonMethod..test1.ClassOne.__init__",
-		"PythonMethod..subfolder.test2.ClassTwo.method_three"
+		"PythonMethod..test2.ClassTwo.method_two",
+		"PythonFunction..test2.function_two"
 	],
 	"suppressed": []
 }
