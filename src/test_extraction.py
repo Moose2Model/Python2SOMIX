@@ -92,10 +92,10 @@ def build_id_to_object_map(entries: List[SExpr]) -> Dict[str, str]:
                     value = attr[1].strip("'")
                     if key == "id:":
                         obj_id = value
-                    elif key == "linkToEditor":
-                        # Skip 'linkToEditor' attribute
-                        # This is problematic because the path will be different on different machines
-                        continue
+                    # elif key == "linkToEditor":
+                    #     # Skip 'linkToEditor' attribute
+                    #     # This is problematic because the path will be different on different machines
+                    #     continue
                     else:
                         attrs[key] = value
             if obj_id is None:
@@ -206,6 +206,13 @@ def parse_mse_file(filepath: str) -> List[str]:
     # coding_objects = process_coding_objects(entries, id_to_object)
     coding_objects = list(id_to_object.values())
 
+    # Replace in id_to_oject values the strings that starts with 'linkToEditor:' or 'name:' and ends with ', ' with an empty string
+    # This makes the compact strings describing relations more readable
+    for key in id_to_object:
+        id_to_object[key] = re.sub(r'linkToEditor:.*?, ', '', id_to_object[key])    
+        id_to_object[key] = re.sub(r'name:.*?, ', '', id_to_object[key])   
+
+
     # Process relations by replacing refs with full object strings
     relations = replace_refs_in_relations(entries, id_to_object)
 
@@ -290,77 +297,84 @@ def function_two():
     print("function_two called")
 
 """)
+            
+
+        # Get the current script directory
+        current_dir = Path(__file__).parent    
+
+        #Fill current_dir2 and replace the backslashes with forward slashes
+        current_dir2 = str(current_dir).replace('\\', '/')        
 
         # Write expected mse file
         expected_mse_path = os.path.join(test_dir, 'expected_output.mse')
         with open(expected_mse_path, 'w', encoding='utf-8') as f:
-            f.write("""\
+            f.write(f"""\
 (
 (SOMIX.Grouping (id: 1 )
   (name 'test1.py')
   (uniqueName 'test1')
   (technicalType 'PythonFile')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/test1.py/:1:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test1.py/:1:1')
 )
 (SOMIX.Grouping (id: 2 )
   (name 'ClassOne')
   (uniqueName 'test1.ClassOne')
   (technicalType 'PythonClass')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/test1.py/:2:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test1.py/:2:1')
 )
 (SOMIX.Code (id: 3 )
   (name '__init__')
   (technicalType 'PythonMethod')
   (uniqueName 'test1.ClassOne.__init__')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/test1.py/:5:5')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test1.py/:5:5')
 )
 (SOMIX.Data (id: 4 )
   (name 'instance_variable')
   (technicalType 'PythonVariable')
   (uniqueName 'test1.ClassOne.instance_variable')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/test1.py/:6:9')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test1.py/:6:9')
 )
 (SOMIX.Code (id: 5 )
   (name 'method_one')
   (technicalType 'PythonMethod')
   (uniqueName 'test1.ClassOne.method_one')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/test1.py/:9:5')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test1.py/:9:5')
 )
 (SOMIX.Code (id: 6 )
   (name 'function_one')
   (technicalType 'PythonFunction')
   (uniqueName 'test1.function_one')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/test1.py/:13:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/test1.py/:13:1')
 )
 (SOMIX.Grouping (id: 7 )
   (name 'test2.py')
   (uniqueName 'subfolder.test2')
   (technicalType 'PythonFile')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/subfolder/test2.py/:1:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/subfolder/test2.py/:1:1')
 )
 (SOMIX.Grouping (id: 8 )
   (name 'ClassTwo')
   (uniqueName 'subfolder.test2.ClassTwo')
   (technicalType 'PythonClass')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/subfolder/test2.py/:4:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/subfolder/test2.py/:4:1')
 )
 (SOMIX.Code (id: 9 )
   (name 'method_two')
   (technicalType 'PythonMethod')
   (uniqueName 'subfolder.test2.ClassTwo.method_two')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/subfolder/test2.py/:5:5')
+  (linkToEditor 'vscode://file/{current_dir2}/test/subfolder/test2.py/:5:5')
 )
 (SOMIX.Code (id: 11 )
   (name 'method_three')
   (technicalType 'PythonMethod')
   (uniqueName 'subfolder.test2.ClassTwo.method_three')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/subfolder/test2.py/:10:5')
+  (linkToEditor 'vscode://file/{current_dir2}/test/subfolder/test2.py/:11:5')
 )
 (SOMIX.Code (id: 10 )
   (name 'function_two')
   (technicalType 'PythonFunction')
   (uniqueName 'subfolder.test2.function_two')
-  (linkToEditor 'vscode://file/C:/DataEigen/Eigenes/Python2SOMIX/src/test/subfolder/test2.py/:15:1')
+  (linkToEditor 'vscode://file/{current_dir2}/test/subfolder/test2.py/:15:1')
 )
 (SOMIX.ParentChild
   (parent (ref: 1))
@@ -501,8 +515,6 @@ def function_two():
         #     print(f"Extraction script not found at {extraction_script_path}")
         #     sys.exit(1)
 
-        # Get the current script directory
-        current_dir = Path(__file__).parent
 
         # Define the relative path to python2mse.py
         extraction_script_path = current_dir / 'python2mse.py'
