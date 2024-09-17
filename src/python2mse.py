@@ -149,7 +149,7 @@ class DefinitionCollector(ast.NodeVisitor):
                     if isinstance(target.value, ast.Name) and target.value.id == 'self':
                         attr_name = target.attr
                         unique_attr_name = f"{self.current_class.unique_name}.{attr_name}"
-                        technical_type = 'PythonVariable'  # Changed to 'PythonVariable' to match previous MSE
+                        technical_type = 'PythonVariable'
                         link_to_editor = self.get_link(node.lineno, node.col_offset)
 
                         if unique_attr_name not in self.elements:
@@ -157,7 +157,8 @@ class DefinitionCollector(ast.NodeVisitor):
                             self.elements[unique_attr_name] = data_element
                             self.symbol_table[unique_attr_name] = data_element
 
-                            parent = self.scope_stack[-1]
+                            # **Parent is the class, not the method**
+                            parent = self.current_class  # Changed from self.scope_stack[-1]
                             self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': True})
                             parent.children.append(data_element)
 
@@ -169,7 +170,7 @@ class DefinitionCollector(ast.NodeVisitor):
                     if isinstance(target.value, ast.Name) and target.value.id == 'self':
                         attr_name = target.attr
                         unique_attr_name = f"{self.current_class.unique_name}.{attr_name}"
-                        technical_type = 'PythonVariable'  # Changed to 'PythonVariable' to match previous MSE
+                        technical_type = 'PythonVariable'
                         link_to_editor = self.get_link(node.lineno, node.col_offset)
 
                         if unique_attr_name not in self.elements:
@@ -177,12 +178,14 @@ class DefinitionCollector(ast.NodeVisitor):
                             self.elements[unique_attr_name] = data_element
                             self.symbol_table[unique_attr_name] = data_element
 
-                            parent = self.scope_stack[-1]
+                            # **Parent is the class, not the method**
+                            parent = self.current_class  # Changed from self.scope_stack[-1]
                             self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_attr_name, 'isMain': True})
                             parent.children.append(data_element)
 
                             logging.debug(f"Collected instance attribute '{unique_attr_name}'")
         self.generic_visit(node)
+
 
 
 

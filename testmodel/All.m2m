@@ -20,23 +20,23 @@
 		},
 		{
 			"uniqueKey": "PythonClass..test1.ClassOne",
-			"x": -455.59,
-			"y": -42.74
+			"x": -456.78,
+			"y": -33.82
 		},
 		{
 			"uniqueKey": "PythonMethod..test1.ClassOne.__init__",
-			"x": -537.5,
-			"y": -113
+			"x": -541.19,
+			"y": -111.08
 		},
 		{
 			"uniqueKey": "PythonVariable..test1.ClassOne.instance_variable",
-			"x": -500.5,
-			"y": -30.5
+			"x": -501.19,
+			"y": -31.08
 		},
 		{
 			"uniqueKey": "PythonMethod..test1.ClassOne.method_one",
-			"x": -437.5,
-			"y": -113
+			"x": -441.19,
+			"y": -111.08
 		},
 		{
 			"uniqueKey": "PythonFunction..test1.function_one",
