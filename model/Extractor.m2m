@@ -208,8 +208,8 @@
 		},
 		{
 			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.__init__",
-			"x": 1415.87,
-			"y": -1011.67
+			"x": 1106.42,
+			"y": -1043.62
 		},
 		{
 			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.filename",
@@ -248,8 +248,8 @@
 		},
 		{
 			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.current_class",
-			"x": 1163.67,
-			"y": -1013.95
+			"x": 1160.31,
+			"y": -987.88
 		},
 		{
 			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.current_function",
@@ -268,23 +268,23 @@
 		},
 		{
 			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_Module",
-			"x": 1407.74,
-			"y": -879.1
+			"x": 1446.43,
+			"y": -1013.64
 		},
 		{
 			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_ClassDef",
-			"x": 1300.11,
-			"y": -949.19
+			"x": 1336.27,
+			"y": -1012.26
 		},
 		{
 			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_FunctionDef",
-			"x": 1462.34,
-			"y": -961.8
+			"x": 1538.86,
+			"y": -1009.73
 		},
 		{
 			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_Assign",
-			"x": 1060.11,
-			"y": -949.19
+			"x": 1234.18,
+			"y": -1018.14
 		},
 		{
 			"uniqueKey": "PythonClass..python2mse.UsageAnalyzer",
@@ -596,7 +596,9 @@
 		"PythonFunction..test_extraction.process_coding_objects",
 		"PythonFunction..test_extraction.tokenize",
 		"PythonFunction..test_extraction.parse_sexpr",
-		"PythonFunction..test.test2.function_two"
+		"PythonFunction..test.test2.function_two",
+		"PythonMethod..python2mse.DefinitionCollector.visit_Assign",
+		"PythonMethod..python2mse.DefinitionCollector.visit_ClassDef"
 	],
 	"suppressed": []
 }
