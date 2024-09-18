@@ -96,6 +96,12 @@ class DefinitionCollector(ast.NodeVisitor):
         # Add to symbol table
         self.symbol_table[unique_name] = class_element
 
+        # **Map short unique name (base_module.class_name) to the same element**
+        base_module_name = self.module_name.split('.')[-1]
+        short_unique_name = f"{base_module_name}.{name}"
+        self.symbol_table[short_unique_name] = class_element
+        logging.debug(f"Mapped short unique name '{short_unique_name}' to '{unique_name}'")
+
         parent = self.scope_stack[-1]
         self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_name, 'isMain': True})
         parent.children.append(class_element)
@@ -123,6 +129,16 @@ class DefinitionCollector(ast.NodeVisitor):
 
         # Add to symbol table
         self.symbol_table[unique_name] = code_element
+
+        # **Map short unique name (base_module.class_name.function_name or base_module.function_name) to the same element**
+        base_module_name = self.module_name.split('.')[-1]
+        if self.current_class:
+            class_name = self.current_class.name
+            short_unique_name = f"{base_module_name}.{class_name}.{name}"
+        else:
+            short_unique_name = f"{base_module_name}.{name}"
+        self.symbol_table[short_unique_name] = code_element
+        logging.debug(f"Mapped short unique name '{short_unique_name}' to '{unique_name}'")
 
         parent = self.scope_stack[-1]
         self.parent_child_relations.append({'parent': parent.unique_name, 'child': unique_name, 'isMain': True})
@@ -163,6 +179,13 @@ class DefinitionCollector(ast.NodeVisitor):
                             parent.children.append(data_element)
 
                             logging.debug(f"Collected class attribute '{unique_attr_name}'")
+
+                            # **Map short unique name (base_module.class_name.attribute) to the same element**
+                            base_module_name = self.module_name.split('.')[-1]
+                            class_name = self.current_class.name
+                            short_unique_name = f"{base_module_name}.{class_name}.{attr_name}"
+                            self.symbol_table[short_unique_name] = data_element
+                            logging.debug(f"Mapped short unique name '{short_unique_name}' to '{unique_attr_name}'")
         # Handle instance-level attributes (inside a function)
         elif self.current_class and self.current_function:
             for target in node.targets:
@@ -184,10 +207,14 @@ class DefinitionCollector(ast.NodeVisitor):
                             parent.children.append(data_element)
 
                             logging.debug(f"Collected instance attribute '{unique_attr_name}'")
+
+                            # **Map short unique name (base_module.class_name.attribute) to the same element**
+                            base_module_name = self.module_name.split('.')[-1]
+                            class_name = self.current_class.name
+                            short_unique_name = f"{base_module_name}.{class_name}.{attr_name}"
+                            self.symbol_table[short_unique_name] = data_element
+                            logging.debug(f"Mapped short unique name '{short_unique_name}' to '{unique_attr_name}'")
         self.generic_visit(node)
-
-
-
 
 class UsageAnalyzer(ast.NodeVisitor):
     def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, parameter_type_map=None):
@@ -206,9 +233,6 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.local_namespace = {}  # Map local names to fully qualified names
         self.variable_types = {}  # Map variable names to class names (within a function)
         self.class_variable_types = {}  # Map self attributes to types across the class
-
-
-
 
     def visit_Module(self, node):
         logging.debug(f"Visiting module: {self.module_name}")
@@ -329,7 +353,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         elif isinstance(annotation, ast.Subscript):
             return self.get_annotation_type(annotation.value)
         return None
-    
+
     def visit_Assign(self, node):
         if self.current_function:
             for target in node.targets:
@@ -431,7 +455,6 @@ class UsageAnalyzer(ast.NodeVisitor):
             else:
                 logging.debug(f"Could not infer type for parameter '{param}' in function '{called_unique_name}'")
 
-
     def get_called_name(self, node):
         if isinstance(node, ast.Name):
             return node.id
@@ -514,6 +537,29 @@ class UsageAnalyzer(ast.NodeVisitor):
                 logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
                 return None
 
+    def infer_parameter_types(self, called_unique_name, call_node):
+        if not self.parameter_type_map:
+            return
+        called_function = self.symbol_table.get(called_unique_name)
+        if not called_function or not isinstance(called_function, Code):
+            logging.warning(f"Called function '{called_unique_name}' not found in symbol table")
+            return
+
+        parameter_names = getattr(called_function, 'parameters', [])
+        if not parameter_names:
+            logging.warning(f"No parameter names found for function '{called_unique_name}'")
+            return
+
+        if called_unique_name not in self.parameter_type_map:
+            self.parameter_type_map[called_unique_name] = {param: set() for param in parameter_names}
+
+        for arg, param in zip(call_node.args, parameter_names):
+            inferred_type = self.infer_type(arg)
+            if inferred_type:
+                self.parameter_type_map[called_unique_name][param].add(inferred_type)
+                logging.debug(f"Inferred type for parameter '{param}' in function '{called_unique_name}': {inferred_type}")
+            else:
+                logging.debug(f"Could not infer type for parameter '{param}' in function '{called_unique_name}'")
 
     def visit_Attribute(self, node):
         if self.current_function:
@@ -552,8 +598,7 @@ class UsageAnalyzer(ast.NodeVisitor):
                                 })
                                 logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
                         elif len(inferred_types) > 1:
-                            # Choose one for simplicity
-                            var_type = next(iter(inferred_types))
+                            var_type = next(iter(inferred_types))  # Choose one for simplicity
                             full_attr_name = var_type + '.' + node.attr
                             data_element = self.symbol_table.get(full_attr_name)
                             if data_element and isinstance(data_element, Data):
