@@ -1,604 +1,608 @@
 {
 	"newElementBox": {
 		"isInitial": false,
-		"newElBoxX": 3454.3265997835115,
-		"newElBoxY": -1194,
+		"newElBoxX": 3923.339573306227,
+		"newElBoxY": -1274,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 888
+		"newElBoxHeight": 948
 	},
 	"addedWithNeighbors": [
-		"PythonMethod..test.test1.ClassOne.__init__",
-		"PythonVariable..test.test1.ClassOne.instance_variable",
-		"PythonMethod..test.test1.ClassOne.method_one",
-		"PythonMethod..python2mse.Code.__init__",
-		"PythonVariable..python2mse.Code.accesses",
-		"PythonVariable..python2mse.Code.calls",
-		"PythonVariable..python2mse.Code.children",
-		"PythonMethod..python2mse.Data.__init__",
-		"PythonVariable..python2mse.Data.accessed_by",
-		"PythonMethod..python2mse.DefinitionCollector.__init__",
-		"PythonVariable..python2mse.DefinitionCollector.base_path",
-		"PythonVariable..python2mse.DefinitionCollector.current_class",
-		"PythonVariable..python2mse.DefinitionCollector.current_function",
-		"PythonVariable..python2mse.DefinitionCollector.elements",
-		"PythonVariable..python2mse.DefinitionCollector.filename",
-		"PythonMethod..python2mse.DefinitionCollector.get_link",
-		"PythonVariable..python2mse.DefinitionCollector.local_namespace",
-		"PythonVariable..python2mse.DefinitionCollector.module_name",
-		"PythonVariable..python2mse.DefinitionCollector.parent_child_relations",
-		"PythonVariable..python2mse.DefinitionCollector.scope_stack",
-		"PythonVariable..python2mse.DefinitionCollector.symbol_table",
-		"PythonMethod..python2mse.DefinitionCollector.visit_Assign",
-		"PythonMethod..python2mse.DefinitionCollector.visit_ClassDef",
-		"PythonMethod..python2mse.DefinitionCollector.visit_FunctionDef",
-		"PythonMethod..python2mse.DefinitionCollector.visit_Module",
-		"PythonMethod..python2mse.Element.__init__",
-		"PythonVariable..python2mse.Element.id",
-		"PythonVariable..python2mse.Element.link_to_editor",
-		"PythonVariable..python2mse.Element.name",
-		"PythonVariable..python2mse.Element.technical_type",
-		"PythonMethod..python2mse.Grouping.__init__",
-		"PythonVariable..python2mse.Element.unique_name",
-		"PythonVariable..python2mse.Grouping.children",
-		"PythonVariable..python2mse.Grouping.is_main",
-		"PythonMethod..python2mse.UsageAnalyzer.__init__",
-		"PythonVariable..python2mse.UsageAnalyzer.base_path",
-		"PythonVariable..python2mse.UsageAnalyzer.class_variable_types",
-		"PythonVariable..python2mse.UsageAnalyzer.current_function",
-		"PythonVariable..python2mse.UsageAnalyzer.filename",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Name",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Module",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_ImportFrom",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Import",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_FunctionDef",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_ClassDef",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Attribute",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Assign",
-		"PythonVariable..python2mse.UsageAnalyzer.variable_types",
-		"PythonVariable..python2mse.UsageAnalyzer.symbol_table",
-		"PythonVariable..python2mse.UsageAnalyzer.scope_stack",
-		"PythonMethod..python2mse.UsageAnalyzer.resolve_class_name",
-		"PythonMethod..python2mse.UsageAnalyzer.resolve_called_name",
-		"PythonVariable..python2mse.UsageAnalyzer.module_name",
-		"PythonVariable..python2mse.UsageAnalyzer.local_namespace",
-		"PythonMethod..python2mse.UsageAnalyzer.infer_type",
-		"PythonMethod..python2mse.UsageAnalyzer.get_called_name",
-		"PythonVariable..python2mse.UsageAnalyzer.current_class",
-		"PythonVariable..python2mse.UsageAnalyzer.accesses",
-		"PythonVariable..python2mse.UsageAnalyzer.calls",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Call",
-		"PythonFunction..test_extraction.main",
-		"PythonFunction..test_extraction.parse_mse_file",
-		"PythonFunction..test.test1.function_one",
-		"PythonFunction..python2mse.main",
-		"PythonMethod..test.test2.ClassTwo.method_four",
-		"PythonMethod..test.test2.ClassTwo.method_three",
-		"PythonMethod..test.test2.ClassTwo.method_two",
-		"PythonVariable..python2mse.Code.inferred_parameter_types",
-		"PythonVariable..python2mse.Code.parameters",
-		"PythonMethod..python2mse.UsageAnalyzer.get_annotation_type",
-		"PythonMethod..python2mse.UsageAnalyzer.infer_parameter_types",
-		"PythonVariable..python2mse.UsageAnalyzer.parameter_type_map",
-		"PythonFunction..test_extraction.tokenize",
-		"PythonFunction..test_extraction.replace_refs_in_relations",
-		"PythonFunction..test_extraction.parse_sexpr",
-		"PythonFunction..test_extraction.build_id_to_object_map",
-		"PythonFunction..test_extraction.compare_mse_files",
-		"PythonFunction..test_extraction.parse_mse_content",
-		"PythonFunction..test_extraction.process_coding_objects",
-		"PythonFunction..test_extraction.extract_entries",
-		"PythonFunction..test.test2.function_two",
-		"PythonFunction..python2mse.load_config"
+		"PythonMethod..src.python2mse.Code.__init__",
+		"PythonVariable..src.python2mse.Code.accesses",
+		"PythonVariable..src.python2mse.Code.calls",
+		"PythonVariable..src.python2mse.Code.children",
+		"PythonMethod..src.python2mse.Data.__init__",
+		"PythonVariable..src.python2mse.Data.accessed_by",
+		"PythonMethod..src.python2mse.DefinitionCollector.__init__",
+		"PythonVariable..src.python2mse.DefinitionCollector.base_path",
+		"PythonVariable..src.python2mse.DefinitionCollector.current_class",
+		"PythonVariable..src.python2mse.DefinitionCollector.current_function",
+		"PythonVariable..src.python2mse.DefinitionCollector.elements",
+		"PythonVariable..src.python2mse.DefinitionCollector.filename",
+		"PythonMethod..src.python2mse.DefinitionCollector.get_link",
+		"PythonVariable..src.python2mse.DefinitionCollector.local_namespace",
+		"PythonVariable..src.python2mse.DefinitionCollector.module_name",
+		"PythonVariable..src.python2mse.DefinitionCollector.parent_child_relations",
+		"PythonVariable..src.python2mse.DefinitionCollector.scope_stack",
+		"PythonVariable..src.python2mse.DefinitionCollector.symbol_table",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_Assign",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_ClassDef",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_FunctionDef",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_Module",
+		"PythonMethod..src.python2mse.Element.__init__",
+		"PythonVariable..src.python2mse.Element.id",
+		"PythonVariable..src.python2mse.Element.link_to_editor",
+		"PythonVariable..src.python2mse.Element.name",
+		"PythonVariable..src.python2mse.Element.technical_type",
+		"PythonMethod..src.python2mse.Grouping.__init__",
+		"PythonVariable..src.python2mse.Element.unique_name",
+		"PythonVariable..src.python2mse.Grouping.children",
+		"PythonVariable..src.python2mse.Grouping.is_main",
+		"PythonMethod..src.python2mse.UsageAnalyzer.__init__",
+		"PythonVariable..src.python2mse.UsageAnalyzer.base_path",
+		"PythonVariable..src.python2mse.UsageAnalyzer.class_variable_types",
+		"PythonVariable..src.python2mse.UsageAnalyzer.current_function",
+		"PythonVariable..src.python2mse.UsageAnalyzer.filename",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Name",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Module",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_ImportFrom",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Import",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_FunctionDef",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_ClassDef",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Attribute",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Assign",
+		"PythonVariable..src.python2mse.UsageAnalyzer.variable_types",
+		"PythonVariable..src.python2mse.UsageAnalyzer.symbol_table",
+		"PythonVariable..src.python2mse.UsageAnalyzer.scope_stack",
+		"PythonMethod..src.python2mse.UsageAnalyzer.resolve_class_name",
+		"PythonMethod..src.python2mse.UsageAnalyzer.resolve_called_name",
+		"PythonVariable..src.python2mse.UsageAnalyzer.module_name",
+		"PythonVariable..src.python2mse.UsageAnalyzer.local_namespace",
+		"PythonMethod..src.python2mse.UsageAnalyzer.infer_type",
+		"PythonMethod..src.python2mse.UsageAnalyzer.get_called_name",
+		"PythonVariable..src.python2mse.UsageAnalyzer.current_class",
+		"PythonVariable..src.python2mse.UsageAnalyzer.accesses",
+		"PythonVariable..src.python2mse.UsageAnalyzer.calls",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Call",
+		"PythonFunction..src.test_extraction.main",
+		"PythonFunction..src.test_extraction.parse_mse_file",
+		"PythonFunction..src.python2mse.main",
+		"PythonVariable..src.python2mse.Code.inferred_parameter_types",
+		"PythonVariable..src.python2mse.Code.parameters",
+		"PythonMethod..src.python2mse.UsageAnalyzer.get_annotation_type",
+		"PythonMethod..src.python2mse.UsageAnalyzer.infer_parameter_types",
+		"PythonVariable..src.python2mse.UsageAnalyzer.parameter_type_map",
+		"PythonFunction..src.test_extraction.tokenize",
+		"PythonFunction..src.test_extraction.replace_refs_in_relations",
+		"PythonFunction..src.test_extraction.parse_sexpr",
+		"PythonFunction..src.test_extraction.build_id_to_object_map",
+		"PythonFunction..src.test_extraction.compare_mse_files",
+		"PythonFunction..src.test_extraction.parse_mse_content",
+		"PythonFunction..src.test_extraction.process_coding_objects",
+		"PythonFunction..src.test_extraction.extract_entries",
+		"PythonFunction..src.python2mse.load_config",
+		"PythonMethod..src.test.subfolder1.test1.ClassOne.__init__",
+		"PythonVariable..src.test.subfolder1.test1.ClassOne.instance_variable",
+		"PythonMethod..src.test.subfolder1.test1.ClassOne.method_one",
+		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_four",
+		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_three",
+		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_two",
+		"PythonFunction..src.test.subfolder1.test1.function_one",
+		"PythonFunction..src.test.subfolder2.test2.function_two"
 	],
 	"positions": [
 		{
-			"uniqueKey": "PythonFile..python2mse",
+			"uniqueKey": "PythonFile..src.python2mse",
 			"x": 113.64,
 			"y": 89.01
 		},
 		{
-			"uniqueKey": "PythonClass..python2mse.Element",
-			"x": 1100,
-			"y": 120
+			"uniqueKey": "PythonClass..src.python2mse.Element",
+			"x": 1098.59,
+			"y": 115.76
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.Element.__init__",
-			"x": 720,
-			"y": -560
+			"uniqueKey": "PythonMethod..src.python2mse.Element.__init__",
+			"x": 718.59,
+			"y": -564.24
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Element.id",
-			"x": 860,
-			"y": -560
+			"uniqueKey": "PythonVariable..src.python2mse.Element.id",
+			"x": 858.59,
+			"y": -564.24
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Element.name",
-			"x": 700,
-			"y": -620
+			"uniqueKey": "PythonVariable..src.python2mse.Element.name",
+			"x": 698.59,
+			"y": -624.24
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Element.unique_name",
-			"x": 860,
-			"y": -620
+			"uniqueKey": "PythonVariable..src.python2mse.Element.unique_name",
+			"x": 858.59,
+			"y": -624.24
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Element.technical_type",
-			"x": 800,
-			"y": -560
+			"uniqueKey": "PythonVariable..src.python2mse.Element.technical_type",
+			"x": 798.59,
+			"y": -564.24
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Element.link_to_editor",
-			"x": 780,
-			"y": -620
+			"uniqueKey": "PythonVariable..src.python2mse.Element.link_to_editor",
+			"x": 778.59,
+			"y": -624.24
 		},
 		{
-			"uniqueKey": "PythonClass..python2mse.Grouping",
+			"uniqueKey": "PythonClass..src.python2mse.Grouping",
 			"x": 1200,
 			"y": -440
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.Grouping.__init__",
+			"uniqueKey": "PythonMethod..src.python2mse.Grouping.__init__",
 			"x": 1556.88,
 			"y": -594.3
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Grouping.children",
+			"uniqueKey": "PythonVariable..src.python2mse.Grouping.children",
 			"x": 1556.88,
 			"y": -514.3
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Grouping.is_main",
+			"uniqueKey": "PythonVariable..src.python2mse.Grouping.is_main",
 			"x": 1616.88,
 			"y": -594.3
 		},
 		{
-			"uniqueKey": "PythonClass..python2mse.Code",
+			"uniqueKey": "PythonClass..src.python2mse.Code",
 			"x": 1480,
 			"y": -640
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.Code.__init__",
+			"uniqueKey": "PythonMethod..src.python2mse.Code.__init__",
 			"x": 1248.21,
 			"y": -593.84
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Code.children",
+			"uniqueKey": "PythonVariable..src.python2mse.Code.children",
 			"x": 1310.24,
 			"y": -593.84
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Code.calls",
+			"uniqueKey": "PythonVariable..src.python2mse.Code.calls",
 			"x": 1193.19,
 			"y": -593.84
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Code.accesses",
+			"uniqueKey": "PythonVariable..src.python2mse.Code.accesses",
 			"x": 1204.2,
 			"y": -527.84
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Code.parameters",
+			"uniqueKey": "PythonVariable..src.python2mse.Code.parameters",
 			"x": 1436.97,
 			"y": -527.84
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Code.inferred_parameter_types",
+			"uniqueKey": "PythonVariable..src.python2mse.Code.inferred_parameter_types",
 			"x": 1317.92,
 			"y": -527.84
 		},
 		{
-			"uniqueKey": "PythonClass..python2mse.Data",
+			"uniqueKey": "PythonClass..src.python2mse.Data",
 			"x": 880,
 			"y": -300
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.Data.__init__",
+			"uniqueKey": "PythonMethod..src.python2mse.Data.__init__",
 			"x": 1039.7,
 			"y": -596.27
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.Data.accessed_by",
+			"uniqueKey": "PythonVariable..src.python2mse.Data.accessed_by",
 			"x": 959.7,
 			"y": -596.27
 		},
 		{
-			"uniqueKey": "PythonClass..python2mse.DefinitionCollector",
+			"uniqueKey": "PythonClass..src.python2mse.DefinitionCollector",
 			"x": -480,
 			"y": -940
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.__init__",
+			"uniqueKey": "PythonMethod..src.python2mse.DefinitionCollector.__init__",
 			"x": 1106.42,
 			"y": -1043.62
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.filename",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.filename",
 			"x": 1240.11,
 			"y": -829.19
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.module_name",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.module_name",
 			"x": 1220.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.base_path",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.base_path",
 			"x": 960.11,
 			"y": -749.19
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.symbol_table",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.symbol_table",
 			"x": 1120.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.elements",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.elements",
 			"x": 960.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.parent_child_relations",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.parent_child_relations",
 			"x": 1180.11,
 			"y": -949.19
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.scope_stack",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.scope_stack",
 			"x": 1040.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.current_class",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.current_class",
 			"x": 1160.31,
 			"y": -987.88
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.current_function",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.current_function",
 			"x": 959.89,
 			"y": -948.97
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.DefinitionCollector.local_namespace",
+			"uniqueKey": "PythonVariable..src.python2mse.DefinitionCollector.local_namespace",
 			"x": 1040.11,
 			"y": -829.19
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.get_link",
+			"uniqueKey": "PythonMethod..src.python2mse.DefinitionCollector.get_link",
 			"x": 1158.02,
 			"y": -715.55
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_Module",
+			"uniqueKey": "PythonMethod..src.python2mse.DefinitionCollector.visit_Module",
 			"x": 1446.43,
 			"y": -1013.64
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_ClassDef",
+			"uniqueKey": "PythonMethod..src.python2mse.DefinitionCollector.visit_ClassDef",
 			"x": 1336.27,
 			"y": -1012.26
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_FunctionDef",
+			"uniqueKey": "PythonMethod..src.python2mse.DefinitionCollector.visit_FunctionDef",
 			"x": 1538.86,
 			"y": -1009.73
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.DefinitionCollector.visit_Assign",
+			"uniqueKey": "PythonMethod..src.python2mse.DefinitionCollector.visit_Assign",
 			"x": 1234.18,
 			"y": -1018.14
 		},
 		{
-			"uniqueKey": "PythonClass..python2mse.UsageAnalyzer",
+			"uniqueKey": "PythonClass..src.python2mse.UsageAnalyzer",
 			"x": 760,
 			"y": 360
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.__init__",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.__init__",
 			"x": 1771.63,
 			"y": -834.73
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.filename",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.filename",
 			"x": 1776.66,
 			"y": -432.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.module_name",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.module_name",
 			"x": 2187.51,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.base_path",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.base_path",
 			"x": 1868.71,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.symbol_table",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.symbol_table",
 			"x": 1996.75,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.calls",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.calls",
 			"x": 2029.42,
 			"y": -696.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.accesses",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.accesses",
 			"x": 2088.43,
 			"y": -696.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.parameter_type_map",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.parameter_type_map",
 			"x": 1957.72,
 			"y": -432.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.scope_stack",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.scope_stack",
 			"x": 1787.33,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.current_class",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.current_class",
 			"x": 2191.15,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.current_function",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.current_function",
 			"x": 2051.74,
 			"y": -630.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.local_namespace",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.local_namespace",
 			"x": 2292.23,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.variable_types",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.variable_types",
 			"x": 2090.79,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..python2mse.UsageAnalyzer.class_variable_types",
+			"uniqueKey": "PythonVariable..src.python2mse.UsageAnalyzer.class_variable_types",
 			"x": 1939.72,
 			"y": -696.82
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_Module",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_Module",
 			"x": 2306.24,
 			"y": -488.73
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_Import",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_Import",
 			"x": 1850.01,
 			"y": -432.82
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_ImportFrom",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_ImportFrom",
 			"x": 2090.79,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_ClassDef",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_ClassDef",
 			"x": 1903.39,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_FunctionDef",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_FunctionDef",
 			"x": 2301.22,
 			"y": -905.79
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.get_annotation_type",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.get_annotation_type",
 			"x": 2439.72,
 			"y": -896.19
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_Assign",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_Assign",
 			"x": 2106.72,
 			"y": -901.59
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.infer_type",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.infer_type",
 			"x": 2206.04,
 			"y": -833.05
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.resolve_class_name",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.resolve_class_name",
 			"x": 2418.79,
 			"y": -824.25
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_Call",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_Call",
 			"x": 1948.5,
 			"y": -920.5
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.infer_parameter_types",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.infer_parameter_types",
 			"x": 1947.62,
 			"y": -825.52
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.get_called_name",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.get_called_name",
 			"x": 2199.95,
 			"y": -775.04
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.resolve_called_name",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.resolve_called_name",
 			"x": 2053.94,
 			"y": -770.41
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_Attribute",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_Attribute",
 			"x": 2314.71,
 			"y": -739.3
 		},
 		{
-			"uniqueKey": "PythonMethod..python2mse.UsageAnalyzer.visit_Name",
+			"uniqueKey": "PythonMethod..src.python2mse.UsageAnalyzer.visit_Name",
 			"x": 1875.68,
 			"y": -630.82
 		},
 		{
-			"uniqueKey": "PythonFunction..python2mse.load_config",
+			"uniqueKey": "PythonFunction..src.python2mse.load_config",
 			"x": 1900,
 			"y": -1020
 		},
 		{
-			"uniqueKey": "PythonFunction..python2mse.main",
+			"uniqueKey": "PythonFunction..src.python2mse.main",
 			"x": 1820,
 			"y": -1080
 		},
 		{
-			"uniqueKey": "PythonFile..test_extraction",
+			"uniqueKey": "PythonFile..src.test_extraction",
 			"x": 1264.02,
 			"y": 176.42
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.tokenize",
+			"uniqueKey": "PythonFunction..src.test_extraction.tokenize",
 			"x": 3089.77,
 			"y": -716.46
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.parse_sexpr",
+			"uniqueKey": "PythonFunction..src.test_extraction.parse_sexpr",
 			"x": 2899.77,
 			"y": -701.46
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.parse_mse_content",
+			"uniqueKey": "PythonFunction..src.test_extraction.parse_mse_content",
 			"x": 2872.73,
 			"y": -788.46
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.extract_entries",
+			"uniqueKey": "PythonFunction..src.test_extraction.extract_entries",
 			"x": 3043.77,
 			"y": -884.32
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.build_id_to_object_map",
+			"uniqueKey": "PythonFunction..src.test_extraction.build_id_to_object_map",
 			"x": 2700.16,
 			"y": -795.48
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.replace_refs_in_relations",
+			"uniqueKey": "PythonFunction..src.test_extraction.replace_refs_in_relations",
 			"x": 3023.07,
 			"y": -801.8
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.process_coding_objects",
+			"uniqueKey": "PythonFunction..src.test_extraction.process_coding_objects",
 			"x": 3273.77,
 			"y": -867.46
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.parse_mse_file",
+			"uniqueKey": "PythonFunction..src.test_extraction.parse_mse_file",
 			"x": 2756.73,
 			"y": -909
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.compare_mse_files",
+			"uniqueKey": "PythonFunction..src.test_extraction.compare_mse_files",
 			"x": 2764.57,
 			"y": -977.54
 		},
 		{
-			"uniqueKey": "PythonFunction..test_extraction.main",
+			"uniqueKey": "PythonFunction..src.test_extraction.main",
 			"x": 2766.71,
 			"y": -1061.2
 		},
 		{
-			"uniqueKey": "PythonFile..test.test1",
-			"x": 4747.79,
-			"y": -789.87
+			"uniqueKey": "PythonFile..src.test.subfolder1.test1",
+			"x": 3729.43,
+			"y": -506.24
 		},
 		{
-			"uniqueKey": "PythonClass..test.test1.ClassOne",
-			"x": 5361.14,
-			"y": -1182.98
+			"uniqueKey": "PythonClass..src.test.subfolder1.test1.ClassOne",
+			"x": 3685.69,
+			"y": -1084.21
 		},
 		{
-			"uniqueKey": "PythonMethod..test.test1.ClassOne.__init__",
-			"x": 2675.14,
-			"y": -581.98
+			"uniqueKey": "PythonMethod..src.test.subfolder1.test1.ClassOne.__init__",
+			"x": 3632,
+			"y": -952
 		},
 		{
-			"uniqueKey": "PythonVariable..test.test1.ClassOne.instance_variable",
-			"x": 2775.14,
-			"y": -581.98
+			"uniqueKey": "PythonVariable..src.test.subfolder1.test1.ClassOne.instance_variable",
+			"x": 3632,
+			"y": -892
 		},
 		{
-			"uniqueKey": "PythonMethod..test.test1.ClassOne.method_one",
-			"x": 2695.14,
-			"y": -521.98
+			"uniqueKey": "PythonMethod..src.test.subfolder1.test1.ClassOne.method_one",
+			"x": 3712,
+			"y": -952
 		},
 		{
-			"uniqueKey": "PythonFunction..test.test1.function_one",
-			"x": 2626,
-			"y": -441
+			"uniqueKey": "PythonFunction..src.test.subfolder1.test1.function_one",
+			"x": 3871.69,
+			"y": -980.71
 		},
 		{
-			"uniqueKey": "PythonFile..test.test2",
-			"x": 3371.59,
-			"y": -531.16
+			"uniqueKey": "PythonFile..src.test.subfolder2.test2",
+			"x": 3639.93,
+			"y": -740.64
 		},
 		{
-			"uniqueKey": "PythonClass..test.test2.ClassTwo",
-			"x": 3225.57,
-			"y": -70.2
+			"uniqueKey": "PythonClass..src.test.subfolder2.test2.ClassTwo",
+			"x": 3991,
+			"y": -1581
 		},
 		{
-			"uniqueKey": "PythonMethod..test.test2.ClassTwo.method_two",
-			"x": 2997,
-			"y": -417
+			"uniqueKey": "PythonMethod..src.test.subfolder2.test2.ClassTwo.method_two",
+			"x": 3627,
+			"y": -1167
 		},
 		{
-			"uniqueKey": "PythonMethod..test.test2.ClassTwo.method_three",
-			"x": 2997,
-			"y": -477
+			"uniqueKey": "PythonMethod..src.test.subfolder2.test2.ClassTwo.method_three",
+			"x": 3727,
+			"y": -1167
 		},
 		{
-			"uniqueKey": "PythonMethod..test.test2.ClassTwo.method_four",
-			"x": 3097,
-			"y": -477
+			"uniqueKey": "PythonMethod..src.test.subfolder2.test2.ClassTwo.method_four",
+			"x": 3794.5,
+			"y": -1116.5
 		},
 		{
-			"uniqueKey": "PythonFunction..test.test2.function_two",
-			"x": 3216.57,
-			"y": -467.2
+			"uniqueKey": "PythonFunction..src.test.subfolder2.test2.function_two",
+			"x": 3901.5,
+			"y": -1147
 		}
 	],
 	"comments": [],
 	"pinned": [
-		"PythonFunction..python2mse.main",
-		"PythonVariable..python2mse.UsageAnalyzer.current_class",
-		"PythonVariable..python2mse.UsageAnalyzer.variable_types",
-		"PythonVariable..python2mse.UsageAnalyzer.current_function",
-		"PythonVariable..python2mse.DefinitionCollector.current_class",
-		"PythonVariable..python2mse.DefinitionCollector.current_function",
-		"PythonMethod..python2mse.UsageAnalyzer.__init__",
-		"PythonMethod..python2mse.DefinitionCollector.__init__",
-		"PythonFunction..python2mse.load_config",
-		"PythonMethod..python2mse.UsageAnalyzer.infer_parameter_types",
-		"PythonFunction..test_extraction.parse_mse_content",
-		"PythonFunction..test_extraction.compare_mse_files",
-		"PythonFunction..test_extraction.replace_refs_in_relations",
-		"PythonFunction..test_extraction.build_id_to_object_map",
-		"PythonFunction..test_extraction.main",
-		"PythonFunction..test_extraction.parse_mse_file",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Call",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Attribute",
-		"PythonMethod..python2mse.UsageAnalyzer.get_called_name",
-		"PythonMethod..python2mse.UsageAnalyzer.infer_type",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Assign",
-		"PythonMethod..python2mse.UsageAnalyzer.resolve_called_name",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_Module",
-		"PythonMethod..python2mse.UsageAnalyzer.get_annotation_type",
-		"PythonMethod..python2mse.UsageAnalyzer.visit_FunctionDef",
-		"PythonMethod..python2mse.UsageAnalyzer.resolve_class_name",
-		"PythonMethod..python2mse.DefinitionCollector.visit_FunctionDef",
-		"PythonMethod..python2mse.DefinitionCollector.get_link",
-		"PythonMethod..python2mse.DefinitionCollector.visit_Module",
-		"PythonFunction..test_extraction.process_coding_objects",
-		"PythonFunction..test_extraction.tokenize",
-		"PythonFunction..test_extraction.parse_sexpr",
-		"PythonFunction..test.test2.function_two",
-		"PythonMethod..python2mse.DefinitionCollector.visit_Assign",
-		"PythonMethod..python2mse.DefinitionCollector.visit_ClassDef"
+		"PythonFunction..src.python2mse.main",
+		"PythonVariable..src.python2mse.UsageAnalyzer.current_class",
+		"PythonVariable..src.python2mse.UsageAnalyzer.variable_types",
+		"PythonVariable..src.python2mse.UsageAnalyzer.current_function",
+		"PythonVariable..src.python2mse.DefinitionCollector.current_class",
+		"PythonVariable..src.python2mse.DefinitionCollector.current_function",
+		"PythonMethod..src.python2mse.UsageAnalyzer.__init__",
+		"PythonMethod..src.python2mse.DefinitionCollector.__init__",
+		"PythonFunction..src.python2mse.load_config",
+		"PythonMethod..src.python2mse.UsageAnalyzer.infer_parameter_types",
+		"PythonFunction..src.test_extraction.parse_mse_content",
+		"PythonFunction..src.test_extraction.compare_mse_files",
+		"PythonFunction..src.test_extraction.replace_refs_in_relations",
+		"PythonFunction..src.test_extraction.build_id_to_object_map",
+		"PythonFunction..src.test_extraction.main",
+		"PythonFunction..src.test_extraction.parse_mse_file",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Call",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Attribute",
+		"PythonMethod..src.python2mse.UsageAnalyzer.get_called_name",
+		"PythonMethod..src.python2mse.UsageAnalyzer.infer_type",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Assign",
+		"PythonMethod..src.python2mse.UsageAnalyzer.resolve_called_name",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_Module",
+		"PythonMethod..src.python2mse.UsageAnalyzer.get_annotation_type",
+		"PythonMethod..src.python2mse.UsageAnalyzer.visit_FunctionDef",
+		"PythonMethod..src.python2mse.UsageAnalyzer.resolve_class_name",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_FunctionDef",
+		"PythonMethod..src.python2mse.DefinitionCollector.get_link",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_Module",
+		"PythonFunction..src.test_extraction.process_coding_objects",
+		"PythonFunction..src.test_extraction.tokenize",
+		"PythonFunction..src.test_extraction.parse_sexpr",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_Assign",
+		"PythonMethod..src.python2mse.DefinitionCollector.visit_ClassDef",
+		"PythonFunction..src.test.subfolder2.test2.function_two",
+		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_four",
+		"PythonFunction..src.test.subfolder1.test1.function_one",
+		"PythonMethod..src.test.subfolder1.test1.ClassOne.method_one",
+		"PythonVariable..src.test.subfolder1.test1.ClassOne.instance_variable"
 	],
 	"suppressed": []
 }
