@@ -11,3 +11,6 @@ src/test_extraction.log
 test_extraction.log
 src/config_python2mse.txt
 src/test/expected_output.mse
+src/config_python2mse.txt
+python2mse.log
+model/Determine type of called coding.m2m
