@@ -2,14 +2,32 @@ import os
 import ast
 import datetime
 import logging
+import argparse
+import textwrap
+from argparse import ArgumentParser, HelpFormatter
 
-# Configure logging
-logging.basicConfig(
-    filename='.python2somix.log',
-    filemode='w',
-    level=logging.DEBUG,  # Set to DEBUG to capture all levels of logs
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+VERSION = "0.1.0"
+
+def setup_logging(debug):
+    if debug:
+        logging.basicConfig(
+        filename='.python2somix.log',
+        filemode='w',
+        level=logging.DEBUG, 
+        format='%(asctime)s - %(levelname)s - %(message)s'
+        )
+        logging.debug("Debugging mode active")
+    else:
+        logging.basicConfig(
+        filename='.python2somix.log',
+        filemode='w',
+        level=logging.INFO, 
+        format='%(asctime)s - %(levelname)s - %(message)s'
+        )
+
+
+
+
 
 # Define a set of built-in functions to exclude them from being treated as user-defined
 BUILT_IN_FUNCTIONS = {
@@ -655,6 +673,36 @@ def load_config(config_file='config_python2somix.txt'):
     return config
 
 def main():
+
+    class RawFormatter(HelpFormatter):
+        def _fill_text(self, text, width, indent):
+            return "\n".join([textwrap.fill(line, width) for line in textwrap.indent(textwrap.dedent(text), indent).splitlines()])
+
+
+
+    program_descripton = """Extract Python code structure and usages to SOMIX format.
+                                        
+Enter path to the base folder containing Python source code files when prompted.    
+The output .mse file will be saved in the same folder as the script by default.
+Place a 'config_python2somix.txt' file in the same folder as the script to specify custom paths for base folder and output file.
+The config file should contain the following lines: 
+base_path = /path/to/base/folder
+output_path = /path/to/output/folder
+Use Moose2Model to visualize the .mse file.                                   
+"""
+
+    parser = argparse.ArgumentParser(description=program_descripton, formatter_class=RawFormatter)	
+    parser.add_argument('-v', '--version', action='store_true', help='show the version and exit')
+    parser.add_argument('--debug', action='store_true', help='enable debugging information in logs')
+    
+    args = parser.parse_args()
+
+    if args.version:
+        print(f"python2somix.py Version {VERSION}")
+        return
+
+    setup_logging(args.debug)
+
     config = load_config()
 
     if 'base_path' in config:
