@@ -2,17 +2,12 @@
 *.mse
 /src/test
 /work/code_versions
-src/python2mse.log
-src/config_python2mse.txt
 /src/test
 /test/subfolder
 /test
 src/test_extraction.log
 test_extraction.log
-src/config_python2mse.txt
-src/test/expected_output.mse
-src/config_python2mse.txt
-python2mse.log
 model/Determine type of called coding.m2m
 Python2SOMIX.code-workspace
 src/.python2somix.log
+src/config_python2somix.txt
