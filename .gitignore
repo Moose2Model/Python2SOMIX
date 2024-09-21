@@ -14,3 +14,5 @@ src/test/expected_output.mse
 src/config_python2mse.txt
 python2mse.log
 model/Determine type of called coding.m2m
+Python2SOMIX.code-workspace
+src/.python2somix.log

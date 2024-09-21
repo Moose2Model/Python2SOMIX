@@ -60,13 +60,13 @@ Or construct diagrams which may contain only parts of the application together w
 ## How to run
 start the script in the terminal with 
 ```batch
-python .\python2mse.py
+python .\python2somix.py
 ```
 The script will ask for the path to the folder where the python code is saved.
 
-You may place a configuration file in the same folder as python2mse.py to specify which folder is to be read and where the output file is to be placed:
+You may place a configuration file in the same folder as python2somix.py to specify which folder is to be read and where the output file is to be placed:
 
-Exact name of the file: config_python2mse.txt
+Exact name of the file: config_python2somix.txt
 
 ```batch
 # Configuration file

@@ -5,7 +5,7 @@ import logging
 
 # Configure logging
 logging.basicConfig(
-    filename='python2mse.log',
+    filename='.python2somix.log',
     filemode='w',
     level=logging.DEBUG,  # Set to DEBUG to capture all levels of logs
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -643,7 +643,7 @@ class UsageAnalyzer(ast.NodeVisitor):
                 logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
         self.generic_visit(node)
 
-def load_config(config_file='config_python2mse.txt'):
+def load_config(config_file='config_python2somix.txt'):
     config = {}
     if os.path.exists(config_file):
         with open(config_file, 'r') as f:
