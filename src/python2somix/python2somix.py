@@ -6,7 +6,7 @@ import argparse
 import textwrap
 from argparse import HelpFormatter
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 def setup_logging(debug):
     if debug:
