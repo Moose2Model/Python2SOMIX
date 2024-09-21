@@ -11,3 +11,7 @@ model/Determine type of called coding.m2m
 Python2SOMIX.code-workspace
 src/.python2somix.log
 src/config_python2somix.txt
+/dist
+*.toml
+config_python2somix.txt
+/src/tests/test

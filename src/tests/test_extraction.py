@@ -541,7 +541,10 @@ def function_two():
 
 
         # Define the relative path to python2mse.py
-        extraction_script_path = current_dir / 'python2mse.py'
+
+        # Aktueller Verzeichnis-Pfad
+        current_dir = Path(__file__).parent
+        extraction_script_path = current_dir.parent / 'python2somix' / 'python2somix.py'        
 
         # Check if the extraction script exists
         if not extraction_script_path.is_file():

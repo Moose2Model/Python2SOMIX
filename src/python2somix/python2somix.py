@@ -4,7 +4,7 @@ import datetime
 import logging
 import argparse
 import textwrap
-from argparse import ArgumentParser, HelpFormatter
+from argparse import HelpFormatter
 
 VERSION = "0.1.0"
 

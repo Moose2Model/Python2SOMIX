@@ -51,11 +51,11 @@ Go to www.moose2model.org to do this. This website uses only simple JavaScript c
 
 You may display all parts in a diagram like this:
 
-![Force-attraction-diagram of all elements](./src/AllElements.png)
+![Force-attraction-diagram of all elements](./AllElements.png)
 
 Or construct diagrams which may contain only parts of the application together with coding. These are easy to keep correct when the code changes. You can also easily jump to an editor from the diagram.
 
-![Demo Diagram of the two test classes](./src/DemoDiagram.png)
+![Demo Diagram of the two test classes](./DemoDiagram.png)
 
 ## How to run
 start the script in the terminal with 
@@ -85,7 +85,7 @@ To find usages of methods when the instance is passed to a parameter, you have t
 Do an automatic test with 
 
 ```batch
-...\Python2SOMIX\src> python .\test_extraction.py
+...\Python2SOMIX\src\tests> python .\test_extraction.py
 ```
 
 This test generates the subfolder test with test coding and compares the expected mse file expected_output.mse with the extracted file test(date_time).mse.

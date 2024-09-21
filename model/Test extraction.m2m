@@ -1,42 +1,64 @@
 {
 	"newElementBox": {
 		"isInitial": false,
-		"newElBoxX": 221.02249885333558,
-		"newElBoxY": -54,
+		"newElBoxX": 662.6974144763104,
+		"newElBoxY": -174,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 328
+		"newElBoxHeight": 548
 	},
 	"addedWithNeighbors": [
-		"PythonFunction..src.test_extraction.compare_elements",
-		"PythonFunction..src.test_extraction.main",
-		"PythonFunction..src.test_extraction.parse_mse_file"
+		"PythonFunction..src.tests.test_extraction.main",
+		"PythonFunction..src.tests.test_extraction.parse_mse_file"
 	],
 	"positions": [
 		{
-			"uniqueKey": "PythonFile..src.test_extraction",
+			"uniqueKey": "PythonFile..src.tests.test_extraction",
 			"x": 49.66,
 			"y": 26.26
 		},
 		{
-			"uniqueKey": "PythonFunction..src.test_extraction.parse_mse_file",
+			"uniqueKey": "PythonFunction..src.tests.test_extraction.parse_mse_content",
+			"x": 509.32,
+			"y": 199.61
+		},
+		{
+			"uniqueKey": "PythonFunction..src.tests.test_extraction.extract_entries",
+			"x": 233.91,
+			"y": 144.27
+		},
+		{
+			"uniqueKey": "PythonFunction..src.tests.test_extraction.build_id_to_object_map",
+			"x": -39.66,
+			"y": 253.07
+		},
+		{
+			"uniqueKey": "PythonFunction..src.tests.test_extraction.replace_refs_in_relations",
+			"x": 123.67,
+			"y": 252.03
+		},
+		{
+			"uniqueKey": "PythonFunction..src.tests.test_extraction.parse_mse_file",
 			"x": -54.29,
 			"y": 167.23
 		},
 		{
-			"uniqueKey": "PythonFunction..src.test_extraction.compare_elements",
-			"x": 63.93,
-			"y": 165.34
+			"uniqueKey": "PythonFunction..src.tests.test_extraction.compare_mse_files",
+			"x": 45.52,
+			"y": 43.65
 		},
 		{
-			"uniqueKey": "PythonFunction..src.test_extraction.main",
-			"x": 5.29,
-			"y": 50.99
+			"uniqueKey": "PythonFunction..src.tests.test_extraction.main",
+			"x": 68.93,
+			"y": -68.51
 		}
 	],
 	"comments": [],
 	"pinned": [
-		"PythonFunction..src.test_extraction.compare_elements",
-		"PythonFunction..src.test_extraction.parse_mse_file"
+		"PythonFunction..src.tests.test_extraction.parse_mse_file",
+		"PythonFunction..src.tests.test_extraction.build_id_to_object_map",
+		"PythonFunction..src.tests.test_extraction.replace_refs_in_relations",
+		"PythonFunction..src.tests.test_extraction.main",
+		"PythonFunction..src.tests.test_extraction.compare_mse_files"
 	],
 	"suppressed": []
 }
