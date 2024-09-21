@@ -62,6 +62,8 @@ start the script in the terminal with
 ```batch
 python .\python2somix.py
 ```
+See parameter -h or --help for available options.
+
 The script will ask for the path to the folder where the python code is saved.
 
 You may place a configuration file in the same folder as python2somix.py to specify which folder is to be read and where the output file is to be placed:
