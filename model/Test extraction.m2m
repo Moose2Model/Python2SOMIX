@@ -1,16 +1,136 @@
 {
 	"newElementBox": {
 		"isInitial": false,
-		"newElBoxX": 662.6974144763104,
+		"newElBoxX": 662.6952251042047,
 		"newElBoxY": -174,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 548
+		"newElBoxHeight": 668
 	},
 	"addedWithNeighbors": [
 		"PythonFunction..Python2SOMIX.src.tests.test_extraction.main",
 		"PythonFunction..Python2SOMIX.src.tests.test_extraction.parse_mse_file"
 	],
 	"positions": [
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.exists",
+			"x": 698.62,
+			"y": 213.3
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.print",
+			"x": 685.24,
+			"y": 308.75
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.join",
+			"x": 926.47,
+			"y": 10.53
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.info",
+			"x": 906.08,
+			"y": -141.46
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.endswith",
+			"x": 1059.22,
+			"y": 168.05
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.read",
+			"x": 754.61,
+			"y": 79
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.write",
+			"x": 797.57,
+			"y": 96.19
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.values",
+			"x": 922.1,
+			"y": 153.46
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.sub",
+			"x": 1009.92,
+			"y": 303.29
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.parse_mse_content",
+			"x": 113.65,
+			"y": 378.1
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.extract_entries",
+			"x": 1043.29,
+			"y": 104.34
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.build_id_to_object_map",
+			"x": 937.66,
+			"y": 220.39
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.list",
+			"x": 683.25,
+			"y": -28.55
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.replace_refs_in_relations",
+			"x": 779.78,
+			"y": 356.86
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.sort",
+			"x": 927.58,
+			"y": 255.78
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.getcwd",
+			"x": 804.13,
+			"y": 259.3
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.rmtree",
+			"x": 879.21,
+			"y": 193.49
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.makedirs",
+			"x": 971.6,
+			"y": 73.7
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.Path",
+			"x": 707.38,
+			"y": -149.11
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.is_file",
+			"x": 913.72,
+			"y": 274.87
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.exit",
+			"x": 795.79,
+			"y": 158.07
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.Popen",
+			"x": 1027.35,
+			"y": -82.13
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.communicate",
+			"x": 949.32,
+			"y": 339.26
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.listdir",
+			"x": 840.09,
+			"y": 145.36
+		},
 		{
 			"uniqueKey": "PythonFile..Python2SOMIX.src.tests.test_extraction",
 			"x": 49.66,
@@ -58,7 +178,8 @@
 		"PythonFunction..Python2SOMIX.src.tests.test_extraction.build_id_to_object_map",
 		"PythonFunction..Python2SOMIX.src.tests.test_extraction.replace_refs_in_relations",
 		"PythonFunction..Python2SOMIX.src.tests.test_extraction.main",
-		"PythonFunction..Python2SOMIX.src.tests.test_extraction.compare_mse_files"
+		"PythonFunction..Python2SOMIX.src.tests.test_extraction.compare_mse_files",
+		"ExternalPythonFunction..extP2S.parse_mse_content"
 	],
 	"suppressed": []
 }

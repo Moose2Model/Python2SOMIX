@@ -391,6 +391,11 @@ def function_two():
   (uniqueName 'test.subfolder2.test2.function_two')
   (linkToEditor 'vscode://file/{current_dir2}/test/subfolder2/test2.py/:22:1')
 )
+(SOMIX.Code (id: 13 )
+  (name 'print')
+  (technicalType 'ExternalPythonFunction')
+  (uniqueName 'extP2S.print')
+)
 (SOMIX.ParentChild
   (parent (ref: 1))
   (child (ref: 2))
@@ -501,6 +506,27 @@ def function_two():
   (caller (ref: 12))
   (called (ref: 6))
 )
+(SOMIX.Call
+  (caller (ref: 5))
+  (called (ref: 13))
+)
+(SOMIX.Call
+  (caller (ref: 6))
+  (called (ref: 13))
+)
+(SOMIX.Call
+  (caller (ref: 9))
+  (called (ref: 13))
+)
+(SOMIX.Call
+  (caller (ref: 12))
+  (called (ref: 13))
+)
+(SOMIX.Call
+  (caller (ref: 11))
+  (called (ref: 13))
+)
+
 (SOMIX.Access
   (accessor (ref: 3))
   (accessed (ref: 4))

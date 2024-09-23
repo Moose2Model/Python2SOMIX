@@ -11,18 +11,18 @@ VERSION = "0.1.2"
 def setup_logging(debug):
     if debug:
         logging.basicConfig(
-        filename='.python2somix.log',
-        filemode='w',
-        level=logging.DEBUG, 
-        format='%(asctime)s - %(levelname)s - %(message)s'
+            filename='.python2somix.log',
+            filemode='w',
+            level=logging.DEBUG, 
+            format='%(asctime)s - %(levelname)s - %(message)s'
         )
         logging.debug("Debugging mode active")
     else:
         logging.basicConfig(
-        filename='.python2somix.log',
-        filemode='w',
-        level=logging.INFO, 
-        format='%(asctime)s - %(levelname)s - %(message)s'
+            filename='.python2somix.log',
+            filemode='w',
+            level=logging.INFO, 
+            format='%(asctime)s - %(levelname)s - %(message)s'
         )
 
 # Define a set of built-in functions to exclude them from being treated as user-defined
@@ -231,7 +231,7 @@ class DefinitionCollector(ast.NodeVisitor):
         self.generic_visit(node)
 
 class UsageAnalyzer(ast.NodeVisitor):
-    def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, parameter_type_map=None):
+    def __init__(self, filename, module_name, base_path, symbol_table, calls, accesses, parameter_type_map=None, add_external_code_callback=None):
         self.filename = filename
         self.module_name = module_name
         self.base_path = base_path
@@ -247,6 +247,9 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.local_namespace = {}  # Map local names to fully qualified names
         self.variable_types = {}  # Map variable names to class names (within a function)
         self.class_variable_types = {}  # Map self attributes to types across the class
+
+        # Callback to handle external code additions
+        self.add_external_code_callback = add_external_code_callback
 
     def visit_Module(self, node):
         logging.debug(f"Visiting module: {self.module_name}")
@@ -392,13 +395,16 @@ class UsageAnalyzer(ast.NodeVisitor):
             class_name = self.get_called_name(value.func)
             class_element = self.resolve_class_name(class_name)
             if class_element:
-                full_class_name = class_element.unique_name
-                init_method_name = full_class_name + '.__init__'
+                init_method_name = class_element.unique_name + '.__init__'
                 init_method = self.symbol_table.get(init_method_name)
                 if init_method and isinstance(init_method, Code):
                     self.calls.append({'caller': self.current_code, 'called': init_method.unique_name})
-                    logging.debug(f"Recorded call from '{self.current_code}' to '__init__' of '{full_class_name}'")
-                return full_class_name
+                    logging.debug(f"Recorded call from '{self.current_code}' to '__init__' of '{class_element.unique_name}'")
+                return class_element.unique_name
+            else:
+                # Handle external code call
+                external_unique_name = self.add_external_code(class_name)
+                return external_unique_name
         elif isinstance(value, ast.Name):
             var_name = value.id
             var_type = self.variable_types.get(var_name) or self.class_variable_types.get(var_name)
@@ -530,8 +536,9 @@ class UsageAnalyzer(ast.NodeVisitor):
                 if isinstance(called_element, Code):
                     return called_element
                 else:
-                    logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
-                    return None
+                    # Handle external code call
+                    external_unique_name = self.add_external_code(called_unique_name)
+                    return self.symbol_table.get(external_unique_name)
         else:
             if called_name in self.local_namespace:
                 called_unique_name = self.local_namespace[called_name]
@@ -548,32 +555,43 @@ class UsageAnalyzer(ast.NodeVisitor):
             if isinstance(called_element, Code):
                 return called_element
             else:
-                logging.warning(f"Called element '{called_unique_name}' is not a Code instance")
-                return None
+                # Handle external code call
+                external_unique_name = self.add_external_code(called_unique_name)
+                return self.symbol_table.get(external_unique_name)
 
-    def infer_parameter_types(self, called_unique_name, call_node):
-        if not self.parameter_type_map:
-            return
-        called_function = self.symbol_table.get(called_unique_name)
-        if not called_function or not isinstance(called_function, Code):
-            logging.warning(f"Called function '{called_unique_name}' not found in symbol table")
-            return
+    def add_external_code(self, called_unique_name):
+        """
+        Adds external code to the model with 'extP2S' in uniqueName and without linkToEditor.
+        uniqueName is built as 'extP2S.' + parts[-1]
+        """
+        if not called_unique_name:
+            return None
 
-        parameter_names = getattr(called_function, 'parameters', [])
-        if not parameter_names:
-            logging.warning(f"No parameter names found for function '{called_unique_name}'")
-            return
+        if called_unique_name in self.symbol_table:
+            return called_unique_name  # Already added
 
-        if called_unique_name not in self.parameter_type_map:
-            self.parameter_type_map[called_unique_name] = {param: set() for param in parameter_names}
+        # Split the called_unique_name to extract the last part
+        parts = called_unique_name.split('.')
+        if len(parts) > 1:
+            external_unique_name = 'extP2S.' + parts[-1]
+        else:
+            external_unique_name = 'extP2S.' + parts[0]
 
-        for arg, param in zip(call_node.args, parameter_names):
-            inferred_type = self.infer_type(arg)
-            if inferred_type:
-                self.parameter_type_map[called_unique_name][param].add(inferred_type)
-                logging.debug(f"Inferred type for parameter '{param}' in code '{called_unique_name}': {inferred_type}")
-            else:
-                logging.debug(f"Could not infer type for parameter '{param}' in code '{called_unique_name}'")
+        # Avoid duplicates
+        if external_unique_name in self.symbol_table:
+            return external_unique_name
+
+        # Create a new Code element for external code
+        external_code = Code(None, parts[-1], external_unique_name, 'ExternalPythonFunction', link_to_editor=None)
+        self.symbol_table[external_unique_name] = external_code
+        self.calls.append({'caller': self.current_code, 'called': external_unique_name})
+        logging.debug(f"Added external code '{external_unique_name}' called by '{self.current_code}'")
+
+        # Add to elements via callback
+        if self.add_external_code_callback:
+            self.add_external_code_callback(external_code)
+
+        return external_unique_name
 
     def visit_Attribute(self, node):
         if self.current_code:
@@ -724,6 +742,11 @@ Use Moose2Model to visualize the .mse file.
     # Initialize parameter_type_map
     parameter_type_map = {}
 
+    # Callback function to add external code elements to 'all_elements'
+    def add_external_code_element(external_code):
+        all_elements[external_code.unique_name] = external_code
+        logging.debug(f"External code '{external_code.unique_name}' added to all_elements")
+
     # First pass: Collect definitions
     logging.info(f"First pass: Collecting definitions from Python files in '{base_path}'")
     elements = {}
@@ -735,8 +758,8 @@ Use Moose2Model to visualize the .mse file.
                 try:
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
-                    module_name = base_repo_name + '.' + os.path.relpath(filepath, base_path).replace(os.sep, '.')
-                    module_name = module_name[:-3]  # Remove '.py'
+                    rel_path = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = base_repo_name + '.' + rel_path[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
                     collector = DefinitionCollector(filepath, module_name, base_path, symbol_table, elements, parent_child_relations)
                     collector.visit(tree)
@@ -754,10 +777,10 @@ Use Moose2Model to visualize the .mse file.
                 try:
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
-                    module_name = base_repo_name + '.' + os.path.relpath(filepath, base_path).replace(os.sep, '.')
-                    module_name = module_name[:-3]  # Remove '.py'
+                    rel_path = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = base_repo_name + '.' + rel_path[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
-                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass1, accesses_pass1, parameter_type_map)
+                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass1, accesses_pass1, parameter_type_map, add_external_code_element)
                     analyzer.visit(tree)
                 except Exception as e:
                     logging.error(f"Error processing file {filepath}: {e}")
@@ -792,10 +815,10 @@ Use Moose2Model to visualize the .mse file.
                 try:
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
-                    module_name = base_repo_name + '.' + os.path.relpath(filepath, base_path).replace(os.sep, '.')
-                    module_name = module_name[:-3]  # Remove '.py'
+                    rel_path = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = base_repo_name + '.' + rel_path[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
-                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass2, accesses_pass2, parameter_type_map)
+                    analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass2, accesses_pass2, parameter_type_map, add_external_code_element)
                     analyzer.visit(tree)
                 except Exception as e:
                     logging.error(f"Error processing file {filepath}: {e}")
@@ -812,8 +835,15 @@ Use Moose2Model to visualize the .mse file.
     for unique_name, elem in elements.items():
         elem.id = id_counter
         id_mapping[unique_name] = id_counter
-        all_elements[id_counter] = elem
+        all_elements[unique_name] = elem
         id_counter += 1
+
+    # Include external codes in ID assignment
+    for unique_name, elem in all_elements.items():
+        if unique_name not in id_mapping:
+            elem.id = id_counter
+            id_mapping[unique_name] = id_counter
+            id_counter += 1
 
     # Map parent-child relations
     for relation in parent_child_relations:

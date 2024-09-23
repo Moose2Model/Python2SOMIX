@@ -1,10 +1,10 @@
 {
 	"newElementBox": {
 		"isInitial": false,
-		"newElBoxX": 2604.3408393728246,
-		"newElBoxY": -1194,
+		"newElBoxX": 3138.0185335734923,
+		"newElBoxY": -1274,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 868
+		"newElBoxHeight": 1028
 	},
 	"addedWithNeighbors": [
 		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.Code.__init__",
@@ -72,6 +72,121 @@
 		"PythonFunction..Python2SOMIX.src.python2somix.python2somix.load_config"
 	],
 	"positions": [
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.debug",
+			"x": 1688.08,
+			"y": -365.08
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.super",
+			"x": 2722.64,
+			"y": -617.75
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.abspath",
+			"x": 2738.73,
+			"y": -947.98
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.basename",
+			"x": 2995.28,
+			"y": -677.98
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.get_link",
+			"x": 2652.04,
+			"y": -719.98
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.append",
+			"x": 2718.32,
+			"y": -643.97
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.get_annotation_type",
+			"x": 2777.75,
+			"y": -1001.99
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.resolve_class_name",
+			"x": 2796.23,
+			"y": -1084.18
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.next",
+			"x": 2952.63,
+			"y": -982.82
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.iter",
+			"x": 2623.58,
+			"y": -682.87
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.warning",
+			"x": 2713.49,
+			"y": -461.28
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.startswith",
+			"x": 2849.45,
+			"y": -409.01
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.reverse",
+			"x": 2889.02,
+			"y": -1154.23
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.infer_type",
+			"x": 2935.9,
+			"y": -737.1
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.get_called_name",
+			"x": 2968.32,
+			"y": -954.63
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.get",
+			"x": 2839.09,
+			"y": -397.21
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.add_external_code",
+			"x": 2809.03,
+			"y": -844.55
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.dump",
+			"x": 2824.38,
+			"y": -774.21
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.resolve_called_name",
+			"x": 2810.19,
+			"y": -529.36
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.getattr",
+			"x": 2820.97,
+			"y": -464.01
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.split",
+			"x": 2733.38,
+			"y": -542.12
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.exists",
+			"x": 2922.3,
+			"y": -420.62
+		},
+		{
+			"uniqueKey": "ExternalPythonFunction..extP2S.strip",
+			"x": 2864.52,
+			"y": -774.3
+		},
 		{
 			"uniqueKey": "PythonFile..Python2SOMIX.src.python2somix.python2somix",
 			"x": 113.64,
@@ -269,153 +384,163 @@
 		},
 		{
 			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer",
-			"x": 760,
-			"y": 360
+			"x": 735,
+			"y": 350
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.__init__",
-			"x": 1771.63,
-			"y": -834.73
+			"x": 1755,
+			"y": -850
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.filename",
-			"x": 1776.66,
-			"y": -432.82
+			"x": 1755,
+			"y": -450
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.module_name",
-			"x": 2187.51,
-			"y": -564.82
+			"x": 2155,
+			"y": -570
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.base_path",
-			"x": 1868.71,
-			"y": -498.82
+			"x": 1835,
+			"y": -510
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.symbol_table",
-			"x": 1996.75,
-			"y": -564.82
+			"x": 1975,
+			"y": -570
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.calls",
-			"x": 2029.42,
-			"y": -696.82
+			"x": 1995,
+			"y": -710
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.accesses",
-			"x": 2088.43,
-			"y": -696.82
+			"x": 2055,
+			"y": -710
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.parameter_type_map",
-			"x": 1957.72,
-			"y": -432.82
+			"x": 1935,
+			"y": -450
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.scope_stack",
-			"x": 1787.33,
-			"y": -498.82
+			"x": 1755,
+			"y": -510
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_class",
-			"x": 2191.15,
-			"y": -498.82
+			"x": 2175,
+			"y": -510
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_code",
-			"x": 2412.54,
-			"y": -562.54
+			"x": 2395,
+			"y": -570
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.local_namespace",
-			"x": 2292.23,
-			"y": -564.82
+			"x": 2275,
+			"y": -570
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.variable_types",
-			"x": 2090.79,
-			"y": -564.82
+			"x": 2075,
+			"y": -570
 		},
 		{
 			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.class_variable_types",
-			"x": 1939.72,
-			"y": -696.82
+			"x": 1915,
+			"y": -710
+		},
+		{
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.add_external_code_callback",
+			"x": 2655,
+			"y": -530
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Module",
-			"x": 2306.24,
-			"y": -488.73
+			"x": 2275,
+			"y": -490
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Import",
-			"x": 1850.01,
-			"y": -432.82
+			"x": 1835,
+			"y": -450
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_ImportFrom",
-			"x": 2090.79,
-			"y": -498.82
+			"x": 2075,
+			"y": -510
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_ClassDef",
-			"x": 1903.39,
-			"y": -564.82
+			"x": 1875,
+			"y": -570
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_FunctionDef",
-			"x": 2301.22,
-			"y": -905.79
+			"x": 2275,
+			"y": -910
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_annotation_type",
-			"x": 2439.72,
-			"y": -896.19
+			"x": 2415,
+			"y": -910
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Assign",
-			"x": 2106.72,
-			"y": -901.59
+			"x": 2075,
+			"y": -910
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_type",
-			"x": 2206.04,
-			"y": -833.05
+			"x": 2175,
+			"y": -850
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_class_name",
-			"x": 2418.79,
-			"y": -824.25
+			"x": 2395,
+			"y": -830
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Call",
-			"x": 1948.5,
-			"y": -920.5
+			"x": 1915,
+			"y": -930
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_parameter_types",
-			"x": 1947.62,
-			"y": -825.52
+			"x": 1915,
+			"y": -830
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_called_name",
-			"x": 2199.95,
-			"y": -775.04
+			"x": 2175,
+			"y": -790
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_called_name",
-			"x": 2053.94,
-			"y": -770.41
+			"x": 2035,
+			"y": -790
+		},
+		{
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.add_external_code",
+			"x": 2615,
+			"y": -950
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Attribute",
-			"x": 2314.71,
-			"y": -739.3
+			"x": 2295,
+			"y": -750
 		},
 		{
 			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Name",
-			"x": 1875.68,
-			"y": -630.82
+			"x": 1855,
+			"y": -650
 		},
 		{
 			"uniqueKey": "PythonFunction..Python2SOMIX.src.python2somix.python2somix.load_config",
@@ -431,6 +556,11 @@
 			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.RawFormatter",
 			"x": 4006.4,
 			"y": -1098.58
+		},
+		{
+			"uniqueKey": "PythonFunction..Python2SOMIX.src.python2somix.python2somix.add_external_code_element",
+			"x": 2620.56,
+			"y": -627.77
 		}
 	],
 	"comments": [],
@@ -459,7 +589,8 @@
 		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Module",
 		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Assign",
 		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_ClassDef",
-		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_code"
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_code",
+		"ExternalPythonFunction..extP2S.debug"
 	],
 	"suppressed": []
 }
