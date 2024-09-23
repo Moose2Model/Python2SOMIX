@@ -7,98 +7,93 @@
 		"newElBoxHeight": 488
 	},
 	"addedWithNeighbors": [
-		"PythonMethod..subfolder1.test1.ClassOne.__init__",
-		"PythonVariable..subfolder1.test1.ClassOne.instance_variable",
-		"PythonMethod..subfolder1.test1.ClassOne.method_one",
-		"PythonFunction..subfolder1.test1.function_one",
-		"PythonMethod..subfolder2.test2.ClassTwo.method_four",
-		"PythonMethod..subfolder2.test2.ClassTwo.method_three",
-		"PythonMethod..subfolder2.test2.ClassTwo.method_two"
+		"PythonMethod..test.subfolder1.test1.ClassOne.__init__",
+		"PythonVariable..test.subfolder1.test1.ClassOne.instance_variable",
+		"PythonMethod..test.subfolder1.test1.ClassOne.method_one",
+		"PythonFunction..test.subfolder1.test1.function_one",
+		"PythonMethod..test.subfolder2.test2.ClassTwo.method_four",
+		"PythonMethod..test.subfolder2.test2.ClassTwo.method_three",
+		"PythonMethod..test.subfolder2.test2.ClassTwo.method_two",
+		"PythonFunction..test.subfolder2.test2.function_two"
 	],
 	"positions": [
 		{
-			"uniqueKey": "PythonFile..test1",
-			"x": 36.39,
-			"y": 93.7
+			"uniqueKey": "PythonFile..test.subfolder1.test1",
+			"x": 367.69,
+			"y": -288.53
 		},
 		{
-			"uniqueKey": "PythonClass..subfolder1.test1.ClassOne",
+			"uniqueKey": "PythonClass..test.subfolder1.test1.ClassOne",
 			"x": -456.78,
 			"y": -33.82
 		},
 		{
-			"uniqueKey": "PythonMethod..subfolder1.test1.ClassOne.__init__",
+			"uniqueKey": "PythonMethod..test.subfolder1.test1.ClassOne.__init__",
 			"x": -541.19,
 			"y": -111.08
 		},
 		{
-			"uniqueKey": "PythonVariable..subfolder1.test1.ClassOne.instance_variable",
+			"uniqueKey": "PythonVariable..test.subfolder1.test1.ClassOne.instance_variable",
 			"x": -501.19,
 			"y": -31.08
 		},
 		{
-			"uniqueKey": "PythonMethod..subfolder1.test1.ClassOne.method_one",
+			"uniqueKey": "PythonMethod..test.subfolder1.test1.ClassOne.method_one",
 			"x": -441.19,
 			"y": -111.08
 		},
 		{
-			"uniqueKey": "PythonFunction..subfolder1.test1.function_one",
+			"uniqueKey": "PythonFunction..test.subfolder1.test1.function_one",
 			"x": -322.77,
 			"y": -44.28
 		},
 		{
-			"uniqueKey": "PythonFile..test2",
-			"x": -176.21,
-			"y": -362.91
+			"uniqueKey": "PythonFile..test.subfolder2.test2",
+			"x": 400.21,
+			"y": -104.36
 		},
 		{
-			"uniqueKey": "PythonClass..subfolder2.test2.ClassTwo",
+			"uniqueKey": "PythonClass..test.subfolder2.test2.ClassTwo",
 			"x": -831.84,
 			"y": -142.97
 		},
 		{
-			"uniqueKey": "PythonMethod..subfolder2.test2.ClassTwo.method_two",
+			"uniqueKey": "PythonMethod..test.subfolder2.test2.ClassTwo.method_two",
 			"x": -421.51,
 			"y": -307.73
 		},
 		{
-			"uniqueKey": "PythonMethod..subfolder2.test2.ClassTwo.method_three",
+			"uniqueKey": "PythonMethod..test.subfolder2.test2.ClassTwo.method_three",
 			"x": -282.7,
 			"y": -308.32
 		},
 		{
-			"uniqueKey": "PythonMethod..subfolder2.test2.ClassTwo.method_four",
+			"uniqueKey": "PythonMethod..test.subfolder2.test2.ClassTwo.method_four",
 			"x": -197.56,
 			"y": -243.41
 		},
 		{
-			"uniqueKey": "PythonFunction..subfolder2.test2.function_two",
+			"uniqueKey": "PythonFunction..test.subfolder2.test2.function_two",
 			"x": -53.73,
 			"y": -231.02
 		}
 	],
 	"comments": [
 		{
-			"uniqueKey": "PythonFile..test1",
-			"x": -851.7,
-			"y": -266.5,
-			"text": "This is a test file.\nThe benefit is to get a mental map of \nthe coding and the option to jump to the editor from the diagram."
-		},
-		{
-			"uniqueKey": "PythonFunction..subfolder1.test1.function_one",
+			"uniqueKey": "PythonFunction..test.subfolder1.test1.function_one",
 			"x": -257.27,
 			"y": -100.78,
 			"text": "This is a function in the Python\ntest coding"
 		}
 	],
 	"pinned": [
-		"PythonFunction..subfolder1.test1.function_one",
-		"PythonVariable..subfolder1.test1.ClassOne.instance_variable",
-		"PythonMethod..subfolder1.test1.ClassOne.method_one",
-		"PythonMethod..subfolder1.test1.ClassOne.__init__",
-		"PythonMethod..subfolder2.test2.ClassTwo.method_two",
-		"PythonFunction..subfolder2.test2.function_two",
-		"PythonMethod..subfolder2.test2.ClassTwo.method_four"
+		"PythonFunction..test.subfolder1.test1.function_one",
+		"PythonVariable..test.subfolder1.test1.ClassOne.instance_variable",
+		"PythonMethod..test.subfolder1.test1.ClassOne.method_one",
+		"PythonMethod..test.subfolder1.test1.ClassOne.__init__",
+		"PythonMethod..test.subfolder2.test2.ClassTwo.method_two",
+		"PythonFunction..test.subfolder2.test2.function_two",
+		"PythonMethod..test.subfolder2.test2.ClassTwo.method_four"
 	],
 	"suppressed": []
 }

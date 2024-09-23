@@ -1,608 +1,465 @@
 {
 	"newElementBox": {
 		"isInitial": false,
-		"newElBoxX": 3923.339573306227,
-		"newElBoxY": -1274,
+		"newElBoxX": 2604.3408393728246,
+		"newElBoxY": -1194,
 		"newElBoxWidth": 400,
-		"newElBoxHeight": 948
+		"newElBoxHeight": 868
 	},
 	"addedWithNeighbors": [
-		"PythonMethod..src.python2somix.python2somix.Code.__init__",
-		"PythonVariable..src.python2somix.python2somix.Code.accesses",
-		"PythonVariable..src.python2somix.python2somix.Code.calls",
-		"PythonVariable..src.python2somix.python2somix.Code.children",
-		"PythonMethod..src.python2somix.python2somix.Data.__init__",
-		"PythonVariable..src.python2somix.python2somix.Data.accessed_by",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.__init__",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.base_path",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.current_class",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.current_function",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.elements",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.filename",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.get_link",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.local_namespace",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.module_name",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.parent_child_relations",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.scope_stack",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.symbol_table",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_Assign",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_ClassDef",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_FunctionDef",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_Module",
-		"PythonMethod..src.python2somix.python2somix.Element.__init__",
-		"PythonVariable..src.python2somix.python2somix.Element.id",
-		"PythonVariable..src.python2somix.python2somix.Element.link_to_editor",
-		"PythonVariable..src.python2somix.python2somix.Element.name",
-		"PythonVariable..src.python2somix.python2somix.Element.technical_type",
-		"PythonMethod..src.python2somix.python2somix.Grouping.__init__",
-		"PythonVariable..src.python2somix.python2somix.Element.unique_name",
-		"PythonVariable..src.python2somix.python2somix.Grouping.children",
-		"PythonVariable..src.python2somix.python2somix.Grouping.is_main",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.__init__",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.base_path",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.class_variable_types",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.current_function",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.filename",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Name",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Module",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_ImportFrom",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Import",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_FunctionDef",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_ClassDef",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Attribute",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Assign",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.variable_types",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.symbol_table",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.scope_stack",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.resolve_class_name",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.resolve_called_name",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.module_name",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.local_namespace",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.infer_type",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.get_called_name",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.current_class",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.accesses",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.calls",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Call",
-		"PythonFunction..src.test_extraction.main",
-		"PythonFunction..src.test_extraction.parse_mse_file",
-		"PythonFunction..src.python2somix.python2somix.main",
-		"PythonVariable..src.python2somix.python2somix.Code.inferred_parameter_types",
-		"PythonVariable..src.python2somix.python2somix.Code.parameters",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.get_annotation_type",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.infer_parameter_types",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.parameter_type_map",
-		"PythonFunction..src.test_extraction.tokenize",
-		"PythonFunction..src.test_extraction.replace_refs_in_relations",
-		"PythonFunction..src.test_extraction.parse_sexpr",
-		"PythonFunction..src.test_extraction.build_id_to_object_map",
-		"PythonFunction..src.test_extraction.compare_mse_files",
-		"PythonFunction..src.test_extraction.parse_mse_content",
-		"PythonFunction..src.test_extraction.process_coding_objects",
-		"PythonFunction..src.test_extraction.extract_entries",
-		"PythonFunction..src.python2somix.python2somix.load_config",
-		"PythonMethod..src.test.subfolder1.test1.ClassOne.__init__",
-		"PythonVariable..src.test.subfolder1.test1.ClassOne.instance_variable",
-		"PythonMethod..src.test.subfolder1.test1.ClassOne.method_one",
-		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_four",
-		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_three",
-		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_two",
-		"PythonFunction..src.test.subfolder1.test1.function_one",
-		"PythonFunction..src.test.subfolder2.test2.function_two"
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.Code.__init__",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.accesses",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.calls",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.children",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.Data.__init__",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Data.accessed_by",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.__init__",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.base_path",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.current_class",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.current_function",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.elements",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.filename",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.get_link",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.local_namespace",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.module_name",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.parent_child_relations",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.scope_stack",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.symbol_table",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Assign",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_ClassDef",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_FunctionDef",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Module",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.Element.__init__",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.id",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.link_to_editor",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.name",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.technical_type",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.Grouping.__init__",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.unique_name",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Grouping.children",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Grouping.is_main",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.__init__",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.base_path",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.class_variable_types",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.filename",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Name",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Module",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_ImportFrom",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Import",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_FunctionDef",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_ClassDef",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Attribute",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Assign",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.variable_types",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.symbol_table",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.scope_stack",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_class_name",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_called_name",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.module_name",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.local_namespace",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_type",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_called_name",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_class",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.accesses",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.calls",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Call",
+		"PythonFunction..Python2SOMIX.src.python2somix.python2somix.main",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.inferred_parameter_types",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.parameters",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_annotation_type",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_parameter_types",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.parameter_type_map",
+		"PythonFunction..Python2SOMIX.src.python2somix.python2somix.load_config"
 	],
 	"positions": [
 		{
-			"uniqueKey": "PythonFile..src.python2somix.python2somix",
+			"uniqueKey": "PythonFile..Python2SOMIX.src.python2somix.python2somix",
 			"x": 113.64,
 			"y": 89.01
 		},
 		{
-			"uniqueKey": "PythonClass..src.python2somix.python2somix.Element",
+			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.Element",
 			"x": 1098.59,
 			"y": 115.76
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.Element.__init__",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.Element.__init__",
 			"x": 718.59,
 			"y": -564.24
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Element.id",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.id",
 			"x": 858.59,
 			"y": -564.24
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Element.name",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.name",
 			"x": 698.59,
 			"y": -624.24
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Element.unique_name",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.unique_name",
 			"x": 858.59,
 			"y": -624.24
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Element.technical_type",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.technical_type",
 			"x": 798.59,
 			"y": -564.24
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Element.link_to_editor",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Element.link_to_editor",
 			"x": 778.59,
 			"y": -624.24
 		},
 		{
-			"uniqueKey": "PythonClass..src.python2somix.python2somix.Grouping",
+			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.Grouping",
 			"x": 1200,
 			"y": -440
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.Grouping.__init__",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.Grouping.__init__",
 			"x": 1556.88,
 			"y": -594.3
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Grouping.children",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Grouping.children",
 			"x": 1556.88,
 			"y": -514.3
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Grouping.is_main",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Grouping.is_main",
 			"x": 1616.88,
 			"y": -594.3
 		},
 		{
-			"uniqueKey": "PythonClass..src.python2somix.python2somix.Code",
+			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.Code",
 			"x": 1480,
 			"y": -640
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.Code.__init__",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.Code.__init__",
 			"x": 1248.21,
 			"y": -593.84
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Code.children",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.children",
 			"x": 1310.24,
 			"y": -593.84
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Code.calls",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.calls",
 			"x": 1193.19,
 			"y": -593.84
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Code.accesses",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.accesses",
 			"x": 1204.2,
 			"y": -527.84
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Code.parameters",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.parameters",
 			"x": 1436.97,
 			"y": -527.84
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Code.inferred_parameter_types",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Code.inferred_parameter_types",
 			"x": 1317.92,
 			"y": -527.84
 		},
 		{
-			"uniqueKey": "PythonClass..src.python2somix.python2somix.Data",
+			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.Data",
 			"x": 880,
 			"y": -300
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.Data.__init__",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.Data.__init__",
 			"x": 1039.7,
 			"y": -596.27
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.Data.accessed_by",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.Data.accessed_by",
 			"x": 959.7,
 			"y": -596.27
 		},
 		{
-			"uniqueKey": "PythonClass..src.python2somix.python2somix.DefinitionCollector",
+			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector",
 			"x": -480,
 			"y": -940
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.DefinitionCollector.__init__",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.__init__",
 			"x": 1106.42,
 			"y": -1043.62
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.filename",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.filename",
 			"x": 1240.11,
 			"y": -829.19
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.module_name",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.module_name",
 			"x": 1220.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.base_path",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.base_path",
 			"x": 960.11,
 			"y": -749.19
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.symbol_table",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.symbol_table",
 			"x": 1120.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.elements",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.elements",
 			"x": 960.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.parent_child_relations",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.parent_child_relations",
 			"x": 1180.11,
 			"y": -949.19
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.scope_stack",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.scope_stack",
 			"x": 1040.11,
 			"y": -889.19
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.current_class",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.current_class",
 			"x": 1160.31,
 			"y": -987.88
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.current_function",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.current_function",
 			"x": 959.89,
 			"y": -948.97
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.DefinitionCollector.local_namespace",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.local_namespace",
 			"x": 1040.11,
 			"y": -829.19
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.DefinitionCollector.get_link",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.get_link",
 			"x": 1158.02,
 			"y": -715.55
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_Module",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Module",
 			"x": 1446.43,
 			"y": -1013.64
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_ClassDef",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_ClassDef",
 			"x": 1336.27,
 			"y": -1012.26
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_FunctionDef",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_FunctionDef",
 			"x": 1538.86,
 			"y": -1009.73
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_Assign",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Assign",
 			"x": 1234.18,
 			"y": -1018.14
 		},
 		{
-			"uniqueKey": "PythonClass..src.python2somix.python2somix.UsageAnalyzer",
+			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer",
 			"x": 760,
 			"y": 360
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.__init__",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.__init__",
 			"x": 1771.63,
 			"y": -834.73
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.filename",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.filename",
 			"x": 1776.66,
 			"y": -432.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.module_name",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.module_name",
 			"x": 2187.51,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.base_path",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.base_path",
 			"x": 1868.71,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.symbol_table",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.symbol_table",
 			"x": 1996.75,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.calls",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.calls",
 			"x": 2029.42,
 			"y": -696.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.accesses",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.accesses",
 			"x": 2088.43,
 			"y": -696.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.parameter_type_map",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.parameter_type_map",
 			"x": 1957.72,
 			"y": -432.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.scope_stack",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.scope_stack",
 			"x": 1787.33,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.current_class",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_class",
 			"x": 2191.15,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.current_function",
-			"x": 2051.74,
-			"y": -630.82
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_code",
+			"x": 2412.54,
+			"y": -562.54
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.local_namespace",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.local_namespace",
 			"x": 2292.23,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.variable_types",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.variable_types",
 			"x": 2090.79,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonVariable..src.python2somix.python2somix.UsageAnalyzer.class_variable_types",
+			"uniqueKey": "PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.class_variable_types",
 			"x": 1939.72,
 			"y": -696.82
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Module",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Module",
 			"x": 2306.24,
 			"y": -488.73
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Import",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Import",
 			"x": 1850.01,
 			"y": -432.82
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_ImportFrom",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_ImportFrom",
 			"x": 2090.79,
 			"y": -498.82
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_ClassDef",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_ClassDef",
 			"x": 1903.39,
 			"y": -564.82
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_FunctionDef",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_FunctionDef",
 			"x": 2301.22,
 			"y": -905.79
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.get_annotation_type",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_annotation_type",
 			"x": 2439.72,
 			"y": -896.19
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Assign",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Assign",
 			"x": 2106.72,
 			"y": -901.59
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.infer_type",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_type",
 			"x": 2206.04,
 			"y": -833.05
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.resolve_class_name",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_class_name",
 			"x": 2418.79,
 			"y": -824.25
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Call",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Call",
 			"x": 1948.5,
 			"y": -920.5
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.infer_parameter_types",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_parameter_types",
 			"x": 1947.62,
 			"y": -825.52
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.get_called_name",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_called_name",
 			"x": 2199.95,
 			"y": -775.04
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.resolve_called_name",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_called_name",
 			"x": 2053.94,
 			"y": -770.41
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Attribute",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Attribute",
 			"x": 2314.71,
 			"y": -739.3
 		},
 		{
-			"uniqueKey": "PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Name",
+			"uniqueKey": "PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Name",
 			"x": 1875.68,
 			"y": -630.82
 		},
 		{
-			"uniqueKey": "PythonFunction..src.python2somix.python2somix.load_config",
+			"uniqueKey": "PythonFunction..Python2SOMIX.src.python2somix.python2somix.load_config",
 			"x": 1900,
 			"y": -1020
 		},
 		{
-			"uniqueKey": "PythonFunction..src.python2somix.python2somix.main",
+			"uniqueKey": "PythonFunction..Python2SOMIX.src.python2somix.python2somix.main",
 			"x": 1820,
 			"y": -1080
 		},
 		{
-			"uniqueKey": "PythonFile..src.test_extraction",
-			"x": 1264.02,
-			"y": 176.42
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.tokenize",
-			"x": 3089.77,
-			"y": -716.46
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.parse_sexpr",
-			"x": 2899.77,
-			"y": -701.46
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.parse_mse_content",
-			"x": 2872.73,
-			"y": -788.46
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.extract_entries",
-			"x": 3043.77,
-			"y": -884.32
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.build_id_to_object_map",
-			"x": 2700.16,
-			"y": -795.48
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.replace_refs_in_relations",
-			"x": 3023.07,
-			"y": -801.8
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.process_coding_objects",
-			"x": 3273.77,
-			"y": -867.46
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.parse_mse_file",
-			"x": 2756.73,
-			"y": -909
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.compare_mse_files",
-			"x": 2764.57,
-			"y": -977.54
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test_extraction.main",
-			"x": 2766.71,
-			"y": -1061.2
-		},
-		{
-			"uniqueKey": "PythonFile..src.test.subfolder1.test1",
-			"x": 3729.43,
-			"y": -506.24
-		},
-		{
-			"uniqueKey": "PythonClass..src.test.subfolder1.test1.ClassOne",
-			"x": 3685.69,
-			"y": -1084.21
-		},
-		{
-			"uniqueKey": "PythonMethod..src.test.subfolder1.test1.ClassOne.__init__",
-			"x": 3632,
-			"y": -952
-		},
-		{
-			"uniqueKey": "PythonVariable..src.test.subfolder1.test1.ClassOne.instance_variable",
-			"x": 3632,
-			"y": -892
-		},
-		{
-			"uniqueKey": "PythonMethod..src.test.subfolder1.test1.ClassOne.method_one",
-			"x": 3712,
-			"y": -952
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test.subfolder1.test1.function_one",
-			"x": 3871.69,
-			"y": -980.71
-		},
-		{
-			"uniqueKey": "PythonFile..src.test.subfolder2.test2",
-			"x": 3639.93,
-			"y": -740.64
-		},
-		{
-			"uniqueKey": "PythonClass..src.test.subfolder2.test2.ClassTwo",
-			"x": 3991,
-			"y": -1581
-		},
-		{
-			"uniqueKey": "PythonMethod..src.test.subfolder2.test2.ClassTwo.method_two",
-			"x": 3627,
-			"y": -1167
-		},
-		{
-			"uniqueKey": "PythonMethod..src.test.subfolder2.test2.ClassTwo.method_three",
-			"x": 3727,
-			"y": -1167
-		},
-		{
-			"uniqueKey": "PythonMethod..src.test.subfolder2.test2.ClassTwo.method_four",
-			"x": 3794.5,
-			"y": -1116.5
-		},
-		{
-			"uniqueKey": "PythonFunction..src.test.subfolder2.test2.function_two",
-			"x": 3901.5,
-			"y": -1147
+			"uniqueKey": "PythonClass..Python2SOMIX.src.python2somix.python2somix.RawFormatter",
+			"x": 4006.4,
+			"y": -1098.58
 		}
 	],
 	"comments": [],
 	"pinned": [
-		"PythonFunction..src.python2somix.python2somix.main",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.current_class",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.variable_types",
-		"PythonVariable..src.python2somix.python2somix.UsageAnalyzer.current_function",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.current_class",
-		"PythonVariable..src.python2somix.python2somix.DefinitionCollector.current_function",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.__init__",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.__init__",
-		"PythonFunction..src.python2somix.python2somix.load_config",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.infer_parameter_types",
-		"PythonFunction..src.test_extraction.parse_mse_content",
-		"PythonFunction..src.test_extraction.compare_mse_files",
-		"PythonFunction..src.test_extraction.replace_refs_in_relations",
-		"PythonFunction..src.test_extraction.build_id_to_object_map",
-		"PythonFunction..src.test_extraction.main",
-		"PythonFunction..src.test_extraction.parse_mse_file",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Call",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Attribute",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.get_called_name",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.infer_type",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Assign",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.resolve_called_name",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_Module",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.get_annotation_type",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.visit_FunctionDef",
-		"PythonMethod..src.python2somix.python2somix.UsageAnalyzer.resolve_class_name",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_FunctionDef",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.get_link",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_Module",
-		"PythonFunction..src.test_extraction.process_coding_objects",
-		"PythonFunction..src.test_extraction.tokenize",
-		"PythonFunction..src.test_extraction.parse_sexpr",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_Assign",
-		"PythonMethod..src.python2somix.python2somix.DefinitionCollector.visit_ClassDef",
-		"PythonFunction..src.test.subfolder2.test2.function_two",
-		"PythonMethod..src.test.subfolder2.test2.ClassTwo.method_four",
-		"PythonFunction..src.test.subfolder1.test1.function_one",
-		"PythonMethod..src.test.subfolder1.test1.ClassOne.method_one",
-		"PythonVariable..src.test.subfolder1.test1.ClassOne.instance_variable"
+		"PythonFunction..Python2SOMIX.src.python2somix.python2somix.main",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_class",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.variable_types",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.current_class",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.current_function",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.__init__",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.__init__",
+		"PythonFunction..Python2SOMIX.src.python2somix.python2somix.load_config",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_parameter_types",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Call",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Attribute",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_called_name",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.infer_type",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Assign",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_called_name",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_Module",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.get_annotation_type",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.visit_FunctionDef",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.resolve_class_name",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_FunctionDef",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.get_link",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Module",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_Assign",
+		"PythonMethod..Python2SOMIX.src.python2somix.python2somix.DefinitionCollector.visit_ClassDef",
+		"PythonVariable..Python2SOMIX.src.python2somix.python2somix.UsageAnalyzer.current_code"
 	],
 	"suppressed": []
 }
