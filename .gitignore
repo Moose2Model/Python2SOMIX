@@ -14,3 +14,4 @@ src/config_python2somix.txt
 /dist
 config_python2somix.txt
 /src/tests/test
+.python2somix.log

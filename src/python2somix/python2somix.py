@@ -6,7 +6,7 @@ import argparse
 import textwrap
 from argparse import HelpFormatter
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 def setup_logging(debug):
     if debug:
@@ -59,7 +59,7 @@ class Code(Element):
         self.children = []
         self.calls = []
         self.accesses = []
-        self.parameters = []  # To store function/method parameters
+        self.parameters = []  # To store code parameters
         self.inferred_parameter_types = {}  # To store inferred types for parameters
 
 class Data(Element):
@@ -246,7 +246,7 @@ class UsageAnalyzer(ast.NodeVisitor):
 
         self.scope_stack = []
         self.current_class = None
-        self.current_function = None
+        self.current_code = None
 
         self.local_namespace = {}  # Map local names to fully qualified names
         self.variable_types = {}  # Map variable names to class names (within a function)
@@ -301,10 +301,10 @@ class UsageAnalyzer(ast.NodeVisitor):
         else:
             unique_name = self.module_name + '.' + name
 
-        logging.debug(f"Visiting function/method: {unique_name}")
+        logging.debug(f"Visiting code: {unique_name}")
 
         self.scope_stack.append(unique_name)
-        self.current_function = unique_name
+        self.current_code = unique_name
 
         # Initialize variable types for this function
         self.variable_types = {}
@@ -321,7 +321,7 @@ class UsageAnalyzer(ast.NodeVisitor):
                         if unique_name not in self.parameter_type_map:
                             self.parameter_type_map[unique_name] = {}
                         self.parameter_type_map[unique_name][param_name] = set([resolved_type.unique_name])
-                        logging.debug(f"Assigned inferred type '{resolved_type.unique_name}' to parameter '{param_name}' in function '{unique_name}'")
+                        logging.debug(f"Assigned inferred type '{resolved_type.unique_name}' to parameter '{param_name}' in code '{unique_name}'")
                         # **Assign the inferred type to variable_types**
                         self.variable_types[param_name] = resolved_type.unique_name
                         logging.debug(f"Set variable_types['{param_name}'] = '{resolved_type.unique_name}'")
@@ -331,14 +331,14 @@ class UsageAnalyzer(ast.NodeVisitor):
                 if inferred_types and len(inferred_types) == 1:
                     inferred_type = next(iter(inferred_types))
                     self.variable_types[param_name] = inferred_type
-                    logging.debug(f"Inferred type '{inferred_type}' for parameter '{param_name}' in function '{unique_name}'")
+                    logging.debug(f"Inferred type '{inferred_type}' for parameter '{param_name}' in code '{unique_name}'")
                 elif inferred_types and len(inferred_types) > 1:
                     inferred_type = next(iter(inferred_types))  # Choose one for simplicity
                     self.variable_types[param_name] = inferred_type
-                    logging.warning(f"Parameter '{param_name}' in function '{unique_name}' has multiple inferred types: {inferred_types}. Assigned '{inferred_type}'")
+                    logging.warning(f"Parameter '{param_name}' in code '{unique_name}' has multiple inferred types: {inferred_types}. Assigned '{inferred_type}'")
                 else:
                     self.variable_types[param_name] = None
-                    logging.debug(f"Parameter '{param_name}' in function '{unique_name}' has unknown type")
+                    logging.debug(f"Parameter '{param_name}' in code '{unique_name}' has unknown type")
 
         self.generic_visit(node)
 
@@ -351,7 +351,7 @@ class UsageAnalyzer(ast.NodeVisitor):
         self.variable_types = {}
 
         self.scope_stack.pop()
-        self.current_function = None
+        self.current_code = None
 
     def get_annotation_type(self, annotation):
         """
@@ -373,14 +373,14 @@ class UsageAnalyzer(ast.NodeVisitor):
         return None
 
     def visit_Assign(self, node):
-        if self.current_function:
+        if self.current_code:
             for target in node.targets:
                 if isinstance(target, ast.Name):
                     var_name = target.id
                     value = node.value
                     var_type = self.infer_type(value)
                     self.variable_types[var_name] = var_type
-                    logging.debug(f"Inferred type for variable '{var_name}' in function '{self.current_function}': {var_type}")
+                    logging.debug(f"Inferred type for variable '{var_name}' in code '{self.current_code}': {var_type}")
                 elif isinstance(target, ast.Attribute):
                     if isinstance(target.value, ast.Name) and target.value.id == 'self':
                         attr_name = 'self.' + target.attr
@@ -400,8 +400,8 @@ class UsageAnalyzer(ast.NodeVisitor):
                 init_method_name = full_class_name + '.__init__'
                 init_method = self.symbol_table.get(init_method_name)
                 if init_method and isinstance(init_method, Code):
-                    self.calls.append({'caller': self.current_function, 'called': init_method.unique_name})
-                    logging.debug(f"Recorded call from '{self.current_function}' to '__init__' of '{full_class_name}'")
+                    self.calls.append({'caller': self.current_code, 'called': init_method.unique_name})
+                    logging.debug(f"Recorded call from '{self.current_code}' to '__init__' of '{full_class_name}'")
                 return full_class_name
         elif isinstance(value, ast.Name):
             var_name = value.id
@@ -439,13 +439,13 @@ class UsageAnalyzer(ast.NodeVisitor):
 
     def visit_Call(self, node):
         called_name = self.get_called_name(node.func)
-        logging.debug(f"Processing call to '{called_name}' in function '{self.current_function}'")
+        logging.debug(f"Processing call to '{called_name}' in code '{self.current_code}'")
         if called_name:
             called_element = self.resolve_called_name(called_name)
             if called_element and isinstance(called_element, Code):
-                if self.current_function:
-                    self.calls.append({'caller': self.current_function, 'called': called_element.unique_name})
-                    logging.debug(f"Recorded call from '{self.current_function}' to '{called_element.unique_name}'")
+                if self.current_code:
+                    self.calls.append({'caller': self.current_code, 'called': called_element.unique_name})
+                    logging.debug(f"Recorded call from '{self.current_code}' to '{called_element.unique_name}'")
                 self.infer_parameter_types(called_element.unique_name, node)
         self.generic_visit(node)
 
@@ -469,9 +469,9 @@ class UsageAnalyzer(ast.NodeVisitor):
             inferred_type = self.infer_type(arg)
             if inferred_type:
                 self.parameter_type_map[called_unique_name][param].add(inferred_type)
-                logging.debug(f"Inferred type for parameter '{param}' in function '{called_unique_name}': {inferred_type}")
+                logging.debug(f"Inferred type for parameter '{param}' in code '{called_unique_name}': {inferred_type}")
             else:
-                logging.debug(f"Could not infer type for parameter '{param}' in function '{called_unique_name}'")
+                logging.debug(f"Could not infer type for parameter '{param}' in code '{called_unique_name}'")
 
     def get_called_name(self, node):
         if isinstance(node, ast.Name):
@@ -539,14 +539,14 @@ class UsageAnalyzer(ast.NodeVisitor):
         else:
             if called_name in self.local_namespace:
                 called_unique_name = self.local_namespace[called_name]
-                logging.debug(f"Resolved global function '{called_name}' to '{called_unique_name}'")
+                logging.debug(f"Resolved global code name '{called_name}' to '{called_unique_name}'")
             else:
                 # If called_name is a built-in function, skip
                 if called_name in BUILT_IN_FUNCTIONS:
                     logging.debug(f"Identified '{called_name}' as a built-in function. Skipping.")
                     return None
                 called_unique_name = self.module_name + '.' + called_name
-                logging.debug(f"Resolved global function '{called_name}' to '{called_unique_name}'")
+                logging.debug(f"Resolved global code name '{called_name}' to '{called_unique_name}'")
 
             called_element = self.symbol_table.get(called_unique_name)
             if isinstance(called_element, Code):
@@ -575,12 +575,12 @@ class UsageAnalyzer(ast.NodeVisitor):
             inferred_type = self.infer_type(arg)
             if inferred_type:
                 self.parameter_type_map[called_unique_name][param].add(inferred_type)
-                logging.debug(f"Inferred type for parameter '{param}' in function '{called_unique_name}': {inferred_type}")
+                logging.debug(f"Inferred type for parameter '{param}' in code '{called_unique_name}': {inferred_type}")
             else:
-                logging.debug(f"Could not infer type for parameter '{param}' in function '{called_unique_name}'")
+                logging.debug(f"Could not infer type for parameter '{param}' in code '{called_unique_name}'")
 
     def visit_Attribute(self, node):
-        if self.current_function:
+        if self.current_code:
             if isinstance(node.value, ast.Name):
                 var_name = node.value.id
                 attr_name = var_name + '.' + node.attr
@@ -590,16 +590,16 @@ class UsageAnalyzer(ast.NodeVisitor):
                     data_element = self.symbol_table.get(self.current_class + '.' + node.attr)
                     if data_element and isinstance(data_element, Data):
                         self.accesses.append({
-                            'accessor': self.current_function,
+                            'accessor': self.current_code,
                             'accessed': data_element.unique_name,
                             'isWrite': False,
                             'isRead': True,
                             'isDependent': True
                         })
-                        logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
+                        logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_code}'")
                 else:
                     # Check if var_name is a parameter with inferred type
-                    current_func_params = self.parameter_type_map.get(self.current_function, {})
+                    current_func_params = self.parameter_type_map.get(self.current_code, {})
                     if var_name in current_func_params:
                         inferred_types = current_func_params[var_name]
                         if len(inferred_types) == 1:
@@ -608,27 +608,27 @@ class UsageAnalyzer(ast.NodeVisitor):
                             data_element = self.symbol_table.get(full_attr_name)
                             if data_element and isinstance(data_element, Data):
                                 self.accesses.append({
-                                    'accessor': self.current_function,
+                                    'accessor': self.current_code,
                                     'accessed': data_element.unique_name,
                                     'isWrite': False,
                                     'isRead': True,
                                     'isDependent': True
                                 })
-                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
+                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_code}'")
                         elif len(inferred_types) > 1:
                             var_type = next(iter(inferred_types))  # Choose one for simplicity
                             full_attr_name = var_type + '.' + node.attr
                             data_element = self.symbol_table.get(full_attr_name)
                             if data_element and isinstance(data_element, Data):
                                 self.accesses.append({
-                                    'accessor': self.current_function,
+                                    'accessor': self.current_code,
                                     'accessed': data_element.unique_name,
                                     'isWrite': False,
                                     'isRead': True,
                                     'isDependent': True
                                 })
-                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
-                            logging.warning(f"Parameter '{var_name}' in function '{self.current_function}' has multiple inferred types. Assigned '{var_type}'")
+                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_code}'")
+                            logging.warning(f"Parameter '{var_name}' in code '{self.current_code}' has multiple inferred types. Assigned '{var_type}'")
                     else:
                         var_type = self.variable_types.get(var_name) or self.class_variable_types.get(var_name)
                         if var_type:
@@ -636,29 +636,29 @@ class UsageAnalyzer(ast.NodeVisitor):
                             data_element = self.symbol_table.get(full_attr_name)
                             if data_element and isinstance(data_element, Data):
                                 self.accesses.append({
-                                    'accessor': self.current_function,
+                                    'accessor': self.current_code,
                                     'accessed': data_element.unique_name,
                                     'isWrite': False,
                                     'isRead': True,
                                     'isDependent': True
                                 })
-                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
+                                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_code}'")
         self.generic_visit(node)
 
     def visit_Name(self, node):
-        if self.current_function:
+        if self.current_code:
             name = node.id
             unique_name = self.module_name + '.' + name
             data_element = self.symbol_table.get(unique_name)
             if data_element and isinstance(data_element, Data):
                 self.accesses.append({
-                    'accessor': self.current_function,
+                    'accessor': self.current_code,
                     'accessed': data_element.unique_name,
                     'isWrite': False,
                     'isRead': True,
                     'isDependent': True
                 })
-                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_function}'")
+                logging.debug(f"Recorded access to '{data_element.unique_name}' by '{self.current_code}'")
         self.generic_visit(node)
 
 def load_config(config_file='config_python2somix.txt'):
@@ -731,6 +731,7 @@ Use Moose2Model to visualize the .mse file.
     parameter_type_map = {}
 
     # First pass: Collect definitions
+    logging.info(f"First pass: Collecting definitions from Python files in '{base_path}'")
     elements = {}
     parent_child_relations = []
     for root, dirs, files in os.walk(base_path):
@@ -749,6 +750,7 @@ Use Moose2Model to visualize the .mse file.
                     logging.error(f"Error processing file {filepath}: {e}")
 
     # Second pass: Analyze usages to build parameter_type_map
+    logging.info(f"Second pass: Analyzing usages to build parameter_type_map")
     calls_pass1 = []
     accesses_pass1 = []
     for root, dirs, files in os.walk(base_path):
@@ -767,6 +769,7 @@ Use Moose2Model to visualize the .mse file.
                     logging.error(f"Error processing file {filepath}: {e}")
 
     # Assign inferred types to Code elements based on parameter_type_map
+    logging.info("Assigning inferred types to Code elements based on parameter_type_map")
     for func_name, params in parameter_type_map.items():
         for param, types in params.items():
             if len(types) == 1:
@@ -774,17 +777,18 @@ Use Moose2Model to visualize the .mse file.
                 function_element = symbol_table.get(func_name)
                 if function_element and isinstance(function_element, Code):
                     function_element.inferred_parameter_types[param] = inferred_type
-                    logging.debug(f"Assigned inferred type '{inferred_type}' to parameter '{param}' in function '{func_name}'")
+                    logging.debug(f"Assigned inferred type '{inferred_type}' to parameter '{param}' in code '{func_name}'")
             elif len(types) > 1:
                 inferred_type = next(iter(types))  # Choose one for simplicity
                 function_element = symbol_table.get(func_name)
                 if function_element and isinstance(function_element, Code):
                     function_element.inferred_parameter_types[param] = inferred_type
-                    logging.warning(f"Parameter '{param}' in function '{func_name}' has multiple inferred types: {types}. Assigned '{inferred_type}'")
+                    logging.warning(f"Parameter '{param}' in code '{func_name}' has multiple inferred types: {types}. Assigned '{inferred_type}'")
             else:
-                logging.warning(f"Parameter '{param}' in function '{func_name}' has no inferred type")
+                logging.warning(f"Parameter '{param}' in code '{func_name}' has no inferred type")
 
     # Third pass: Analyze usages again with parameter_type_map to resolve parameter types
+    logging.info("Third pass: Analyzing usages to resolve parameter types")
     calls_pass2 = []
     accesses_pass2 = []
     for root, dirs, files in os.walk(base_path):
@@ -801,6 +805,8 @@ Use Moose2Model to visualize the .mse file.
                     analyzer.visit(tree)
                 except Exception as e:
                     logging.error(f"Error processing file {filepath}: {e}")
+
+    logging.info(f"Post-processing: Combining results from all three passes")
 
     # Combine calls and accesses from both passes
     all_calls = calls_pass1 + calls_pass2
@@ -845,6 +851,7 @@ Use Moose2Model to visualize the .mse file.
             })
 
     # Write output to .mse file
+    logging.info(f"Writing output to '{output_file}'")
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write('(\n')
         for elem in all_elements.values():
@@ -896,6 +903,6 @@ Use Moose2Model to visualize the .mse file.
             f.write(')\n')
 
         f.write(')\n')
-
+    logging.info("Finished processing Python code.")
 if __name__ == '__main__':
     main()
