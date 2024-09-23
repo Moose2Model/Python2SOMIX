@@ -25,18 +25,14 @@ def setup_logging(debug):
         format='%(asctime)s - %(levelname)s - %(message)s'
         )
 
-
-
-
-
 # Define a set of built-in functions to exclude them from being treated as user-defined
 BUILT_IN_FUNCTIONS = {
-    'print', 'len', 'range', 'int', 'str', 'float', 'bool', 'list',
+    'len', 'range', 'int', 'str', 'float', 'bool', 'list',
     'dict', 'set', 'tuple', 'open', 'enumerate', 'zip', 'map', 'filter',
     'sum', 'min', 'max', 'abs', 'round', 'sorted', 'reversed', 'any',
     'all', 'type', 'isinstance', 'issubclass', 'getattr', 'setattr',
     'hasattr', 'delattr', 'globals', 'locals', 'dir', 'id', 'eval',
-    'exec', 'compile', 'vars', 'globals', 'locals', 'help', 'input'
+    'exec', 'compile', 'vars', 'globals', 'locals', 'help' #, 'input', 'print',
 }
 
 class Element:
@@ -338,7 +334,7 @@ class UsageAnalyzer(ast.NodeVisitor):
                     logging.warning(f"Parameter '{param_name}' in code '{unique_name}' has multiple inferred types: {inferred_types}. Assigned '{inferred_type}'")
                 else:
                     self.variable_types[param_name] = None
-                    logging.debug(f"Parameter '{param_name}' in code '{unique_name}' has unknown type")
+                    logging.debug(f"Parameter '{param_name}' has unknown type in code '{unique_name}'")
 
         self.generic_visit(node)
 
@@ -678,8 +674,6 @@ def main():
         def _fill_text(self, text, width, indent):
             return "\n".join([textwrap.fill(line, width) for line in textwrap.indent(textwrap.dedent(text), indent).splitlines()])
 
-
-
     program_descripton = """Extract Python code structure and usages to SOMIX format.
                                         
 Enter path to the base folder containing Python source code files when prompted.    
@@ -741,7 +735,7 @@ Use Moose2Model to visualize the .mse file.
                 try:
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
-                    module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = base_repo_name + '.' + os.path.relpath(filepath, base_path).replace(os.sep, '.')
                     module_name = module_name[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
                     collector = DefinitionCollector(filepath, module_name, base_path, symbol_table, elements, parent_child_relations)
@@ -760,7 +754,7 @@ Use Moose2Model to visualize the .mse file.
                 try:
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
-                    module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = base_repo_name + '.' + os.path.relpath(filepath, base_path).replace(os.sep, '.')
                     module_name = module_name[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
                     analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass1, accesses_pass1, parameter_type_map)
@@ -798,7 +792,7 @@ Use Moose2Model to visualize the .mse file.
                 try:
                     with open(filepath, 'r', encoding='utf-8') as f:
                         source = f.read()
-                    module_name = os.path.relpath(filepath, base_path).replace(os.sep, '.')
+                    module_name = base_repo_name + '.' + os.path.relpath(filepath, base_path).replace(os.sep, '.')
                     module_name = module_name[:-3]  # Remove '.py'
                     tree = ast.parse(source, filename=filepath)
                     analyzer = UsageAnalyzer(filepath, module_name, base_path, symbol_table, calls_pass2, accesses_pass2, parameter_type_map)
@@ -904,5 +898,6 @@ Use Moose2Model to visualize the .mse file.
 
         f.write(')\n')
     logging.info("Finished processing Python code.")
+
 if __name__ == '__main__':
     main()
