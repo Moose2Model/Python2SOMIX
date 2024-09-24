@@ -18,9 +18,9 @@
 	],
 	"positions": [
 		{
-			"uniqueKey": "ExternalPythonFunction..extP2S.print",
-			"x": -213.35,
-			"y": -157.64
+			"uniqueKey": "ExternalPythonFunction..extP2S.math.sqrt",
+			"x": -567.79,
+			"y": -212.3
 		},
 		{
 			"uniqueKey": "PythonFile..test.subfolder1.test1",
@@ -85,12 +85,6 @@
 	],
 	"comments": [
 		{
-			"uniqueKey": "ExternalPythonFunction..extP2S.print",
-			"x": -113.35,
-			"y": -154.64,
-			"text": "Externally called coding"
-		},
-		{
 			"uniqueKey": "PythonFunction..test.subfolder1.test1.function_one",
 			"x": -257.27,
 			"y": -100.78,
@@ -105,7 +99,7 @@
 		"PythonMethod..test.subfolder2.test2.ClassTwo.method_two",
 		"PythonFunction..test.subfolder2.test2.function_two",
 		"PythonMethod..test.subfolder2.test2.ClassTwo.method_four",
-		"ExternalPythonFunction..extP2S.print"
+		"ExternalPythonFunction..extP2S.math.sqrt"
 	],
 	"suppressed": []
 }

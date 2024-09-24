@@ -392,9 +392,9 @@ def function_two():
   (linkToEditor 'vscode://file/{current_dir2}/test/subfolder2/test2.py/:22:1')
 )
 (SOMIX.Code (id: 13 )
-  (name 'print')
+  (name 'math.sqrt')
   (technicalType 'ExternalPythonFunction')
-  (uniqueName 'extP2S.print')
+  (uniqueName 'extP2S.math.sqrt')
 )
 (SOMIX.ParentChild
   (parent (ref: 1))
@@ -506,26 +506,12 @@ def function_two():
   (caller (ref: 12))
   (called (ref: 6))
 )
-(SOMIX.Call
-  (caller (ref: 5))
-  (called (ref: 13))
-)
-(SOMIX.Call
-  (caller (ref: 6))
-  (called (ref: 13))
-)
+
 (SOMIX.Call
   (caller (ref: 9))
   (called (ref: 13))
 )
-(SOMIX.Call
-  (caller (ref: 12))
-  (called (ref: 13))
-)
-(SOMIX.Call
-  (caller (ref: 11))
-  (called (ref: 13))
-)
+
 
 (SOMIX.Access
   (accessor (ref: 3))

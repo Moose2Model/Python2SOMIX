@@ -5,6 +5,7 @@ import logging
 import argparse
 import textwrap
 from argparse import HelpFormatter
+import builtins
 
 VERSION = "0.1.2"
 
@@ -26,14 +27,16 @@ def setup_logging(debug):
         )
 
 # Define a set of built-in functions to exclude them from being treated as user-defined
-BUILT_IN_FUNCTIONS = {
-    'len', 'range', 'int', 'str', 'float', 'bool', 'list',
-    'dict', 'set', 'tuple', 'open', 'enumerate', 'zip', 'map', 'filter',
-    'sum', 'min', 'max', 'abs', 'round', 'sorted', 'reversed', 'any',
-    'all', 'type', 'isinstance', 'issubclass', 'getattr', 'setattr',
-    'hasattr', 'delattr', 'globals', 'locals', 'dir', 'id', 'eval',
-    'exec', 'compile', 'vars', 'globals', 'locals', 'help' #, 'input', 'print',
-}
+# BUILT_IN_FUNCTIONS = {
+#     'len', 'range', 'int', 'str', 'float', 'bool', 'list',
+#     'dict', 'set', 'tuple', 'open', 'enumerate', 'zip', 'map', 'filter',
+#     'sum', 'min', 'max', 'abs', 'round', 'sorted', 'reversed', 'any',
+#     'all', 'type', 'isinstance', 'issubclass', 'getattr', 'setattr',
+#     'hasattr', 'delattr', 'globals', 'locals', 'dir', 'id', 'eval',
+#     'exec', 'compile', 'vars', 'globals', 'locals', 'help' #, 'input', 'print',
+# }
+
+BUILT_IN_FUNCTIONS = set(dir(builtins))
 
 class Element:
     def __init__(self, id, name, unique_name, technical_type, link_to_editor=None):
