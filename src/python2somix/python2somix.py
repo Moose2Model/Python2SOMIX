@@ -562,7 +562,7 @@ class UsageAnalyzer(ast.NodeVisitor):
     def add_external_code(self, called_unique_name):
         """
         Adds external code to the model with 'extP2S' in uniqueName and without linkToEditor.
-        uniqueName is built as 'extP2S.' + parts[-1]
+        uniqueName is built as 'extP2S.' + called_unique_name
         """
         if not called_unique_name:
             return None
@@ -570,10 +570,10 @@ class UsageAnalyzer(ast.NodeVisitor):
         if called_unique_name in self.symbol_table:
             return called_unique_name  # Already added
 
-        # Split the called_unique_name to extract the last part
+        # Split the called_unique_name to extract all parts
         parts = called_unique_name.split('.')
         if len(parts) > 1:
-            external_unique_name = 'extP2S.' + parts[-1]
+            external_unique_name = 'extP2S.' + '.'.join(parts)
         else:
             external_unique_name = 'extP2S.' + parts[0]
 
@@ -582,7 +582,7 @@ class UsageAnalyzer(ast.NodeVisitor):
             return external_unique_name
 
         # Create a new Code element for external code
-        external_code = Code(None, parts[-1], external_unique_name, 'ExternalPythonFunction', link_to_editor=None)
+        external_code = Code(None, '.'.join(parts), external_unique_name, 'ExternalPythonFunction', link_to_editor=None)
         self.symbol_table[external_unique_name] = external_code
         self.calls.append({'caller': self.current_code, 'called': external_unique_name})
         logging.debug(f"Added external code '{external_unique_name}' called by '{self.current_code}'")

@@ -282,13 +282,13 @@ def function_one():
 # test2.py
 # Import of ClassOne and function_one from test1.py required to find usages
 from test1 import ClassOne, function_one
-
+import math
 class ClassTwo:
     def method_two(self):
         obj = ClassOne()
         obj.method_one()
         function_one()
-        print("ClassTwo method_two called")
+        return math.sqrt(4)
 
 # Type annotation ClassOne required to find usage of method_one
     def method_three(self, my_obj: ClassOne):
@@ -578,9 +578,10 @@ def function_two():
             sys.exit(1)            
 
         # Run the extraction script
-        cmd = ['python', extraction_script_path]
+        cmd = ['python', extraction_script_path, '--debug']
         process = subprocess.Popen(cmd, cwd=test_dir, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         stdout, stderr = process.communicate(input=test_dir)
+
         if process.returncode != 0:
             print(f"Extraction script failed with return code {process.returncode}")
             print(stderr)
